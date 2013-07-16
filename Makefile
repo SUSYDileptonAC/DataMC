@@ -22,7 +22,7 @@ all: AN PAS
 
 
 copyAN:
-	scp fig/DataMC/SignalHighMET* $(AN_PLOTS)
+	#~ scp fig/DataMC/SignalHighMET* $(AN_PLOTS)
 	scp fig/DataMC/Signal* $(AN_PLOTS)	
 	scp fig/DataMC/ttBarDilepton* $(AN_PLOTS)
 	scp fig/DataMC/Inclusive* $(AN_PLOTS)

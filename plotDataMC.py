@@ -569,9 +569,11 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				ratioPad.cd()
 			except AttributeError:
 				print "Plot fails. Look up in errs/failedPlots.txt"
-				output =open("errs/failedPlots.txt","w")
+				outFile =open("errs/failedPlots.txt","a")
 				outFile.write('%s\n'%plot.filename%("_"+run.label+"_"+dilepton))
-				outFilePkl.close()
+				outFile.close()
+				plot.cuts=baseCut
+				return 1
 			ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
 			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)

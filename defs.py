@@ -868,22 +868,28 @@ class Plot:
 					self.cuts = self.cuts.replace(cut,"weight*(((")
 				elif "weight" in cut:
 					self.cuts = self.cuts.replace(cut,"weight*(")
-				else:
+				elif "(" in cut:
 					self.cuts = self.cuts.replace(cut.split("(")[1],"")
+				else:
+					self.cuts = self.cuts.replace(cut,"")
 			for cut in nJetsCutDown:
 				if "weight" and "(((" in cut:
 					self.cuts = self.cuts.replace(cut,"weight*(((")
 				elif "weight" in cut:
 					self.cuts = self.cuts.replace(cut,"weight*(")
-				else:
+				elif "(" in cut:
 					self.cuts = self.cuts.replace(cut.split("(")[1],"")
+				else:
+					self.cuts = self.cuts.replace(cut,"")
 			for cut in nJetsCutEqual:
 				if "weight" and "(((" in cut:
 					self.cuts = self.cuts.replace(cut,"weight*(((")
 				elif "weight" in cut:
 					self.cuts = self.cuts.replace(cut,"weight*(")
-				else:
+				elif "(" in cut:
 					self.cuts = self.cuts.replace(cut.split("(")[1],"")
+				else:
+					self.cuts = self.cuts.replace(cut,"")
 					
 			#~ if nJetsCutUp != "":
 				#~ if "weight" in nJetsCutUp:
@@ -1000,9 +1006,8 @@ class thePlots:
 		
 	#~ class plotLists:
 			
-	plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	#~ plots = [mllPlots.mllPlot,METPlots.metPlot,htPlots.htPlot,METPlots.metPlotLowMass,htPlots.htPlotLowMass,nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass]
-	#~ plots = [nJetsPlots.nJetsPlotLowMass]
+	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	plots = [htPlots.htPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
 	#~ generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass]#,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
@@ -1010,7 +1015,7 @@ class thePlots:
 	
 	basicSet = [METPlots.metPlot,mllPlots.mllPlot,nJetsPlots.nJetsPlot,nBJetsPlots.nBJetsPlot,etaPlots.eta1Plot,etaPlots.eta2Plot,htPlots.htPlot]	
 	anPlotsMetStudyPlotsInclusive = [METStudies.metPlot0Jets,METStudies.metPlot1Jets,METStudies.metPlot2Jets,METStudies.metPlot3Jets]				
-	anPlotsMetStudyPlotsHighMET = [METStudies.metPlotLowPileUp,METStudies.metPlotMidPileUp,METStudies.metPlotHighPileUp,METStudies.metPlotCalo,METStudies.metPlotTc,METStudies.metPlotType1,METStudies.metPlotCentralBarrel,METStudies.metPlotOuterBarrel,METStudies.metPlotEndcap,METStudies.metPlothighDR,METStudies.metPlotmidDR,METStudies.metPlothighDR,METStudies.mhtPlotLowMass]				
+	anPlotsMetStudyPlotsHighMET = [METStudies.metPlotLowPileUp,METStudies.metPlotMidPileUp,METStudies.metPlotHighPileUp,METStudies.metPlotCalo,METStudies.metPlotTc,METStudies.metPlotType1,METStudies.metPlotCentralBarrel,METStudies.metPlotOuterBarrel,METStudies.metPlotEndcap,METStudies.metPlothighDR,METStudies.metPlotmidDR,METStudies.metPlotlowDR,METStudies.mhtPlotLowMass]				
 
 	anPlotsInclusive = [htPlots.htPlot,nJetsPlots.nJetsPlot,mllPlots.mllPlotZpeak,mllPlots.mllPlot]
 #	anPlotsInclusiveEEMuMu = [mllPlots.mllPlotZpeak]

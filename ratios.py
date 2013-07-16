@@ -244,7 +244,7 @@ class RatioGraph:
 				upErrors = []
 				downErrors = []
 				for (errorUp, errorDown) in zip(errorsUp, errorsDown):
-					#log.logDebug("up: %f, down: %f" % (errorUp.ratio, errorDown.ratio))
+					log.logError("up: %f, down: %f" % (errorUp.ratio, errorDown.ratio))
 					if (errorUp.ratio >= 0.0 and errorDown.ratio >= 0.0):
 						xs.append(errorUp.xCenter)
 						ys.append(1.0)
@@ -266,6 +266,7 @@ class RatioGraph:
 								downErrors.append(max(1.0 - errorUp.ratio, 1.0 - errorDown.ratio))
 
 				#~ if (iError + 1 < len(self.errors) and self.errors[iError + 1].add):
+				print upErrors
 				if (iError -1 is not -1  ):
 					#~ print iError
 					#~ if (self.errors[iError + 1].size != None):
@@ -280,6 +281,8 @@ class RatioGraph:
 				graph.SetFillColor(error.color)
 				graph.SetFillStyle(error.fillStyle)
 				errorGraphs.append(graph)
+				#~ print downErrors
+				#~ print upErrors
 				numErrorGraphs = numErrorGraphs+1
 		
 		#~ num = errorGraphs[-1].Merge(errorGraphsToAdd)
@@ -414,9 +417,9 @@ class RatioError:
 				denDown = self.denominatorDown.GetBinContent(iBin)
 				denDownError = self.denominatorDown.GetBinError(iBin)
 
-				log.logDebug("den: %f +- %f" % (den, denError))
-				log.logDebug("denup: %f +- %f" % (denUp, denUpError))
-				log.logDebug("dendown: %f +- %f" % (denDown, denDownError))
+				#~ log.logDebug("den: %f +- %f" % (den, denError))
+				#~ log.logDebug("denup: %f +- %f" % (denUp, denUpError))
+				#~ log.logDebug("dendown: %f +- %f" % (denDown, denDownError))
 
 				x = self.denominator.GetBinCenter(iBin)
 				width = self.denominator.GetBinWidth(iBin)
@@ -426,7 +429,7 @@ class RatioError:
 					ratioUp = Ratio(denUp, den, math.pow(denUpError, 2.0), math.pow(denError, 2.0), x, width)
 					ratioDown = Ratio(denDown, den, math.pow(denDownError, 2.0), math.pow(denError, 2.0), x, width)
 
-					log.logInfo("ratioUp: %f, ratioDown: %f" % (ratioUp.ratio, ratioDown.ratio))
+					#~ log.logInfo("ratioUp: %f, ratioDown: %f" % (ratioUp.ratio, ratioDown.ratio))
 
 					if (tempRatioUp != None):
 						tempRatioUp.addRatio(ratioUp)

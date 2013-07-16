@@ -22,9 +22,17 @@ How to make plots:
 			- SFvsOFFlavourSeperated: The red&blue plots comparing EE vs MuMu vs OF
 		
 		3. Choose a selection. Available at the moment:
+			- SignalInclusive
+			- SignalBarrel
+			- SignalForward
 			- SignalHighMET
+			- SignalHighMETBarrel
+			- SignalHighMETForward
 			- SignalLowMET
+			- SignalLowMETFullEta
 			- Control
+			- ControlCentral
+			- ControlForward
 			- bTagControl
 			- DrellYan
 			- Zpeak

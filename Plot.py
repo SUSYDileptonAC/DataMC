@@ -384,7 +384,7 @@ def main():
 				dileptons = ["SF","EE","MuMu"]
 			else:
 				#~ dileptons = ["SF","OF","EE","MuMu"]
-				dileptons = ["SF","OF","EE","MuMu"]
+				dileptons = ["OF"]
 			for dilepton in dileptons:
 				if argv[2] == "CompareTTbar":
 					compareTTbar(path,plot,dilepton,logScale)

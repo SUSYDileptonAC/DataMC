@@ -1,5 +1,4 @@
 def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run201153X=False):
-	print region
 	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath
 	import ratios
 	from defs import Backgrounds
@@ -201,17 +200,13 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 
 	baseCut = plot.cuts
 	for run in runs:
-		print plot.cuts 
 		plot.cuts=baseCut
-		print plot.cuts	
 		plot.cuts = plot.cuts%run.runCut
-		print plot.cuts
 		lumi = run.lumi
 		printLumi = run.printval
 		
 		
 		if mainConfig.useVectorTrees:
-			print plot.cuts
 			plot.cuts = plot.cuts.replace("met","vMet.Pt()")
 			plot.cuts = plot.cuts.replace("pt1","lepton1.Pt()")
 			plot.cuts = plot.cuts.replace("pt2","lepton2.Pt()")
@@ -219,7 +214,6 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			plot.cuts = plot.cuts.replace("eta2","lepton2.Eta()")
 			plot.cuts = plot.cuts.replace("deltaR","sqrt((lepton1.Eta()-lepton2.Eta())^2+(lepton1.Phi()-lepton2.Phi())^2)")
 			#~ plot.cuts = plot.cuts.replace("deltaR","1")
-			print plot.cuts
 		
 		
 		plotPad.cd()
@@ -277,7 +271,6 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			scaleTree1 = 1.0				
 		
 			
-		print scaleTree1, scaleTree2
 		
 		if mainConfig.normalizeToData:
 			pickleName=plot.filename%("_scaled_"+run.label+"_"+dilepton)
@@ -326,7 +319,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		else: yMax = plot.yMax		
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
-		print plot.cuts
+
 	 
 		if mainConfig.normalizeToData:
 			scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
@@ -354,7 +347,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			plot.cuts = plot.cuts.replace("htJESDown", "ht")
 			plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
 
-		print counts
+
 		
 		errIntMC = ROOT.Double()
 		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
@@ -562,8 +555,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				sumOfEntries = sumOfEntries+datahist.GetBinContent(y)
 				sumOfWeightedEntries = sumOfWeightedEntries+datahist.GetBinContent(y)*weights[y]
 				y=y+1
-			print weights
-			print sumOfEntries/sumOfWeightedEntries
+			#~ print weights
+			#~ print sumOfEntries/sumOfWeightedEntries
 		if mainConfig.plotRatio:
 			try:
 				ratioPad.cd()
@@ -612,6 +605,5 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			#~ datahist.GetYaxis().SetRangeUser(0,datahist.GetBinContent(datahist.GetMaximumBin())*2)
 			#~ hCanvas.Print("fig/DataMC/"+plot.filename%("_"+run.label+"_"+dilepton+"_NoLog"),)
 						
-	print plot.cuts
 	plot.cuts=baseCut
-	print plot.cuts		
+	

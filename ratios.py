@@ -112,10 +112,11 @@ class RatioGraph:
 		self.color=color
 		self.adaptiveBinning = adaptiveBinning
 		self.labelSize=labelSize
+		self.binMerging = []
 		return
 
 	def addErrorBySize(self, name, size, color=None, fillStyle=None, add=True):
-		error = RatioError(name, self.xMin, self.xMax, size=size, add=add)
+		error = RatioError(name, self.xMin, self.xMax,self.binMerging, size=size, add=add)
 		if (color != None):
 			error.color = color
 		if (fillStyle != None):
@@ -123,7 +124,7 @@ class RatioGraph:
 		self.errors.append(error)
 
 	def addErrorByHistograms(self, name, denominatorUp, denominatorDown, color=None, fillStyle=None,add= False):
-		error = RatioError(name, self.xMin, self.xMax, denominator=self.denominator, denominatorUp=denominatorUp, denominatorDown=denominatorDown,add=add)
+		error = RatioError(name, self.xMin, self.xMax,self.binMerging, denominator=self.denominator, denominatorUp=denominatorUp, denominatorDown=denominatorDown,add=add)
 		if (color != None):
 			error.color = color
 		if (fillStyle != None):
@@ -173,8 +174,11 @@ class RatioGraph:
 					#~ ratios.append(tempRatio)
 					#~ tempratio = None
 				if (tempRatio.isFullEnough(self.adaptiveBinning)):
+					 
+					self.binMerging.append(iBin)
 					ratios.append(tempRatio)
 					tempRatio = None
+
 				
 				
 
@@ -194,13 +198,11 @@ class RatioGraph:
 			widths.append(ratio.errorX)
 
 
-		log.logDebug("xs = %s" % xs)
-		log.logDebug("ys = %s" % ys)
-		log.logDebug("yErrors = %s" % yErrors)
-		log.logDebug("widths = %s" % widths)
+		#~ log.logDebug("xs = %s" % xs)
+		#~ log.logDebug("ys = %s" % ys)
+		#~ log.logDebug("yErrors = %s" % yErrors)
+		#~ log.logDebug("widths = %s" % widths)
 
-		# what did I mean with this?
-		log.logError("Fix MC errors!")
 		graph = ROOT.TGraphAsymmErrors(len(xs), array("d", xs), array("d", ys), array("d", widths), array("d", widths), array("d", yErrors), array("d", yErrors))
 		graph.SetLineColor(self.color)
 		graph.SetMarkerColor(self.color)
@@ -215,7 +217,7 @@ class RatioGraph:
 		totalConstantUncertainty = 0
 		errorGraphs = []
 		for iError, error in enumerate(self.errors):
-			print error.name
+
 			if (error.size != None):
 				if (error.add):
 					log.logInfo("Quadractically adding error '%s' with size %f" % (error.name, error.size))
@@ -226,7 +228,7 @@ class RatioGraph:
 					#~ graph.SetFillColor(error.color)
 					#~ errorGraphsToAdd.Add(graph)					
 				else:
-					print error.name
+
 					log.logInfo("Adding error '%s' with size %f" % (error.name, error.size))
 					xCenter = 0.5 * (error.xMin + error.xMax)
 					xWidth = 0.5 * (error.xMax - error.xMin)
@@ -234,7 +236,7 @@ class RatioGraph:
 					graph.SetFillColor(error.color)
 					errorGraphs.append(graph)
 			elif (error.hasHistograms):
-				print error.name
+
 				errorsUp = error.errorsUp
 				errorsDown = error.errorsDown
 
@@ -244,7 +246,6 @@ class RatioGraph:
 				upErrors = []
 				downErrors = []
 				for (errorUp, errorDown) in zip(errorsUp, errorsDown):
-					log.logError("up: %f, down: %f" % (errorUp.ratio, errorDown.ratio))
 					if (errorUp.ratio >= 0.0 and errorDown.ratio >= 0.0):
 						xs.append(errorUp.xCenter)
 						ys.append(1.0)
@@ -266,12 +267,14 @@ class RatioGraph:
 								downErrors.append(max(1.0 - errorUp.ratio, 1.0 - errorDown.ratio))
 
 				#~ if (iError + 1 < len(self.errors) and self.errors[iError + 1].add):
-				print upErrors
+
 				if (iError -1 is not -1  ):
 					#~ print iError
 					#~ if (self.errors[iError + 1].size != None):
 					log.logHighlighted("Found uncertainty to be added. Will do so, now.")
 					#~ size = self.errors[iError -1].size
+					#~ upErrors = [math.sqrt(prev ** 2 + errorGraphs[numErrorGraphs-1].GetErrorYhigh(index) ** 2 + totalConstantUncertainty**2) for index, prev in enumerate(upErrors)]
+					#~ downErrors = [math.sqrt(prev ** 2 + errorGraphs[numErrorGraphs-1].GetErrorYlow(index) ** 2 + totalConstantUncertainty**2) for index, prev in enumerate(downErrors)]
 					upErrors = [math.sqrt(prev ** 2 + errorGraphs[numErrorGraphs-1].GetErrorYhigh(index) ** 2 + totalConstantUncertainty**2) for index, prev in enumerate(upErrors)]
 					downErrors = [math.sqrt(prev ** 2 + errorGraphs[numErrorGraphs-1].GetErrorYlow(index) ** 2 + totalConstantUncertainty**2) for index, prev in enumerate(downErrors)]
 					#~ else:
@@ -306,14 +309,13 @@ class RatioGraph:
 		self.hAxis.SetYTitle(self.title)
 		self.hAxis.GetXaxis().SetLabelSize(0.0)
 		self.hAxis.GetYaxis().SetLabelSize(0.15)
-		print self.labelSize
+
 		if self.labelSize is None:
-			print "default"
 			self.hAxis.SetTitleSize(0.15, "Y")
 		else:
-			print "changed"
 			self.hAxis.SetTitleSize(self.labelSize, "Y")
-
+		self.graph = self.getGraph()
+		self.binMerging.append(-1)
 		self.errorGraphs = self.getErrorGraphs()
 		self.errorGraphs.reverse()
 		for errorGraph in self.errorGraphs:
@@ -331,7 +333,7 @@ class RatioGraph:
 		#~ if redrawAxis:
 		#~ self.hAxis.Draw("SAMEAXIS")
 
-		self.graph = self.getGraph()
+		
 		
 		if drawAsHist:
 			self.graph.SetLineWidth(2)
@@ -356,16 +358,17 @@ class RatioGraph:
 
 
 class RatioError:
-	def __init__(self, name, xMin, xMax, size=None, denominator=None, denominatorUp=None, denominatorDown=None, add=False):
+	def __init__(self, name, xMin, xMax,binMerging, size=None, denominator=None, denominatorUp=None, denominatorDown=None, add=False):
 		self.name = name
 
 		self.denominator = denominator
 		self.denominatorUp = denominatorUp
 		self.denominatorDown = denominatorDown
+		self.binMerging = binMerging
 		self.size = size
 		self.xMin = xMin
 		self.xMax = xMax
-		self.rebinErrorBoundary = 0.05
+		self.rebinErrorBoundary = 0.1
 
 		self.add = add
 
@@ -409,6 +412,7 @@ class RatioError:
 		if (self.hasHistograms):
 			tempRatioUp = None
 			tempRatioDown = None
+			nBin = 0
 			for iBin in range(1, 1 + self.denominator.GetNbinsX()):
 				den = self.denominator.GetBinContent(iBin)
 				denError = self.denominator.GetBinError(iBin)
@@ -438,7 +442,9 @@ class RatioError:
 						tempRatioUp = ratioUp
 						tempRatioDown = ratioDown
 
-					if (tempRatioUp.isFullEnough(self.rebinErrorBoundary) and tempRatioDown.isFullEnough(self.rebinErrorBoundary)):
+					#~ if (tempRatioUp.isFullEnough(self.rebinErrorBoundary) and tempRatioDown.isFullEnough(self.rebinErrorBoundary)):
+					if (iBin == self.binMerging[nBin]):
+						nBin = nBin+1
 						self.__ratiosUp__.append(tempRatioUp)
 						self.__ratiosDown__.append(tempRatioDown)
 						tempRatioUp = None

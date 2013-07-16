@@ -821,7 +821,6 @@ class Plot:
 			self.tree1 = dilepton
 			self.tree2 = "None"		
 	def cleanCuts(self):
-		print self.cuts
 		if self.variable == "met" or self.variable == "type1Met" or self.variable == "tcMet" or self.variable == "caloMet" or self.variable == "mht":
 			cuts = self.cuts.split("&&")
 			metCutUp = []

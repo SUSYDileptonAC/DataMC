@@ -20,8 +20,8 @@ def main():
 	#~ allPkls = loadPickles("shelves/*.pkl")
 	inclusivePkls = loadPickles("shelves/Inclusive_Mll*.pkl")
 	ttBarDileptonPkls = loadPickles("shelves/ttBarDilepton*_Mll*.pkl")
-	SignalHighMETPkls = loadPickles("shelves/SignalHighMET_Mll*.pkl")
-	SignalLowMETPkls = loadPickles("shelves/SignalLowMET_Mll*.pkl")
+	SignalHighMETPkls = loadPickles("shelves/SignalBarrel_Mll*.pkl")
+	SignalLowMETPkls = loadPickles("shelves/SignalForward_Mll*.pkl")
 	#~ print argv[1]
 	if argv[1] == "ttBarDilepton":
 		lowMassSF = loadPickles("shelves/%sSF_Mll_edgeMass_Run92_SF.pdf.pkl"%argv[1])
@@ -29,10 +29,10 @@ def main():
 		highMassSF = loadPickles("shelves/%sSF_Mll_highMass_Run92_SF.pdf.pkl"%argv[1])
 		highMassOF = loadPickles("shelves/%sOF_Mll_highMass_Run92_OF.pdf.pkl"%argv[1])
 	elif argv[1] == "Signal":
-		lowMassSF = loadPickles("shelves/SignalLowMET_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalLowMET_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalLowMET_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalLowMET_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_OF.pdf.pkl")
 	else:
 		lowMassSF = loadPickles("shelves/%s_Mll_edgeMass_Run92_SF.pdf.pkl"%argv[1])
 		lowMassOF = loadPickles("shelves/%s_Mll_edgeMass_Run92_OF.pdf.pkl"%argv[1])
@@ -62,14 +62,14 @@ def main():
 
 	table =""
 	
-	#~ print lowMassSF["Z#rightarrow ee/#mu#mu"]["val"]
-	name = "Powheg t#bar{t}"
+	#~ print lowMassSF["DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"]["val"]
+	name = "Madgraph t#bar{t} w/ SC"
 	table += lineTemplateData%("\\ttbar",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])	
-	name = "Z#rightarrow ee/#mu#mu"
+	name = "DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"
 	table += lineTemplateData%("\\DYjets (\\EE,\\MM)",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
-	name = "Z#rightarrow #tau#tau"
+	name = "DY+jets (#tau#tau)"
 	table += lineTemplateData%("\\DYjets $(\\tau \\tau)$",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
-	name = "t/#bar{t}+jets"
+	name = "single-top"
 	table += lineTemplateData%("single-top",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])	
 	name = "WW,WZ,ZZ"	
 	table += lineTemplateData%("\\PW\\PW, \\Z{}\\Z, \\PW\\Z",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
@@ -94,21 +94,21 @@ def main():
 	
 	if argv[1] == "Signal":
 		
-		lowMassSF = loadPickles("shelves/SignalHighMET_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalHighMET_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalHighMET_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalHighMET_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_OF.pdf.pkl")
 
 		table2 =""
 		
-		#~ print lowMassSF["Z#rightarrow ee/#mu#mu"]["val"]
-		name = "Powheg t#bar{t}"
+		#~ print lowMassSF["DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"]["val"]
+		name = "Madgraph t#bar{t} w/ SC"
 		table2 += lineTemplateData%("\\ttbar",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])	
-		name = "Z#rightarrow ee/#mu#mu"
+		name = "DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"
 		table2 += lineTemplateData%("\\DYjets (\\EE,\\MM)",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
-		name = "Z#rightarrow #tau#tau"
+		name = "DY+jets (#tau#tau)"
 		table2 += lineTemplateData%("\\DYjets $(\\tau \\tau)$",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
-		name = "t/#bar{t}+jets"
+		name = "single-top"
 		table2 += lineTemplateData%("single-top",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])	
 		name = "WW,WZ,ZZ"	
 		table2 += lineTemplateData%("\\PW\\PW, \\Z{}\\Z, \\PW\\Z",lowMassSF[name]["val"],lowMassSF[name]["err"],highMassSF[name]["val"],highMassSF[name]["err"],lowMassOF[name]["val"],lowMassOF[name]["err"],highMassOF[name]["val"],highMassOF[name]["err"])
@@ -133,7 +133,7 @@ def main():
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
-& \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
+Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
 & low mass & high mass & low mass & high mass \\
 \hline
 %s
@@ -142,31 +142,31 @@ def main():
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
-& \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
+Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
 & low mass & high mass & low mass & high mass \\
 \hline
 %s
 \end{tabular}
 """	
 		saveTable(tableTemplate%(table,table2), "DataMC_StatOnly_%s"%argv[1])
-		lowMassSF = loadPickles("shelves/SignalLowMET_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalLowMET_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalLowMET_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalLowMET_Mll_highMass_Run92_OF.pdf.pkl")			
+		lowMassSF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_OF.pdf.pkl")			
 	else:
 		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s"%argv[1])
 	
 	table =""
 	otherUncertainties= 0.06726812023536856
 	totalSystematics = 0 
-	#~ print lowMassSF["Z#rightarrow ee/#mu#mu"]["val"]
-	name = "Powheg t#bar{t}"
+	#~ print lowMassSF["DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"]["val"]
+	name = "Madgraph t#bar{t} w/ SC"
 	table += lineTemplateData%("\\ttbar",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
-	name = "Z#rightarrow ee/#mu#mu"
+	name = "DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"
 	table += lineTemplateData%("\\DYjets (\\EE,\\MM)",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
-	name = "Z#rightarrow #tau#tau"
+	name = "DY+jets (#tau#tau)"
 	table += lineTemplateData%("\\DYjets $(\\tau \\tau)$",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)			
-	name = "t/#bar{t}+jets"
+	name = "single-top"
 	table += lineTemplateData%("single-top",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)			
 	name = "WW,WZ,ZZ"	
 	table += lineTemplateData%("\\PW\\PW, \\Z{}\\Z, \\PW\\Z",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)			
@@ -198,22 +198,22 @@ def main():
 	
 	if argv[1] == "Signal":
 		
-		lowMassSF = loadPickles("shelves/SignalHighMET_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalHighMET_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalHighMET_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalHighMET_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_OF.pdf.pkl")
 
 		table2 =""
 		otherUncertainties= 0.06726812023536856
 		totalSystematics = 0 
-		#~ print lowMassSF["Z#rightarrow ee/#mu#mu"]["val"]
-		name = "Powheg t#bar{t}"
+		#~ print lowMassSF["DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"]["val"]
+		name = "Madgraph t#bar{t} w/ SC"
 		table2 += lineTemplateData%("\\ttbar",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
-		name = "Z#rightarrow ee/#mu#mu"
+		name = "DY+jets (e^{+}e^{-},#mu^{+}#mu^{-})"
 		table2 += lineTemplateData%("\\DYjets (\\EE,\\MM)",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
-		name = "Z#rightarrow #tau#tau"
+		name = "DY+jets (#tau#tau)"
 		table2 += lineTemplateData%("\\DYjets $(\\tau \\tau)$",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
-		name = "t/#bar{t}+jets"
+		name = "single-top"
 		table2 += lineTemplateData%("single-top",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)	
 		name = "WW,WZ,ZZ"	
 		table2 += lineTemplateData%("\\PW\\PW, \\Z{}\\Z, \\PW\\Z",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)		
@@ -246,7 +246,7 @@ def main():
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
-& \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
+Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
 & low mass & high mass & low mass & high mass \\
 \hline
 %s
@@ -255,7 +255,7 @@ def main():
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
-& \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
+Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
 & low mass & high mass & low mass & high mass \\
 \hline
 %s

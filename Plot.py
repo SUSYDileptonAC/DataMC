@@ -33,6 +33,7 @@ def main():
 	
 	from helpers import *
 	from plotDataMC import plotDataMC		
+	from plotMCOverlay import plotMCOverlay		
 	from compareTTbar import compareTTbar		
 	from SFvsOF import SFvsOF		
 	from compareReco2011 import compareReco2011
@@ -372,43 +373,61 @@ def main():
 	
 	else:
 		region = getRegion(argv[3])
-			
-		for plot in thePlots.plots:
+		
+		if argv[2] == "overlay":
+			print argv[3], argv[4]
+			for plot in thePlots.plots:
+				region2 = getRegion(argv[4])
+				if len(argv) > 5:
+					plot2 = plot.clone(argv[5])
+				plot.addRegion(region)
+				plot2.addRegion(region2)
+				logScale = region.logY
+				plot.cleanCuts()				
+				plot2.cleanCuts()				
+				plots = [plot,plot2]
+				dileptons = ["SF","OF","EE","MuMu"]
+				for dilepton in dileptons:
+					plotMCOverlay(path,plots,dilepton,logScale)
+								
 				
-			plot.addRegion(region)
-			logScale = region.logY
-			plot.cleanCuts()
-			if "OF" in argv[3]:
-				dileptons = ["OF"]
-			elif "SF" in argv[3]:
-				dileptons = ["SF","EE","MuMu"]
-			else:
-				#~ dileptons = ["SF","OF","EE","MuMu"]
-				dileptons = ["OF"]
-			for dilepton in dileptons:
-				if argv[2] == "CompareTTbar":
-					compareTTbar(path,plot,dilepton,logScale)
-					#~ compareTTbar(path,plot,dilepton,logScale)
-				elif argv[2] == "DataMC":
-					plotDataMC(path,plot,dilepton,logScale,argv[3])
-					#~ plotDataMC(path,plot,dilepton,logScale,argv[3])
-				elif argv[2] == "DataMC2011":
-					plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
-					#~ plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
-				elif argv[2] == "DataMC201153X":
-					plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
-					#~ plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
-				elif argv[2] == "CompareReco2011":
-					compareReco2011(path,plot,dilepton,logScale)
-					#~ compareReco2011(path,plot,dilepton,logScale)
-			if argv[2] == "CompareReco2011SFvsOF":
-				compareReco2011(path,plot,"OF",logScale,doSFvsOF=True)
-			elif argv[2] == "SFvsOF":
-				SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)
-			elif argv[2] == "SFvsOF2011":
-				SFvsOF(path,plot,"OF",logScale,compare2011=True,compareSFvsOF=False)
-			elif argv[2] == "SFvsOFFlavourSeperated":
-				SFvsOF(path,plot,"OF",logScale,compareSFvsOFFlavourSeperated=True,compareSFvsOF=False)
+		else:	
+			for plot in thePlots.plots:
+					
+				plot.addRegion(region)
+				logScale = region.logY
+				plot.cleanCuts()
+				if "OF" in argv[3]:
+					dileptons = ["OF"]
+				elif "SF" in argv[3]:
+					dileptons = ["SF","EE","MuMu"]
+				else:
+					dileptons = ["SF","OF","EE","MuMu"]
+					#~ dileptons = ["OF"]
+				for dilepton in dileptons:
+					if argv[2] == "CompareTTbar":
+						compareTTbar(path,plot,dilepton,logScale)
+						#~ compareTTbar(path,plot,dilepton,logScale)
+					elif argv[2] == "DataMC":
+						plotDataMC(path,plot,dilepton,logScale,argv[3])
+						#~ plotDataMC(path,plot,dilepton,logScale,argv[3])
+					elif argv[2] == "DataMC2011":
+						plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
+						#~ plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
+					elif argv[2] == "DataMC201153X":
+						plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
+						#~ plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
+					elif argv[2] == "CompareReco2011":
+						compareReco2011(path,plot,dilepton,logScale)
+						#~ compareReco2011(path,plot,dilepton,logScale)
+				if argv[2] == "CompareReco2011SFvsOF":
+					compareReco2011(path,plot,"OF",logScale,doSFvsOF=True)
+				elif argv[2] == "SFvsOF":
+					SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)
+				elif argv[2] == "SFvsOF2011":
+					SFvsOF(path,plot,"OF",logScale,compare2011=True,compareSFvsOF=False)
+				elif argv[2] == "SFvsOFFlavourSeperated":
+					SFvsOF(path,plot,"OF",logScale,compareSFvsOFFlavourSeperated=True,compareSFvsOF=False)
 		
 	
 

@@ -337,7 +337,7 @@ class RatioGraph:
 		
 		if drawAsHist:
 			self.graph.SetLineWidth(2)
-			self.graph.Draw("SAMEpZ")
+			self.graph.Draw("SAMEhist")
 		else:
 			self.graph.Draw("SAMEpZ")
 

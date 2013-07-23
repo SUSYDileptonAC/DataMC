@@ -28,8 +28,9 @@ copyAN:
 	scp fig/DataMC/Signal* $(AN_PLOTS)	
 	scp fig/DataMC/ttBarDilepton* $(AN_PLOTS)
 	scp fig/DataMC/Inclusive* $(AN_PLOTS)
-	scp fig/CompareTTbar/SignalHighMET_MET* $(AN_PLOTS)
-	scp fig/CompareTTbar/SignalLowMET_MET* $(AN_PLOTS)
+	#~ scp fig/CompareTTbar/SignalHighMET_MET* $(AN_PLOTS)
+	#~ scp fig/CompareTTbar/SignalLowMET_MET* $(AN_PLOTS)
+	scp tab/* $(AN_TABLES)
 
 copyTalk:
 	scp fig/mll_Datadriven_SignalHighMET_*.pdf  fig/mll_Datadriven_SignalLowMET_*.pdf $(TALK_PATH)/fig

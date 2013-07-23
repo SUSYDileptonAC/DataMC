@@ -20,7 +20,7 @@ def main():
 	#~ allPkls = loadPickles("shelves/*.pkl")
 	inclusivePkls = loadPickles("shelves/Inclusive_Mll*.pkl")
 	ttBarDileptonPkls = loadPickles("shelves/ttBarDilepton*_Mll*.pkl")
-	SignalHighMETPkls = loadPickles("shelves/SignalBarrel_Mll*.pkl")
+	SignalHighMETPkls = loadPickles("shelves/SignalCentral_Mll*.pkl")
 	SignalLowMETPkls = loadPickles("shelves/SignalForward_Mll*.pkl")
 	#~ print argv[1]
 	if argv[1] == "ttBarDilepton":
@@ -29,10 +29,10 @@ def main():
 		highMassSF = loadPickles("shelves/%sSF_Mll_highMass_Run92_SF.pdf.pkl"%argv[1])
 		highMassOF = loadPickles("shelves/%sOF_Mll_highMass_Run92_OF.pdf.pkl"%argv[1])
 	elif argv[1] == "Signal":
-		lowMassSF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_OF.pdf.pkl")
 	else:
 		lowMassSF = loadPickles("shelves/%s_Mll_edgeMass_Run92_SF.pdf.pkl"%argv[1])
 		lowMassOF = loadPickles("shelves/%s_Mll_edgeMass_Run92_OF.pdf.pkl"%argv[1])
@@ -138,21 +138,23 @@ Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 \hline
 %s
 \end{tabular}
-\medskip
+"""
+		tableTemplate2 = r"""
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
-Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
+Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite Flavor}\\
 & low mass & high mass & low mass & high mass \\
 \hline
 %s
 \end{tabular}
 """	
-		saveTable(tableTemplate%(table,table2), "DataMC_StatOnly_%s"%argv[1])
-		lowMassSF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalBarrel_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalBarrel_Mll_highMass_Run92_OF.pdf.pkl")			
+		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s_Central"%argv[1])
+		saveTable(tableTemplate2%(table2), "DataMC_StatOnly_%s_Forward"%argv[1])
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_SF.pdf.pkl")
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_OF.pdf.pkl")
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_SF.pdf.pkl")
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_OF.pdf.pkl")			
 	else:
 		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s"%argv[1])
 	
@@ -251,7 +253,8 @@ Signal Central & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 \hline
 %s
 \end{tabular}
-\medskip
+"""
+		tableTemplate2=r"""
 \begin{tabular}{l|c|c|c|c}
 \hline
 \hline 
@@ -261,7 +264,8 @@ Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 %s
 \end{tabular}
 """	
-		saveTable(tableTemplate%(table,table2), "DataMC_%s"%argv[1])
+		saveTable(tableTemplate%(table), "DataMC_%s_Central"%argv[1])
+		saveTable(tableTemplate%(table2), "DataMC_%s_Forward"%argv[1])
 	else:
 		saveTable(tableTemplate%(table), "DataMC_%s"%argv[1])
 

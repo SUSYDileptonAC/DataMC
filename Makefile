@@ -1,5 +1,13 @@
 #DATA_TREES=../../../sw532v0458/processedTrees/sw532v0460.processed.MergedData.root
-TREES=/home/jan/Trees/sw532v0470
+TREES=/user/schomakers/trees
+TREES_2011=/home/jan/Trees/2011MC
+AN_PATH = /user/schomakers/DileptonAN
+AN_TABLES=$(AN_PATH)/tables
+AN_PLOTS=$(AN_PATH)/plots
+
+PAS_PATH = rwth:~/PAS2/notes/SUS-12-019/trunk/plots
+
+
 PlotTool = ./Plot.py
 TableTool = ./makeDataMCTables.py
 Region = Region

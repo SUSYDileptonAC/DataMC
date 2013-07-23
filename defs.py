@@ -739,6 +739,13 @@ def getRegion(name):
 		return Region
 	else:
 		return getattr(Regions, name)
+		
+def getMassSelection(name):
+	if not name in dir(theCuts.massCuts):
+		print "unknown selection '%s, using existing selection'"%name
+		return None
+	else:
+		return getattr(theCuts.massCuts, name)
 	
 def getOFScale():
 	rmuePart = 0.5 * (Constants.Pt2010.RMuE.val + 1./Constants.Pt2010.RMuE.val)
@@ -805,11 +812,34 @@ class Plot:
 		self.filename = self.filename.replace("_%s","%s.pdf") 
 		self.label3 = self.label3.replace("%s","")
 	
+	
+	def clone(self,selection):
+		print self.cuts
+		tempPlot = Plot(theVariables.Met,[])
+		if getMassSelection(selection) != None:
+			tempPlot.cuts = "weight*(%s)"%(getMassSelection(selection).cut+"&& %s")
+			tempPlot.overlayLabel = getMassSelection(selection).name
+		else:
+			tempPlot.cuts=self.cuts
+			tempPlot.overlayLabel = "None"			
+		tempPlot.variable=self.variable
+		tempPlot.xaxis=self.xaxis
+		tempPlot.yaxis=self.yaxis
+		tempPlot.nBins=self.nBins
+		tempPlot.firstBin=self.firstBin
+		tempPlot.lastBin=self.lastBin
+		tempPlot.yMin = 0.1
+		tempPlot.yMax = 0
+		tempPlot.label3="%s"
+		tempPlot.filename=self.filename	
+		return tempPlot	
+	
 	def addRegion(self,region):
 		self.cuts = self.cuts%(region.cut+" %s")
 		self.filename = region.name+"_"+self.filename
 		self.label = region.labelRegion
 		self.label2 = region.labelSubRegion
+		self.regionName = region.name
 	def addDilepton(self,dilepton):
 		if dilepton == "SF":
 			self.tree1 = "EE"
@@ -1005,8 +1035,11 @@ class thePlots:
 		
 	#~ class plotLists:
 			
-	plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	#~ plots = [htPlots.htPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+
+	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+
 
 	#~ generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass]#,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]

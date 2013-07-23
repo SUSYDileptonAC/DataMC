@@ -11,6 +11,8 @@ PAS_PATH = rwth:~/PAS2/notes/SUS-12-019/trunk/plots
 PlotTool = ./Plot.py
 TableTool = ./makeDataMCTables.py
 Region = Region
+Region2 = Region2
+newSelection = newSelection
 
 #~ Plot_REGIONS = Region SignalHighMET SignalLowMET bTagControl Zpeak DrellYan Control
 
@@ -68,6 +70,8 @@ SFvsOF2011:
 	$(PlotTool) $(TREES_2011) SFvsOF2011 $(Region)  
 SFvsOFFlavourSeperated: 
 	$(PlotTool) $(TREES) SFvsOFFlavourSeperated $(Region) 
+overlay: 
+	$(PlotTool) $(TREES) overlay $(Region) $(Region2) $(newSelection)
 	
 AN: 
 	$(PlotTool) $(TREES) notNeeded AN

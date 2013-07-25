@@ -94,7 +94,8 @@ def plotMCOverlay(path,plots,dilepton,logScale,region="Inclusive",Run2011=False,
 	if Run2011 or Run201153X:
 		processes = [SingleTop,TTJets,Diboson,DY]
 	else:
-		processes = [Rare,SingleTop,TTJets_SC,Diboson,DYTauTau,DY]
+		#~ processes = [Rare,SingleTop,TTJets_SC,Diboson,DYTauTau,DY]
+		processes = [TTJets_SC]
 
 	#~ for process in reversed(processes):
 		#~ temphist = ROOT.TH1F()
@@ -400,10 +401,14 @@ def plotMCOverlay(path,plots,dilepton,logScale,region="Inclusive",Run2011=False,
 
 
 			#~ hCanvas.Print("fig/DataMC/"+plot.filename%("_TopReweighted_"+run.label+"_"+dilepton),)
+		#~ if plots[1].overlayLabel != "None":
+			#~ hCanvas.Print("fig/DataMCOverlay/"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+plots[1].overlayLabel+"_"+run.label+"_"+dilepton),)			
+		#~ else:	
+			#~ hCanvas.Print("fig/DataMCOverlay/"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+run.label+"_"+dilepton),)
 		if plots[1].overlayLabel != "None":
-			hCanvas.Print("fig/DataMCOverlay/"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+plots[1].overlayLabel+"_"+run.label+"_"+dilepton),)			
+			hCanvas.Print("fig/DataMCOverlay/"+"TTOnly_"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+plots[1].overlayLabel+"_"+run.label+"_"+dilepton),)			
 		else:	
-			hCanvas.Print("fig/DataMCOverlay/"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+run.label+"_"+dilepton),)
+			hCanvas.Print("fig/DataMCOverlay/"+"TTOnly_"+plots[0].filename%("_"+plots[1].regionName+"Overlay"+"_"+run.label+"_"+dilepton),)
 			#~ plotPad.cd()
 			#~ plotPad.SetLogy(0)
 			#~ hCanvas.GetYaxis().SetRangeUser(0,datahist.GetBinContent(datahist.GetMaximumBin())*2)

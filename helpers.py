@@ -5,7 +5,7 @@ from defs import myColors
 from defs import mainConfig
 from ConfigParser import ConfigParser
 
-config_path = "/home/jan/Doktorarbeit/Dilepton/SubmitScripts/Input"
+config_path = "/user/schomakers/SubmitScripts/Input"
 config = ConfigParser()
 config.read("%s/Master53X.ini"%config_path)
 

@@ -505,7 +505,7 @@ class Regions:
 	class SignalInclusive(Region):
 		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
-		labelSubRegion = "Signal Region"
+		labelSubRegion = "Inclusive Signal Region"
 		titel = "Inclusive SR"
 		latex = "Inclusive Signal Region"
 		name = "SignalInclusive"
@@ -521,7 +521,7 @@ class Regions:
 	class SignalForward(Region):
 		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) &&  1.4 <= TMath::Max(abs(eta1),abs(eta2)) && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
-		labelSubRegion = "Signal Region Forward"
+		labelSubRegion = "Forward Signal Region"
 		titel = "Forward SR"
 		latex = "Forward Signal Region"
 		name = "SignalForward"
@@ -553,11 +553,11 @@ class Regions:
 	class SignalBarrel(Region):
 		cut = "((nJets >= 2 && met > 150) || (nJets >= 3 && met > 100)) && abs(eta1) < 1.4 && abs(eta2) < 1.4 && (%s)"%Region.cut
 		#~ labelRegion = Region.labelRegion
-		labelSubRegion = "Signal Region Barrel"
+		labelSubRegion = "Central Signal Region"
 		labelRegion = Region.labelRegion.replace("< 2.4","< 1.4")
-		titel = "Barrel SR"
-		latex = "Barrel Signal Region"
-		name = "SignalBarrel"
+		titel = "Central SR"
+		latex = "Central Signal Region"
+		name = "SignalCentral"
 		rMuE = Constants.Pt2010.RMuE
 		rInOut = Constants.Pt2010.RInOut
 		logY = False
@@ -1051,9 +1051,11 @@ class thePlots:
 		
 	#~ class plotLists:
 			
+
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+
 
 	#~ generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass]#,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]

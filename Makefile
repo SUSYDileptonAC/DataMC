@@ -1,5 +1,5 @@
 #DATA_TREES=../../../sw532v0458/processedTrees/sw532v0460.processed.MergedData.root
-TREES=/user/schomakers/trees
+TREES=/home/jan/Trees/sw532v0474
 TREES_2011=/home/jan/Trees/2011MC
 AN_PATH = /user/schomakers/DileptonAN
 AN_TABLES=$(AN_PATH)/tables
@@ -71,6 +71,8 @@ SFvsOF2011:
 	$(PlotTool) $(TREES_2011) SFvsOF2011 $(Region)  
 SFvsOFFlavourSeperated: 
 	$(PlotTool) $(TREES) SFvsOFFlavourSeperated $(Region) 
+plotRares: 
+	$(PlotTool) $(TREES) plotRares $(Region) 
 overlay: 
 	$(PlotTool) $(TREES) overlay $(Region) $(Region2) $(newSelection)
 	

@@ -5,7 +5,7 @@ from defs import myColors
 from defs import mainConfig
 from ConfigParser import ConfigParser
 
-config_path = "/user/schomakers/SubmitScripts/Input"
+config_path = "/home/jan/Doktorarbeit/Dilepton/projects/SubmitScripts/Input"
 config = ConfigParser()
 config.read("%s/Master53X.ini"%config_path)
 
@@ -251,6 +251,7 @@ class Process:
 			cut = plot.cuts.replace("weight*(","weight*(%s &&"%self.additionalSelection)
 		else: 
 			cut = plot.cuts
+		print cut 
 		#~ if "100" in cut:
 			#~ weightNorm = 1./0.91
 		#~ elif "150" in cut and not "100" in cut:
@@ -258,24 +259,20 @@ class Process:
 		#~ else:
 		weightNorm = 1./0.99			
 		for index, sample in enumerate(self.samples):
-			
+			from defs import mainConfig
 			for name, tree in tree1.iteritems(): 
 				if name == sample:
-					if sample == "TT_Powheg_Summer12_v2" or sample == "TTJets_MGDecays_madgraph_Summer12":
-
-						#~ tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
-						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+					if mainConfig.doTopReweighting:
+						tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 					else:
-						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
-				
+						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
 					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
 					self.histo.Add(tempHist.Clone())
 			if tree2 != "None":		
 				for name, tree in tree2.iteritems(): 
 					if name == sample:
-						if sample == "TT_Powheg_Summer12_v2" or sample == "TTJets_MGDecays_madgraph_Summer12":
-							#~ tempHist = createHistoFromTree(tree, plot.variable ,"%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
-							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						if mainConfig.doTopReweighting:
+							tempHist = createHistoFromTree(tree, plot.variable ,"%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						else:
 							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						

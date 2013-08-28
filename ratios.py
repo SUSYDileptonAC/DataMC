@@ -129,6 +129,8 @@ class RatioGraph:
 			error.color = color
 		if (fillStyle != None):
 			error.fillStyle = fillStyle
+		else:
+			error.fillStyle = 1001
 		self.errors.append(error)
 
 	def getGraph(self):
@@ -234,6 +236,7 @@ class RatioGraph:
 					xWidth = 0.5 * (error.xMax - error.xMin)
 					graph = ROOT.TGraphErrors(1, array("d", [xCenter]), array("d", [1.0]), array("d", [xWidth]), array("d", [error.size]))
 					graph.SetFillColor(error.color)
+					graph.SetFillStyle(error.fillStyle)
 					errorGraphs.append(graph)
 			elif (error.hasHistograms):
 

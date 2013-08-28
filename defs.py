@@ -68,7 +68,7 @@ class runRanges:
 		lumi = 9330
 		printval = "9.2"
 		lumiErr = 0.045*9330
-		runCut = "&& runNr < 201657 && !(runNr >= 198049 && runNr <= 198522)"
+		runCut = "&& runNr < 201678 && !(runNr >= 198049 && runNr <= 198522)"
 		label = "Run92"
 	class All:
 		lumi = 12000
@@ -89,8 +89,8 @@ class runRanges:
 
 		
 class Region:
-	cut = " chargeProduct < 0 && pt1 > 20 && pt2 > 20 && abs(eta1)<2.4  && abs(eta2) < 2.4 && p4.M() > 20 && deltaR > 0.3"
-	cutToUse = "weight*(chargeProduct < 0 && pt1 > 20 && pt2 > 20 && abs(eta1)<2.4  && abs(eta2) < 2.4 && p4.M() > 20 && deltaR > 0.3  )"
+	cut = " chargeProduct < 0 && pt1 > 20 && pt2 > 20 && abs(eta1)<2.4  && abs(eta2) < 2.4 && ((abs(eta1) < 1.4 || abs(eta1) > 1.6) && (abs(eta2) < 1.4 || abs(eta2) > 1.6)) && p4.M() > 20 && deltaR > 0.3 && !(runNr == 195649 && lumiSec == 49 && eventNr == 75858433) && !(runNr == 195749 && lumiSec == 108 && eventNr == 216906941)"
+	cutToUse = "weight*(chargeProduct < 0 && pt1 > 20 && pt2 > 20 && ((abs(eta1) < 1.4 || abs(eta1) > 1.6) && (abs(eta2) < 1.4 || abs(eta2) > 1.6)) && abs(eta1)<2.4  && abs(eta2) < 2.4 && p4.M() > 20 && deltaR > 0.3 && !(runNr == 195649 && lumiSec == 49 && eventNr == 75858433) && !(runNr == 195749 && lumiSec == 108 && eventNr == 216906941) )"
 	#~ cutToUse = "(chargeProduct < 0 && ((pt1 > 20 && pt2 > 10 ) || (pt2 > 20 && pt1 > 10 )) && abs(eta1)<2.4  && abs(eta2) < 2.4 && p4.M() > 20 && deltaR > 0.3  )"
 	title = "everything"
 	latex = "everything"
@@ -519,7 +519,7 @@ class Regions:
 			}
 
 	class SignalForward(Region):
-		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) &&  1.4 <= TMath::Max(abs(eta1),abs(eta2)) && (%s)"%Region.cut
+		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) &&  1.6 <= TMath::Max(abs(eta1),abs(eta2)) && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
 		labelSubRegion = "Forward Signal Region"
 		titel = "Forward SR"
@@ -535,7 +535,7 @@ class Regions:
 			}
 			
 	class SignalOneForward(Region):
-		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) &&  1.4 <= TMath::Max(abs(eta1),abs(eta2)) && (abs(eta1) < 1.4 || abs(eta2) < 1.4) && (%s)"%Region.cut
+		cut = "((nJets >= 2 && met > 150) || (nJets>=3 && met > 100)) &&  1.6 <= TMath::Max(abs(eta1),abs(eta2)) && (abs(eta1) < 1.6 || abs(eta2) < 1.6) && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
 		labelSubRegion = "Signal Region One Forward"
 		titel = "One Forward SR"
@@ -1053,12 +1053,13 @@ class thePlots:
 			
 
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	plots = [mllPlots.mllPlot]
+	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
 
-	#~ generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass]#,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	#~ generalPlots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass]#,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ generalPlots = [htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	
 	basicSet = [METPlots.metPlot,mllPlots.mllPlot,nJetsPlots.nJetsPlot,nBJetsPlots.nBJetsPlot,etaPlots.eta1Plot,etaPlots.eta2Plot,htPlots.htPlot]	
@@ -1197,7 +1198,7 @@ class Backgrounds:
 		linecolor = ROOT.kBlack	
 		uncertainty = 0.04
 		scaleFac     = 1.	
-		additionalSelection = "(abs(motherPdgId) != 15)"
+		additionalSelection = "(abs(motherPdgId1) != 15 || abs(motherPdgId2) != 15)"
 	class DrellYanTauTau:
 		subprocesses = ["AStar_madgraph_Summer12","ZJets_madgraph_Summer12"]
 		label = "DY+jets (#tau#tau)"
@@ -1205,7 +1206,7 @@ class Backgrounds:
 		linecolor = ROOT.kBlack	
 		uncertainty = 0.04
 		scaleFac     = 1.	
-		additionalSelection = "(abs(motherPdgId) == 15)"
+		additionalSelection = "(abs(motherPdgId1) == 15 && abs(motherPdgId2) == 15)"
 	class SingleTop:
 		subprocesses = ["TBar_tWChannel_Powheg_Summer12","TBar_tChannel_Powheg_Summer12","TBar_sChannel_Powheg_Summer12","T_tWChannel_Powheg_Summer12","T_tChannel_Powheg_Summer12","T_sChannel_Powheg_Summer12"]
 		label = "single-top"
@@ -1250,11 +1251,11 @@ class Backgrounds2011:
 		additionalSelection = None
 
 class mainConfig:
-	plotData = True
+	plotData = False
 	plotMC	= True
 	compareTTbar = False
 	normalizeToData = False
-	plotRatio = True
+	plotRatio = False
 	plotSignal = False
 	compare2011 = False
 	compareSFvsOF = True
@@ -1266,7 +1267,8 @@ class mainConfig:
 	produceReweighting = True
 	plot2011 = False
 	plot53X = False
-	personalWork = False
+	personalWork = True
+	doTopReweighting = True
 	
 # Color definition
 #==================

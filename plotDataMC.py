@@ -205,7 +205,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		lumi = run.lumi
 		printLumi = run.printval
 		
-		
+		print plot.cuts
 		if mainConfig.useVectorTrees:
 			plot.cuts = plot.cuts.replace("met","vMet.Pt()")
 			plot.cuts = plot.cuts.replace("pt1","lepton1.Pt()")
@@ -316,7 +316,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*1000
 			else:
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*2
-		else: yMax = plot.yMax		
+		else: yMax = plot.yMax	
+		yMax = 100.	
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
 
@@ -394,8 +395,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 						
 
 		datahist.SetMinimum(0.1)
-
-		datahist.Draw("samep")	
+		if mainConfig.plotData:
+			datahist.Draw("samep")	
 
 	
 		
@@ -584,19 +585,24 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 
 			ratioPad.RedrawAxis()
 
+		nameModifier = run.label+"_"+dilepton
+		if mainConfig.doTopReweighting:
+			nameModifier+="_TopReweighted"
+		if mainConfig.plotData == False:
+			nameModifier+="_MCOnly"
 
 		if mainConfig.normalizeToData:
-			hCanvas.Print("fig/DataMC/"+plot.filename%("_scaled_"+run.label+"_"+dilepton),)
+			hCanvas.Print("fig/DataMC/"+plot.filename%("_scaled_"+nameModifier),)
 		elif mainConfig.useTriggerEmulation:
-			hCanvas.Print("fig/DataMC/"+plot.filename%("_TriggerEmulation_"+run.label+"_"+dilepton),)
+			hCanvas.Print("fig/DataMC/"+plot.filename%("_TriggerEmulation_"+nameModifier),)
 		elif Run2011 or Run201153X:
 			if Run201153X:
-				hCanvas.Print("fig/DataMC/"+plot.filename%("_53X_"+run.label+"_"+dilepton),)
+				hCanvas.Print("fig/DataMC/"+plot.filename%("_53X_"+nameModifier),)
 			else:
-				hCanvas.Print("fig/DataMC/"+plot.filename%("_42X_"+run.label+"_"+dilepton),)
+				hCanvas.Print("fig/DataMC/"+plot.filename%("_42X_"+nameModifier),)
 		else:
 			#~ hCanvas.Print("fig/DataMC/"+plot.filename%("_TopReweighted_"+run.label+"_"+dilepton),)
-			hCanvas.Print("fig/DataMC/"+plot.filename%("_"+run.label+"_"+dilepton),)
+			hCanvas.Print("fig/DataMC/"+plot.filename%("_"+nameModifier),)
 			#~ plotPad.cd()
 			#~ plotPad.SetLogy(0)
 			#~ hCanvas.GetYaxis().SetRangeUser(0,datahist.GetBinContent(datahist.GetMaximumBin())*2)

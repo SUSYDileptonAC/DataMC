@@ -65,9 +65,9 @@ class runRanges:
 		runCut = "&& (runNr > 196531 || runNr ==1)"
 		label = "RunC"
 	class Run92:
-		lumi = 9330
+		lumi = 9200
 		printval = "9.2"
-		lumiErr = 0.045*9330
+		lumiErr = 0.045*9200
 		runCut = "&& runNr < 201678 && !(runNr >= 198049 && runNr <= 198522)"
 		label = "Run92"
 	class All:
@@ -731,12 +731,22 @@ class Regions:
 			#~ labelRegion = region.label
 				
 	class Zpeak(Region):
-		cut = "p4.M() > 60 && p4.M() < 120 (%s)"%Region.cut
+		cut = "p4.M() > 60 && p4.M() < 120 && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
 		labelSubRegion = "60 GeV < m_{ll} < 120 GeV"			
 		titel = "Drell-Yan Enhanced"
 		latex = "Drell-Yan Enhanced"
 		name = "ZPeak"
+		logY = True
+		#~ def __init__(self,region):
+			#~ self.cut = " weight*( p4.M() > 60 && p4.M() < 120 && (%s))"%region.cut		
+	class ZpeakControl(Region):
+		cut = "p4.M() > 60 && p4.M() < 120 && met < 50 && nJets >= 2 && (%s)"%Region.cut
+		labelRegion = Region.labelRegion
+		labelSubRegion = "#splitline{60 GeV < m_{ll} < 120 GeV}{N_{jets} >= 2 E_T^{miss} < 50 GeV}"			
+		titel = "Drell-Yan Enhanced"
+		latex = "Drell-Yan Enhanced"
+		name = "ZPeakControl"
 		logY = True
 		#~ def __init__(self,region):
 			#~ self.cut = " weight*( p4.M() > 60 && p4.M() < 120 && (%s))"%region.cut		
@@ -1251,11 +1261,11 @@ class Backgrounds2011:
 		additionalSelection = None
 
 class mainConfig:
-	plotData = False
+	plotData = True
 	plotMC	= True
 	compareTTbar = False
 	normalizeToData = False
-	plotRatio = False
+	plotRatio = True
 	plotSignal = False
 	compare2011 = False
 	compareSFvsOF = True
@@ -1267,8 +1277,8 @@ class mainConfig:
 	produceReweighting = True
 	plot2011 = False
 	plot53X = False
-	personalWork = True
-	doTopReweighting = True
+	personalWork = False
+	doTopReweighting = False
 	
 # Color definition
 #==================

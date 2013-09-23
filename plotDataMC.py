@@ -287,7 +287,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		counts = {}
 		import pickle
 		#~ counts[pickleName] = {}
-		
+		print scaleTree1, scaleTree2
 		stack = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
 
 		if Run2011:
@@ -317,7 +317,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			else:
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*2
 		else: yMax = plot.yMax	
-		yMax = 100.	
+		#~ yMax = 100.	
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
 

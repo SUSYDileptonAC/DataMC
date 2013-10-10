@@ -5,7 +5,7 @@ from defs import myColors
 from defs import mainConfig
 from ConfigParser import ConfigParser
 
-config_path = "/home/jan/Doktorarbeit/Dilepton/projects/SubmitScripts/Input"
+config_path = "../SubmitScripts/Input"
 config = ConfigParser()
 config.read("%s/Master53X.ini"%config_path)
 
@@ -263,11 +263,20 @@ class Process:
 			for name, tree in tree1.iteritems(): 
 				if name == sample:
 					if mainConfig.doTopReweighting:
-						tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						if "TTJets_MGDecays_madgraph_Summer12" in name:
+							tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						else:
+							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
+	
 					else:
 						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
 					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
 					self.histo.Add(tempHist.Clone())
+					print name
+					print "Lumi: ", lumi
+					print "Xsec: ", self.xsecs[index]
+					print "Events", self.nEvents[index]
+					print "scalefac: ", scalefacTree1
 			if tree2 != "None":		
 				for name, tree in tree2.iteritems(): 
 					if name == sample:

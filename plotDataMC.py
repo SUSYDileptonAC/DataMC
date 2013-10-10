@@ -316,8 +316,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*1000
 			else:
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*2
-		else: yMax = plot.yMax	
-		yMax = 100.	
+		else: yMax = plot.yMax
+			
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
 

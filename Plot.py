@@ -54,106 +54,106 @@ def main():
 	logScale = True
 	
 	if argv[3] == "AN":
-		#~ region = getRegion("Region")
-		#~ logScale = region.logY
-		#~ plots = thePlots.generalPlots	
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()			
-			#~ plotDataMC(path,plot,"SF",logScale,"Inclusive")
-			#~ plotDataMC(path,plot,"OF",logScale,"Inclusive")
-			#~ plotDataMC(path,plot,"EE",logScale,"Inclusive")
-			#~ plotDataMC(path,plot,"MuMu",logScale,"Inclusive")
-			#~ plot.cuts = tempCutString
-			#~ plot.filename = tempFileName
-		#~ plots = thePlots.anPlotsMetStudyPlotsInclusive
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ plotDataMC(path,plot,"SF",logScale,"Inclusive")
-			#~ plotDataMC(path,plot,"OF",logScale,"Inclusive")		
-			#~ plot.cuts = tempCutString	
-			#~ plot.filename = tempFileName
-		#~ region = getRegion("bTagControl")
-		#~ logScale = region.logY	
-		#~ plots = thePlots.anPlotsbTagControl	
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ plotDataMC(path,plot,"SF",logScale,"bTagControl")
-			#~ plotDataMC(path,plot,"OF",logScale,"bTagControl")
-			#~ plot.cuts = tempCutString
-			#~ plot.filename = tempFileName
-		#~ region = getRegion("SignalBarrel")
-		#~ logScale = region.logY
-		#~ plots = thePlots.generalPlots	
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ plotDataMC(path,plot,"SF",logScale,"SignalBarrel")
-			#~ plotDataMC(path,plot,"OF",logScale,"SignalBarrel")
-			#~ plotDataMC(path,plot,"EE",logScale,"SignalBarrel")
-			#~ plotDataMC(path,plot,"MuMu",logScale,"SignalBarrel")
-			#~ plot.cuts = tempCutString
-			#~ plot.filename = tempFileName
-		#~ region = getRegion("SignalForward")
-		#~ logScale = region.logY
-		#~ plots = thePlots.generalPlots		
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ plotDataMC(path,plot,"SF",logScale,"SignalForward")
-			#~ plotDataMC(path,plot,"OF",logScale,"SignalForward")
-			#~ plotDataMC(path,plot,"EE",logScale,"SignalForward")
-			#~ plotDataMC(path,plot,"MuMu",logScale,"SignalForward")
-			#~ plot.cuts = tempCutString
-			#~ plot.filename = tempFileName
-		#~ region = getRegion("SignalHighMET")
-		#~ logScale = region.logY
-		#~ plots = thePlots.anPlotsMetStudyPlotsHighMET	
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ plotDataMC(path,plot,"SF",logScale,"SignalHighMET")
-			#~ plotDataMC(path,plot,"OF",logScale,"SignalHighMET")
-			#~ plot.cuts = tempCutString
-			#~ plot.filename = tempFileName
-		#~ plots = thePlots.anPlotsCompareTTbar													
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)			
-			#~ plot.cleanCuts()				
-			#~ compareTTbar(path,plot,"SF",logScale)
-			#~ compareTTbar(path,plot,"OF",logScale)
-			#~ plot.cuts = tempCutString	
-			#~ plot.filename = tempFileName
+		region = getRegion("Region")
+		logScale = region.logY
+		plots = thePlots.generalPlots	
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()			
+			plotDataMC(path,plot,"SF",logScale,"Inclusive")
+			plotDataMC(path,plot,"OF",logScale,"Inclusive")
+			plotDataMC(path,plot,"EE",logScale,"Inclusive")
+			plotDataMC(path,plot,"MuMu",logScale,"Inclusive")
+			plot.cuts = tempCutString
+			plot.filename = tempFileName
+		plots = thePlots.anPlotsMetStudyPlotsInclusive
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			plotDataMC(path,plot,"SF",logScale,"Inclusive")
+			plotDataMC(path,plot,"OF",logScale,"Inclusive")		
+			plot.cuts = tempCutString	
+			plot.filename = tempFileName
+		region = getRegion("bTagControl")
+		logScale = region.logY	
+		plots = thePlots.anPlotsbTagControl	
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			plotDataMC(path,plot,"SF",logScale,"bTagControl")
+			plotDataMC(path,plot,"OF",logScale,"bTagControl")
+			plot.cuts = tempCutString
+			plot.filename = tempFileName
+		region = getRegion("SignalBarrel")
+		logScale = region.logY
+		plots = thePlots.generalPlots	
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			plotDataMC(path,plot,"SF",logScale,"SignalBarrel")
+			plotDataMC(path,plot,"OF",logScale,"SignalBarrel")
+			plotDataMC(path,plot,"EE",logScale,"SignalBarrel")
+			plotDataMC(path,plot,"MuMu",logScale,"SignalBarrel")
+			plot.cuts = tempCutString
+			plot.filename = tempFileName
+		region = getRegion("SignalForward")
+		logScale = region.logY
+		plots = thePlots.generalPlots		
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			plotDataMC(path,plot,"SF",logScale,"SignalForward")
+			plotDataMC(path,plot,"OF",logScale,"SignalForward")
+			plotDataMC(path,plot,"EE",logScale,"SignalForward")
+			plotDataMC(path,plot,"MuMu",logScale,"SignalForward")
+			plot.cuts = tempCutString
+			plot.filename = tempFileName
+		region = getRegion("SignalHighMET")
+		logScale = region.logY
+		plots = thePlots.anPlotsMetStudyPlotsHighMET	
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			plotDataMC(path,plot,"SF",logScale,"SignalHighMET")
+			plotDataMC(path,plot,"OF",logScale,"SignalHighMET")
+			plot.cuts = tempCutString
+			plot.filename = tempFileName
+		plots = thePlots.anPlotsCompareTTbar													
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)			
+			plot.cleanCuts()				
+			compareTTbar(path,plot,"SF",logScale)
+			compareTTbar(path,plot,"OF",logScale)
+			plot.cuts = tempCutString	
+			plot.filename = tempFileName
 
-		#~ region = getRegion("ttBarDileptonSF")
-		#~ logScale = region.logY
-		#~ plots = thePlots.generalPlots
-		#~ for plot in plots:
-			#~ tempCutString = plot.cuts
-			#~ tempFileName = plot.filename
-			#~ plot.addRegion(region)
-			#~ plot.cleanCuts()
-			#~ plotDataMC(path,plot,"SF",logScale,"ttBarDileptonSF")
-			#~ plotDataMC(path,plot,"EE",logScale,"ttBarDileptonEE")
-			#~ plotDataMC(path,plot,"MuMu",logScale,"ttBarDileptonMuMu")
-			#~ plot.cuts = tempCutString		
-			#~ plot.filename = tempFileName			
+		region = getRegion("ttBarDileptonSF")
+		logScale = region.logY
+		plots = thePlots.generalPlots
+		for plot in plots:
+			tempCutString = plot.cuts
+			tempFileName = plot.filename
+			plot.addRegion(region)
+			plot.cleanCuts()
+			plotDataMC(path,plot,"SF",logScale,"ttBarDileptonSF")
+			plotDataMC(path,plot,"EE",logScale,"ttBarDileptonEE")
+			plotDataMC(path,plot,"MuMu",logScale,"ttBarDileptonMuMu")
+			plot.cuts = tempCutString		
+			plot.filename = tempFileName			
 
 		region = getRegion("ttBarDileptonOF")
 		logScale = region.logY
@@ -166,7 +166,7 @@ def main():
 			plotDataMC(path,plot,"OF",logScale,"ttBarDileptonOF")
 			plot.cuts = tempCutString	
 			plot.filename = tempFileName
-		#~ 
+		# 
 			
 	if argv[3] == "PAS":
 		region = getRegion("Region")
@@ -205,7 +205,7 @@ def main():
 			plot.addRegion(region)
 			plot.cleanCuts()
 			compareTTbar(path,plot,"SF",logScale)
-			#~ compareTTbar(path,plot,"OF",logScale)
+			# compareTTbar(path,plot,"OF",logScale)
 			plot.cuts = tempCutString		
 			plot.filename = tempFileName			
 		
@@ -218,7 +218,7 @@ def main():
 			plotDataMC(path,plot,"SF",logScale,"ttBarDileptonSF")
 			plot.cuts = tempCutString	
 			plot.filename = tempFileName
-			#~ 
+			# 
 		region = getRegion("ttBarDileptonOF")
 		logScale = region.logY
 		
@@ -402,27 +402,27 @@ def main():
 				elif "SF" in argv[3]:
 					dileptons = ["SF","EE","MuMu"]
 				else:
-					dileptons = ["SF","OF","EE","MuMu"]
-					#~ dileptons = ["OF"]
+					#dileptons = ["SF","OF","EE","MuMu"]
+					dileptons = ["OF"]
 				for dilepton in dileptons:
 					if argv[2] == "CompareTTbar":
 						compareTTbar(path,plot,dilepton,logScale)
-						#~ compareTTbar(path,plot,dilepton,logScale)
+						# compareTTbar(path,plot,dilepton,logScale)
 					elif argv[2] == "DataMC":
 						plotDataMC(path,plot,dilepton,logScale,argv[3])
-						#~ plotDataMC(path,plot,dilepton,logScale,argv[3])
+						# plotDataMC(path,plot,dilepton,logScale,argv[3])
 					elif argv[2] == "DataMC2011":
 						plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
-						#~ plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
+						# plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
 					elif argv[2] == "DataMC201153X":
 						plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
-						#~ plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
+						# plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
 					elif argv[2] == "CompareReco2011":
 						compareReco2011(path,plot,dilepton,logScale)
-						#~ compareReco2011(path,plot,dilepton,logScale)
+						# compareReco2011(path,plot,dilepton,logScale)
 					elif argv[2] == "plotRares":
 						plotRares(path,plot,dilepton,logScale)
-						#~ compareReco2011(path,plot,dilepton,logScale)
+						# compareReco2011(path,plot,dilepton,logScale)
 				if argv[2] == "CompareReco2011SFvsOF":
 					compareReco2011(path,plot,"OF",logScale,doSFvsOF=True)
 				elif argv[2] == "SFvsOF":

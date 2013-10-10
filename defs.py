@@ -1147,7 +1147,7 @@ class Backgrounds:
 		label = "Madgraph t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack
-		uncertainty = 0.15
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 	class TTJets_SpinCorrelations:
@@ -1155,7 +1155,7 @@ class Backgrounds:
 		label = "Madgraph t#bar{t} w/ SC"
 		fillcolor = 855
 		linecolor = ROOT.kBlack
-		uncertainty = 0.15
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 	class TT:
@@ -1163,7 +1163,7 @@ class Backgrounds:
 		label = "t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.15
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 		#~ scaleFac     = 0.71
@@ -1172,7 +1172,7 @@ class Backgrounds:
 		label = "Powheg t#bar{t} Dileptonic"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.15
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		#~ scaleFac     = 0.71
 		additionalSelection = None
@@ -1181,7 +1181,7 @@ class Backgrounds:
 		label = "MCatNLO t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.15
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 		#~ scaleFac     = 0.71

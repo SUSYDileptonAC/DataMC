@@ -267,7 +267,18 @@ class Process:
 						tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 					else:
 						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
-					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
+					
+					#~ print "-------------------------------------"
+					#~ print "process: %s"%name
+					#~ print "cut string: %s"%cut
+					#~ print "raw count: %f"%tempHist.Integral()					
+					#~ print "lumi: %f"%lumi
+					#~ print "cross section %f"%self.xsecs[index]
+					#~ print "number of events in sample: %f"%self.nEvents[index]
+					#~ print "scale factor Data/MC: %f"%scalefacTree1
+					#~ print "combined scale factor: %f"%(lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index])
+					#~ tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
+					#~ print "scaled number in signal region: %f"%tempHist.Integral()
 					self.histo.Add(tempHist.Clone())
 			if tree2 != "None":		
 				for name, tree in tree2.iteritems(): 
@@ -280,7 +291,7 @@ class Process:
 						else:
 							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						
-						
+
 						tempHist.Scale((lumi*self.xsecs[index]*scalefacTree2/self.nEvents[index]))
 
 						self.histo.Add(tempHist.Clone())
@@ -362,7 +373,8 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False):
 		for name, tree in tree2.iteritems():
 			if name == dataname:
 				histo2 = createHistoFromTree(tree, plot.variable , plot.cuts , plot.nBins, plot.firstBin, plot.lastBin)
-				histo.Add(histo2.Clone())		
+				histo.Add(histo2.Clone())
+	print histo.Integral()					
 	return histo	
 				
 def getTotalTopWeight(genPt1,genPt2):

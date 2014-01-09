@@ -70,6 +70,24 @@ class runRanges:
 		lumiErr = 0.045*9200
 		runCut = "&& runNr < 201678 && !(runNr >= 198049 && runNr <= 198522)"
 		label = "Run92"
+	class Full2012:
+		lumi = 19400
+		printval = "19.4"
+		lumiErr = 0.045*19600
+		runCut = "&& runNr < 99999999"
+		label = "Full2012"
+	class BlockA:
+		lumi = 9200
+		printval = "9.2"
+		lumiErr = 0.045*9200
+		runCut = "&& runNr < 99999999"
+		label = "BlockA"
+	class BlockB:
+		lumi = 10200
+		printval = "10.2"
+		lumiErr = 0.045*9200
+		runCut = "&& runNr < 99999999"
+		label = "BlockB"
 	class All:
 		lumi = 12000
 		printval = "12.0"
@@ -84,7 +102,7 @@ class runRanges:
 		label = "2011"
 		
 	#~ runs = [RunAB,RunC,Run92,All]
-	runs = [Run92]
+	runs = [BlockA,BlockB,Full2012]
 		
 
 		
@@ -1063,7 +1081,7 @@ class thePlots:
 			
 
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [mllPlots.mllPlot]
+	plots = [htPlots.htPlot]
 	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
@@ -1151,7 +1169,7 @@ class Backgrounds:
 		scaleFac     = 1.0
 		additionalSelection = None
 	class TTJets_SpinCorrelations:
-		subprocesses = ["TTJets_MGDecays_madgraph_Summer12"]
+		subprocesses = ["TTJets_MGDecays_madgraph_Summer12","TTJets_MGDecays_SemiLept_madgraph_Summer12","TTJets_MGDecays_FullHad_madgraph_Summer12"]
 		label = "Madgraph t#bar{t} w/ SC"
 		fillcolor = 855
 		linecolor = ROOT.kBlack

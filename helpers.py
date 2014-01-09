@@ -35,7 +35,7 @@ def readTreeFromFile(path, dileptonCombination,Run2011=False):
 	if Run2011:
 		result.Add("%s/cutsV18SignalHighPtFinalTrees/%sDileptonTree"%(path, dileptonCombination))
 	else:		
-		result.Add("%s/cutsV22DileptonFinalTrees/%sDileptonTree"%(path, dileptonCombination))
+		result.Add("%s/cutsV23DileptonFinalTrees/%sDileptonTree"%(path, dileptonCombination))
 	if mainConfig.preselect:
 		result = result.CopyTree("nJets >= 2")	
 	return result
@@ -52,7 +52,7 @@ def readMCTreeFromFile(path,dileptonTrigger, dileptonCombination,Run2011=False):
 	if Run2011:
 		result.Add("%s/cutsV18SignalHighPtFinalTrees/%sDileptonTree"%(path, dileptonCombination))		
 	else:
-		result.Add("%s/cutsV22Dilepton%sFinalTrees/%sDileptonTree"%(path,dileptonTrigger, dileptonCombination))
+		result.Add("%s/cutsV23Dilepton%sFinalTrees/%sDileptonTree"%(path,dileptonTrigger, dileptonCombination))
 	if mainConfig.preselect:
 		result = result.CopyTree("nJets >= 2")	
 	return result
@@ -166,9 +166,9 @@ def getFilePathsAndSampleNames(path,Run2011=False):
 			#for the python enthusiats: yield sampleName, filePath is more efficient here :)
 			result[sampleName] = filePath		
 	else:
-		for filePath in glob("%s/sw532*.root"%path):
+		for filePath in glob("%s/sw538*.root"%path):
 			
-			sampleName = match(".*sw532v.*\.processed.*\.(.*).root", filePath).groups()[0]			
+			sampleName = match(".*sw538v.*\.processed.*\.(.*).root", filePath).groups()[0]			
 			#for the python enthusiats: yield sampleName, filePath is more efficient here :)
 			result[sampleName] = filePath
 	return result
@@ -244,11 +244,12 @@ class Process:
 			self.nEvents.append(Counts[sample])
 
 		
-	def createCombinedHistogram(self,lumi,plot,tree1,tree2 = "None",shift = 1.,scalefacTree1=1.,scalefacTree2=1.):
+	def createCombinedHistogram(self,lumi,plot,tree1,tree2 = "None",shift = 1.,scalefacTree1=1.,scalefacTree2=1.,TopWeightUp=False,TopWeightDown=False):
 		self.histo = TH1F("","",plot.nBins,plot.firstBin,plot.lastBin)
 		
 		if self.additionalSelection != None:
-			cut = plot.cuts.replace("weight*(","weight*(%s &&"%self.additionalSelection)
+			print "Applying additional selection: %s"%self.additionalSelection
+			cut = plot.cuts.replace("weightBlockA*(","weightBlockA*(%s &&"%self.additionalSelection)
 		else: 
 			cut = plot.cuts
 		#~ if "100" in cut:
@@ -263,11 +264,18 @@ class Process:
 			from defs import mainConfig
 			for name, tree in tree1.iteritems(): 
 				if name == sample:
-					if mainConfig.doTopReweighting:
-						tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+					if mainConfig.doTopReweighting and "TT" in name:
+						#~ tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						
+						if TopWeightUp:
+							tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						elif TopWeightDown:	
+							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+						else:	
+							tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 					else:
 						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
-					
+		#~ 
 					#~ print "-------------------------------------"
 					#~ print "process: %s"%name
 					#~ print "cut string: %s"%cut
@@ -277,17 +285,19 @@ class Process:
 					#~ print "number of events in sample: %f"%self.nEvents[index]
 					#~ print "scale factor Data/MC: %f"%scalefacTree1
 					#~ print "combined scale factor: %f"%(lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index])
-					#~ tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
+					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
 					#~ print "scaled number in signal region: %f"%tempHist.Integral()
 					self.histo.Add(tempHist.Clone())
 			if tree2 != "None":		
 				for name, tree in tree2.iteritems(): 
 					if name == sample:
-						if mainConfig.doTopReweighting:
-							if "TT" in name:
-								tempHist = createHistoFromTree(tree, plot.variable ,"%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
-							else:
+						if mainConfig.doTopReweighting and "TT" in name:
+							if TopWeightUp:
+								tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+							elif TopWeightDown:	
 								tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+							else:	
+								tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						else:
 							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						
@@ -309,7 +319,7 @@ class TheStack:
 	theHistogram = ROOT.TH1F()	
 	theHistogramXsecUp = ROOT.TH1F()
 	theHistogramXsecDown = ROOT.TH1F()
-	def  __init__(self,processes,lumi,plot,tree1,tree2,shift = 1.0,scalefacTree1=1.0,scalefacTree2=1.0,saveIntegrals=False,counts=None,JESUp=False,JESDown=False):
+	def  __init__(self,processes,lumi,plot,tree1,tree2,shift = 1.0,scalefacTree1=1.0,scalefacTree2=1.0,saveIntegrals=False,counts=None,JESUp=False,JESDown=False,TopWeightUp=False,TopWeightDown=False):
 		self.theStack = THStack()
 		self.theHistogram = ROOT.TH1F()
 		self.theHistogram.Sumw2()
@@ -327,7 +337,12 @@ class TheStack:
 		for process in processes:
 			temphist = TH1F()
 			temphist.Sumw2()
-			temphist = process.createCombinedHistogram(lumi,plot,tree1,tree2,shift,scalefacTree1,scalefacTree2)
+			if TopWeightUp:
+				temphist = process.createCombinedHistogram(lumi,plot,tree1,tree2,shift,scalefacTree1,scalefacTree2,TopWeightUp=True)
+			elif TopWeightDown:	
+				temphist = process.createCombinedHistogram(lumi,plot,tree1,tree2,shift,scalefacTree1,scalefacTree2,TopWeightDown=True)
+			else:	
+				temphist = process.createCombinedHistogram(lumi,plot,tree1,tree2,shift,scalefacTree1,scalefacTree2)
 			if saveIntegrals:
 				
 				errIntMC = ROOT.Double()
@@ -357,7 +372,7 @@ class TheStack:
 			temphist3.Scale(1+process.uncertainty)
 			self.theHistogramXsecUp.Add(temphist3.Clone())
 
-def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False):
+def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False,Block="None"):
 	histo = TH1F()
 	histo2 = TH1F()
 	if Run201153X:
@@ -365,7 +380,12 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False):
 	elif Run2011: 
 		dataname = "Data2011_42"
 	else:
-		dataname= "MergedData"
+		if Block == "BlockA":
+			dataname= "MergedData_BlockA"
+		elif Block == "BlockB":
+			dataname= "MergedData_BlockB"
+		else:
+			dataname = "MergedData"	
 	for name, tree in tree1.iteritems():
 		if name == dataname:
 			histo = createHistoFromTree(tree, plot.variable , plot.cuts , plot.nBins, plot.firstBin, plot.lastBin)
@@ -374,7 +394,7 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False):
 			if name == dataname:
 				histo2 = createHistoFromTree(tree, plot.variable , plot.cuts , plot.nBins, plot.firstBin, plot.lastBin)
 				histo.Add(histo2.Clone())
-	print histo.Integral()					
+	#~ print histo.Integral()					
 	return histo	
 				
 def getTotalTopWeight(genPt1,genPt2):

@@ -113,7 +113,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
 		legendHists.append(temphist2.Clone)
-		legend.AddEntry(temphist2,"JEC Uncert.","f")	
+		legend.AddEntry(temphist2,"Pileup/Top Reweighting Uncert.","f")	
 
 
 	
@@ -204,6 +204,11 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		plot.cuts = plot.cuts%run.runCut
 		lumi = run.lumi
 		printLumi = run.printval
+		
+		if "BlockA" in run.label:
+			plot.cuts.replace("weight","weightBlockA")
+		elif "BlockB" in run.label:
+			plot.cuts.replace("weight","weightBlockB")
 		
 		print plot.cuts
 		if mainConfig.useVectorTrees:
@@ -297,7 +302,12 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		elif Run201153X:
 			datahist = getDataHist(plot,tree1,tree2,Run201153X=True)
 		else:
-			datahist = getDataHist(plot,tree1,tree2)	
+			if "BlockA" in run.label:
+				datahist = getDataHist(plot,tree1,tree2,Block="BlockA")	
+			elif "BlockB" in run.label:
+				datahist = getDataHist(plot,tree1,tree2,Block="BlockB")	
+			else :
+				datahist = getDataHist(plot,tree1,tree2)	
 		datahist.GetXaxis().SetTitle(plot.xaxis) 
 		datahist.GetYaxis().SetTitle(plot.yaxis)
 		
@@ -336,31 +346,63 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		
 		else:
 			drawStack = stack
-			plot.cuts = plot.cuts.replace("met", "metJESUp")	
-			plot.cuts = plot.cuts.replace(" ht", "htJESUp")		
-			plot.cuts = plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-			stackJESUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
-			plot.cuts = plot.cuts.replace("metJESUp", "metJESDown")
-			plot.cuts = plot.cuts.replace("htJESUp", "htJESDown")
-			plot.cuts = plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-			stackJESDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
-			plot.cuts = plot.cuts.replace("metJESDown", "met")
-			plot.cuts = plot.cuts.replace("htJESDown", "ht")
-			plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
+			#~ plot.cuts = plot.cuts.replace("met", "metJESUp")	
+			#~ plot.cuts = plot.cuts.replace(" ht", "htJESUp")		
+			#~ plot.cuts = plot.cuts.replace("nJets", "nShiftedJetsJESUp")
+			#~ stackJESUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
+			#~ plot.cuts = plot.cuts.replace("metJESUp", "metJESDown")
+			#~ plot.cuts = plot.cuts.replace("htJESUp", "htJESDown")
+			#~ plot.cuts = plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
+			#~ stackJESDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
+			#~ plot.cuts = plot.cuts.replace("metJESDown", "met")
+			#~ plot.cuts = plot.cuts.replace("htJESDown", "ht")
+			#~ plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
+			plot.cuts = plot.cuts.replace("*(", "Up*(")	
+			stackPileUpUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
+			plot.cuts = plot.cuts.replace("Up*(", "Down*(")		
+			stackPileUpDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)	
+			plot.cuts = plot.cuts.replace("Down*(", "*(")
+			if mainConfig.doTopReweighting:
+				stackReweightDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts)	
+				stackReweightUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts)	
 
 
+		#~ 
+		#~ errIntMC = ROOT.Double()
+		#~ intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		#~ errIntMC = ROOT.Double()
+		#~ intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				#~ 
+		#~ valJESUp = float(intMCJESUp)
+		#~ valJESDown = float(intMCJESDown)
+		#~ jesUp = abs(counts["Total Background"]["val"]-valJESUp)
+		#~ jesDown = abs(counts["Total Background"]["val"]-valJESDown)
+		#~ counts["Total Background"]["jesDown"]=jesDown				
+		#~ counts["Total Background"]["jesUp"]=jesUp				
 		
 		errIntMC = ROOT.Double()
-		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 		errIntMC = ROOT.Double()
-		intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 				
-		valJESUp = float(intMCJESUp)
-		valJESDown = float(intMCJESDown)
-		jesUp = abs(counts["Total Background"]["val"]-valJESUp)
-		jesDown = abs(counts["Total Background"]["val"]-valJESDown)
-		counts["Total Background"]["jesDown"]=jesDown				
-		counts["Total Background"]["jesUp"]=jesUp				
+		valPileUpUp = float(intMCPileUpUp)
+		valPileUpDown = float(intMCPileUpDown)
+		pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
+		pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
+		counts["Total Background"]["pileUpDown"]=pileUpDown				
+		counts["Total Background"]["pileUpUp"]=pileUpUp	
+					
+		errIntMC = ROOT.Double()
+		intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		errIntMC = ROOT.Double()
+		intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				
+		valTopWeightUp = float(intMCTopWeightUp)
+		valTopWeightDown = float(intMCTopWeightDown)
+		topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
+		topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
+		counts["Total Background"]["topWeightDown"]=topWeightDown				
+		counts["Total Background"]["topWeightUp"]=topWeightUp				
 		
 		xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
 		counts["Total Background"]["xSec"]=xSec
@@ -569,7 +611,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				plot.cuts=baseCut
 				return 1
 			ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
-			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
+			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
+			ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
 			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
 			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
 			ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)

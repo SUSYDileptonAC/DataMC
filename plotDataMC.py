@@ -94,7 +94,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	if Run2011 or Run201153X:
 		processes = [SingleTop,TTJets,Diboson,DY]
 	else:
-		processes = [Rare,SingleTop,TTJets_SC,Diboson,DYTauTau,DY]
+		processes = [Rare,SingleTop,TT,Diboson,DYTauTau,DY]
 
 	for process in reversed(processes):
 		temphist = ROOT.TH1F()
@@ -287,7 +287,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		counts = {}
 		import pickle
 		#~ counts[pickleName] = {}
-		
+		print scaleTree1, scaleTree2
 		stack = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
 
 		if Run2011:
@@ -316,8 +316,10 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*1000
 			else:
 				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*2
+
 		else: yMax = plot.yMax
 			
+
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
 

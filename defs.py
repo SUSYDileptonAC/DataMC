@@ -9,16 +9,16 @@ class Constant:
 class Constants:
 	class Trigger:
 		class EffEE(Constant):
-			val = 0.95
+			val = 0.95*0.967519
 			err = 0.95 * 0.05
 		class EffEMu(Constant):
-			val = 0.94
+			val = 0.94*0.967519
 			err = 0.05*0.94
 			#~ val = 0.95
 			#~ err = 0.5*(0.918+0.883) * 0.05
 
 		class EffMuMu(Constant):
-			val = 0.95
+			val = 0.95*0.967519
 			err = 0.95*0.05
 
 	class Pt2010:
@@ -741,12 +741,22 @@ class Regions:
 			#~ self.cut = " weight*( nJets >= 2 && ht > 100 && met > 150 && (%s))"%region.cut	
 			#~ labelRegion = region.label				
 	class Zpeak(Region):
-		cut = "p4.M() > 60 && p4.M() < 120 (%s)"%Region.cut
+		cut = "p4.M() > 60 && p4.M() < 120 && (%s)"%Region.cut
 		labelRegion = Region.labelRegion
 		labelSubRegion = "60 GeV < m_{ll} < 120 GeV"			
 		titel = "Drell-Yan Enhanced"
 		latex = "Drell-Yan Enhanced"
 		name = "ZPeak"
+		logY = True
+		#~ def __init__(self,region):
+			#~ self.cut = " weight*( p4.M() > 60 && p4.M() < 120 && (%s))"%region.cut		
+	class ZpeakControl(Region):
+		cut = "p4.M() > 60 && p4.M() < 120 && met < 50 && nJets >= 2 && (%s)"%Region.cut
+		labelRegion = Region.labelRegion
+		labelSubRegion = "#splitline{60 GeV < m_{ll} < 120 GeV}{N_{jets} >= 2 E_T^{miss} < 50 GeV}"			
+		titel = "Drell-Yan Enhanced"
+		latex = "Drell-Yan Enhanced"
+		name = "ZPeakControl"
 		logY = True
 		#~ def __init__(self,region):
 			#~ self.cut = " weight*( p4.M() > 60 && p4.M() < 120 && (%s))"%region.cut		
@@ -1063,7 +1073,7 @@ class thePlots:
 			
 
 	#plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [mllPlots.mllPlot]
+	plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
@@ -1147,7 +1157,7 @@ class Backgrounds:
 		label = "Madgraph t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack
-		uncertainty = 0.063
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 	class TTJets_SpinCorrelations:
@@ -1155,7 +1165,7 @@ class Backgrounds:
 		label = "Madgraph t#bar{t} w/ SC"
 		fillcolor = 855
 		linecolor = ROOT.kBlack
-		uncertainty = 0.063
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 	class TT:
@@ -1163,7 +1173,7 @@ class Backgrounds:
 		label = "t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.063
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 		#~ scaleFac     = 0.71
@@ -1172,7 +1182,7 @@ class Backgrounds:
 		label = "Powheg t#bar{t} Dileptonic"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.063
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		#~ scaleFac     = 0.71
 		additionalSelection = None
@@ -1181,7 +1191,7 @@ class Backgrounds:
 		label = "MCatNLO t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack	
-		uncertainty = 0.063
+		uncertainty = 0.07
 		scaleFac     = 1.0
 		additionalSelection = None
 		#~ scaleFac     = 0.71

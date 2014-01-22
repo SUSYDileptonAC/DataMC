@@ -251,13 +251,14 @@ class Process:
 			cut = plot.cuts.replace("weight*(","weight*(%s &&"%self.additionalSelection)
 		else: 
 			cut = plot.cuts
-		print cut 
 		#~ if "100" in cut:
 			#~ weightNorm = 1./0.91
 		#~ elif "150" in cut and not "100" in cut:
 			#~ weightNorm = 1./0.87
 		#~ else:
-		weightNorm = 1./0.99			
+		weightNorm = 1./0.99
+		
+					
 		for index, sample in enumerate(self.samples):
 			from defs import mainConfig
 			for name, tree in tree1.iteritems(): 
@@ -270,22 +271,36 @@ class Process:
 	
 					else:
 						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
+					
+					#~ print "-------------------------------------"
+					#~ print "process: %s"%name
+					#~ print "cut string: %s"%cut
+					#~ print "raw count: %f"%tempHist.Integral()					
+					#~ print "lumi: %f"%lumi
+					#~ print "cross section %f"%self.xsecs[index]
+					#~ print "number of events in sample: %f"%self.nEvents[index]
+					#~ print "scale factor Data/MC: %f"%scalefacTree1
+					#~ print "combined scale factor: %f"%(lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index])
 					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
+					#~ print "scaled number in signal region: %f"%tempHist.Integral()
 					self.histo.Add(tempHist.Clone())
-					print name
-					print "Lumi: ", lumi
-					print "Xsec: ", self.xsecs[index]
-					print "Events", self.nEvents[index]
-					print "scalefac: ", scalefacTree1
+					#print name
+					#print "Lumi: ", lumi
+					#print "Xsec: ", self.xsecs[index]
+					#print "Events", self.nEvents[index]
+					#print "scalefac: ", scalefacTree1
 			if tree2 != "None":		
 				for name, tree in tree2.iteritems(): 
 					if name == sample:
 						if mainConfig.doTopReweighting:
-							tempHist = createHistoFromTree(tree, plot.variable ,"%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+							if "TT" in name:
+								tempHist = createHistoFromTree(tree, plot.variable ,"%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+							else:
+								tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						else:
 							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						
-						
+
 						tempHist.Scale((lumi*self.xsecs[index]*scalefacTree2/self.nEvents[index]))
 
 						self.histo.Add(tempHist.Clone())
@@ -367,7 +382,8 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False):
 		for name, tree in tree2.iteritems():
 			if name == dataname:
 				histo2 = createHistoFromTree(tree, plot.variable , plot.cuts , plot.nBins, plot.firstBin, plot.lastBin)
-				histo.Add(histo2.Clone())		
+				histo.Add(histo2.Clone())
+	print histo.Integral()					
 	return histo	
 				
 def getTotalTopWeight(genPt1,genPt2):

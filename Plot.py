@@ -140,7 +140,6 @@ def main():
 			compareTTbar(path,plot,"OF",logScale)
 			plot.cuts = tempCutString	
 			plot.filename = tempFileName
-
 		region = getRegion("ttBarDileptonSF")
 		logScale = region.logY
 		plots = thePlots.generalPlots

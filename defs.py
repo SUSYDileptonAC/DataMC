@@ -835,7 +835,7 @@ class Plot:
 	tree1 = "None"
 	tree2 = "None"
 	
-	def __init__(self,variable,additionalCuts,binning = None, yRange = None,additionalName=None):
+	def __init__(self,variable,additionalCuts,binning = None, yRange = None,additionalName=None,DoCleanCuts = True):
 		self.variable=variable.variable
 		self.cuts="weight*(%s)"
 		self.xaxis=variable.labelX
@@ -847,6 +847,10 @@ class Plot:
 		self.yMax = 0
 		self.label3="%s"
 		self.filename=variable.name+"_%s"
+		self.doCleanCuts = True
+		
+		if not DoCleanCuts:
+			self.doCleanCuts = False
 
 		if len(additionalCuts) >0:
 			for additionalCut in additionalCuts:
@@ -905,95 +909,97 @@ class Plot:
 			self.tree1 = dilepton
 			self.tree2 = "None"		
 	def cleanCuts(self):
-		if self.variable == "met" or self.variable == "type1Met" or self.variable == "tcMet" or self.variable == "caloMet" or self.variable == "mht":
-			cuts = self.cuts.split("&&")
-			metCutUp = []
-			metCutDown = [] 
-			for cut in cuts:
-				if "met >" in cut:
-					metCutUp.append(cut)
-				elif "met <" in cut:
-					metCutDown.append(cut)
-			for cut in metCutUp:
-				self.cuts = self.cuts.replace(cut.split(")")[0],"")
-			for cut in metCutDown:
-				self.cuts = self.cuts.replace(cut,"")
-			self.cuts = self.cuts.replace("&&)",")")
-			self.cuts = self.cuts.replace("&& &&","&&")
-			self.cuts = self.cuts.replace("&&&&","&&")
-		if self.variable == "ht":
-			cuts = self.cuts.split("&&")
-			htCutUp = "" 
-			htCutDown = "" 
-			for cut in cuts:
-				if "ht >" in cut:
-					metCutUp = cut
-				elif "ht <" in cut:
-					metCutDown = cut
-			self.cuts = self.cuts.replace(htCutUp,"")
-			self.cuts = self.cuts.replace(htCutDown,"")
-			self.cuts = self.cuts.replace("&& &&","&&")
-			self.cuts = self.cuts.replace("&&&&","&&")			
-		if self.variable == "nJets":
-			cuts = self.cuts.split("&&")
-			nJetsCutUp = [] 
-			nJetsCutDown = [] 
-			nJetsCutEqual = []
-			for cut in cuts:
-				if "nJets >" in cut:
-					nJetsCutUp.append(cut)
-				elif "nJets <" in cut:
-					nJetsCutDown.append(cut)
-				elif "nJets ==" in cut:
-					nJetsCutEqual.append(cut)
-			for cut in nJetsCutUp:
-				if "weight" and "(((" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(((")
-				elif "weight" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(")
-				elif "(" in cut:
-					self.cuts = self.cuts.replace(cut.split("(")[1],"")
-				else:
+		if self.doCleanCuts:
+			if self.variable == "met" or self.variable == "type1Met" or self.variable == "tcMet" or self.variable == "caloMet" or self.variable == "mht":
+				cuts = self.cuts.split("&&")
+				metCutUp = []
+				metCutDown = [] 
+				for cut in cuts:
+					if "met >" in cut:
+						metCutUp.append(cut)
+					elif "met <" in cut:
+						metCutDown.append(cut)
+				for cut in metCutUp:
+					self.cuts = self.cuts.replace(cut.split(")")[0],"")
+				for cut in metCutDown:
 					self.cuts = self.cuts.replace(cut,"")
-			for cut in nJetsCutDown:
-				if "weight" and "(((" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(((")
-				elif "weight" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(")
-				elif "(" in cut:
-					self.cuts = self.cuts.replace(cut.split("(")[1],"")
-				else:
-					self.cuts = self.cuts.replace(cut,"")
-			for cut in nJetsCutEqual:
-				if "weight" and "(((" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(((")
-				elif "weight" in cut:
-					self.cuts = self.cuts.replace(cut,"weight*(")
-				elif "(" in cut:
-					self.cuts = self.cuts.replace(cut.split("(")[1],"")
-				else:
-					self.cuts = self.cuts.replace(cut,"")
-					
-			#~ if nJetsCutUp != "":
-				#~ if "weight" in nJetsCutUp:
-					#~ self.cuts = self.cuts.replace(nJetsCutUp,"weight*(")
-				#~ else:
-					#~ self.cuts = self.cuts.replace(nJetsCutUp,"")
-			#~ if nJetsCutDown != "":
-				#~ if "weight" in nJetsCutDown:
-					#~ self.cuts = self.cuts.replace(nJetsCutDown,"weight*(")
-				#~ else:
-					#~ self.cuts = self.cuts.replace(nJetsCutDown,"")
-			#~ if nJetsCutEqual != "":
-				#~ if "weight" in nJetsCutEqual:
-					#~ self.cuts = self.cuts.replace(nJetsCutEqual,"weight*(")
-				#~ else:
-					#~ self.cuts = self.cuts.replace(nJetsCutEqual,"")
-			self.cuts = self.cuts.replace("&& &&","&&")
-			self.cuts = self.cuts.replace("&&&&","&&")			
-			self.cuts = self.cuts.replace("( &&","(")			
-			self.cuts = self.cuts.replace("(&&","(")			
-			
+				self.cuts = self.cuts.replace("&&)",")")
+				self.cuts = self.cuts.replace("&& &&","&&")
+				self.cuts = self.cuts.replace("&&&&","&&")
+			if self.variable == "ht":
+				cuts = self.cuts.split("&&")
+				htCutUp = "" 
+				htCutDown = "" 
+				for cut in cuts:
+					if "ht >" in cut:
+						metCutUp = cut
+					elif "ht <" in cut:
+						metCutDown = cut
+				self.cuts = self.cuts.replace(htCutUp,"")
+				self.cuts = self.cuts.replace(htCutDown,"")
+				self.cuts = self.cuts.replace("&& &&","&&")
+				self.cuts = self.cuts.replace("&&&&","&&")			
+			if self.variable == "nJets":
+				cuts = self.cuts.split("&&")
+				nJetsCutUp = [] 
+				nJetsCutDown = [] 
+				nJetsCutEqual = []
+				for cut in cuts:
+					if "nJets >" in cut:
+						nJetsCutUp.append(cut)
+					elif "nJets <" in cut:
+						nJetsCutDown.append(cut)
+					elif "nJets ==" in cut:
+						nJetsCutEqual.append(cut)
+				for cut in nJetsCutUp:
+					if "weight" and "(((" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(((")
+					elif "weight" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(")
+					elif "(" in cut:
+						self.cuts = self.cuts.replace(cut.split("(")[1],"")
+					else:
+						self.cuts = self.cuts.replace(cut,"")
+				for cut in nJetsCutDown:
+					if "weight" and "(((" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(((")
+					elif "weight" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(")
+					elif "(" in cut:
+						self.cuts = self.cuts.replace(cut.split("(")[1],"")
+					else:
+						self.cuts = self.cuts.replace(cut,"")
+				for cut in nJetsCutEqual:
+					if "weight" and "(((" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(((")
+					elif "weight" in cut:
+						self.cuts = self.cuts.replace(cut,"weight*(")
+					elif "(" in cut:
+						self.cuts = self.cuts.replace(cut.split("(")[1],"")
+					else:
+						self.cuts = self.cuts.replace(cut,"")
+						
+				#~ if nJetsCutUp != "":
+					#~ if "weight" in nJetsCutUp:
+						#~ self.cuts = self.cuts.replace(nJetsCutUp,"weight*(")
+					#~ else:
+						#~ self.cuts = self.cuts.replace(nJetsCutUp,"")
+				#~ if nJetsCutDown != "":
+					#~ if "weight" in nJetsCutDown:
+						#~ self.cuts = self.cuts.replace(nJetsCutDown,"weight*(")
+					#~ else:
+						#~ self.cuts = self.cuts.replace(nJetsCutDown,"")
+				#~ if nJetsCutEqual != "":
+					#~ if "weight" in nJetsCutEqual:
+						#~ self.cuts = self.cuts.replace(nJetsCutEqual,"weight*(")
+					#~ else:
+						#~ self.cuts = self.cuts.replace(nJetsCutEqual,"")
+				self.cuts = self.cuts.replace("&& &&","&&")
+				self.cuts = self.cuts.replace("&&&&","&&")			
+				self.cuts = self.cuts.replace("( &&","(")			
+				self.cuts = self.cuts.replace("(&&","(")			
+		else:
+			print "Cut cleaning deactivated for this plot!"
 		
 class thePlots:
 	class METPlots:
@@ -1021,6 +1027,9 @@ class thePlots:
 		metPlotTc = Plot(theVariables.TcMet,[])
 		metPlotUncertaintyHighMET = Plot(theVariables.Met,[theCuts.htCuts.ht100,theCuts.nJetsCuts.geTwoJetCut])
 		metPlotUncertaintyLowMET = Plot(theVariables.Met,[theCuts.nJetsCuts.geThreeJetCut])
+		metPlot100 = Plot(theVariables.Met,[],binning = [30,100,400,"Events / 10 Gev"],additionalName = "MET100")
+		metPlot100NoClean = Plot(theVariables.Met,[],binning = [30,100,400,"Events / 10 Gev"],additionalName = "MET100Cuts",DoCleanCuts=False)
+		
 	class METStudies:
 		metPlotLowMass = Plot(theVariables.Met,[theCuts.massCuts.edgeMass])
 		metPlotLowPileUp = Plot(theVariables.Met,[theCuts.pileUpCuts.lowPU,theCuts.massCuts.edgeMass])
@@ -1042,7 +1051,6 @@ class thePlots:
 		metPlotCalo = Plot(theVariables.CaloMet,[theCuts.massCuts.edgeMass])
 		metPlotTc = Plot(theVariables.TcMet,[theCuts.massCuts.edgeMass])
 		mhtPlotLowMass = Plot(theVariables.MHT,[theCuts.massCuts.edgeMass])		
-		
 	class htPlots:
 		htPlot = Plot(theVariables.HT,[])		
 		htPlotLowMass = Plot(theVariables.HT,[theCuts.massCuts.edgeMass])		
@@ -1092,7 +1100,7 @@ class thePlots:
 
 
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [htPlots.htPlot]
+	plots = [nJetsPlots.nJetsPlot]
 
 	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
@@ -1307,7 +1315,7 @@ class mainConfig:
 	produceReweighting = True
 	plot2011 = False
 	plot53X = False
-	personalWork = False
+	personalWork = True
 	doTopReweighting = True
 	
 # Color definition

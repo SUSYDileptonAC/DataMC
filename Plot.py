@@ -68,16 +68,6 @@ def main():
 			plotDataMC(path,plot,"MuMu",logScale,"Inclusive")
 			plot.cuts = tempCutString
 			plot.filename = tempFileName
-		plots = thePlots.anPlotsMetStudyPlotsInclusive
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"Inclusive")
-			plotDataMC(path,plot,"OF",logScale,"Inclusive")		
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
 		region = getRegion("bTagControl")
 		logScale = region.logY	
 		plots = thePlots.anPlotsbTagControl	
@@ -117,28 +107,6 @@ def main():
 			plotDataMC(path,plot,"EE",logScale,"SignalForward")
 			plotDataMC(path,plot,"MuMu",logScale,"SignalForward")
 			plot.cuts = tempCutString
-			plot.filename = tempFileName
-		region = getRegion("SignalHighMET")
-		logScale = region.logY
-		plots = thePlots.anPlotsMetStudyPlotsHighMET	
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalHighMET")
-			plotDataMC(path,plot,"OF",logScale,"SignalHighMET")
-			plot.cuts = tempCutString
-			plot.filename = tempFileName
-		plots = thePlots.anPlotsCompareTTbar													
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			compareTTbar(path,plot,"SF",logScale)
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString	
 			plot.filename = tempFileName
 		region = getRegion("ttBarDileptonSF")
 		logScale = region.logY
@@ -401,9 +369,9 @@ def main():
 				elif "SF" in argv[3]:
 					dileptons = ["SF","EE","MuMu"]
 				else:
-					dileptons = ["SF","OF","EE","MuMu"]
+					#~ dileptons = ["SF","OF","EE","MuMu"]
 
-					#dileptons = ["OF"]
+					dileptons = ["OF"]
 				for dilepton in dileptons:
 					if argv[2] == "CompareTTbar":
 						compareTTbar(path,plot,dilepton,logScale)

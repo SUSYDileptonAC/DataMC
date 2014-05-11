@@ -1,6 +1,6 @@
 #DATA_TREES=../../../sw532v0458/processedTrees/sw532v0460.processed.MergedData.root
 
-TREES=/user/jschulte/Trees/sw538v0475
+TREES=/home/jan/Trees/sw538v0477
 TREES_2011=/home/jan/Trees/2011MC
 AN_PATH = ..//DileptonAN
 AN_TABLES=$(AN_PATH)/tables
@@ -50,9 +50,15 @@ copyPASTables:
 	scp tab/table_DataMC_Signal.tex tab/table_DataMC_Inclusive.tex tab/table_DataMC_ttBarDilepton.tex rwth:~/PAS2/notes/SUS-12-019/trunk/
 
 PASTables:
-	$(TableTool) Inclusive
-	$(TableTool) Signal
-	$(TableTool) ttBarDilepton
+	$(TableTool) Inclusive BlockA
+	$(TableTool) Signal BlockA
+	$(TableTool) ttBarDilepton BlockA
+	$(TableTool) Inclusive BlockB
+	$(TableTool) Signal BlockB
+	$(TableTool) ttBarDilepton BlockB
+	$(TableTool) Inclusive Full2012
+	$(TableTool) Signal Full2012
+	$(TableTool) ttBarDilepton Full2012
 
 DataMC: 
 	$(PlotTool) $(TREES) DataMC  $(Region)  

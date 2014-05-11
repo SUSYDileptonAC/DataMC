@@ -84,9 +84,10 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	legendHists = []
 	
 
-	legendHistData = ROOT.TH1F()	
-	legend.AddEntry(legendHistData,"Data","p")	
-	legendEta.AddEntry(legendHistData,"Data","p")	
+	legendHistData = ROOT.TH1F()
+	if mainConfig.plotData:	
+		legend.AddEntry(legendHistData,"Data","p")	
+		legendEta.AddEntry(legendHistData,"Data","p")	
 
 	
 
@@ -113,7 +114,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
 		legendHists.append(temphist2.Clone)
-		legend.AddEntry(temphist2,"Pileup/Top Reweighting Uncert.","f")	
+		legend.AddEntry(temphist2,"JEC/Pileup/Top Reweighting Uncert.","f")	
 
 
 	
@@ -140,7 +141,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	intlumi.SetNDC(True)
 	intlumi2 = ROOT.TLatex()
 	intlumi2.SetTextAlign(12)
-	intlumi2.SetTextSize(0.03)
+	intlumi2.SetTextSize(0.07)
 	intlumi2.SetNDC(True)
 	scalelabel = ROOT.TLatex()
 	scalelabel.SetTextAlign(12)
@@ -206,18 +207,12 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		printLumi = run.printval
 		
 		if "BlockA" in run.label:
-			plot.cuts.replace("weight","weightBlockA")
+			plot.cuts = plot.cuts.replace("weight","weightBlockA")
 		elif "BlockB" in run.label:
-			plot.cuts.replace("weight","weightBlockB")
+			plot.cuts = plot.cuts.replace("weight","weightBlockB")
 		
 		print plot.cuts
-		if mainConfig.useVectorTrees:
-			plot.cuts = plot.cuts.replace("met","vMet.Pt()")
-			plot.cuts = plot.cuts.replace("pt1","lepton1.Pt()")
-			plot.cuts = plot.cuts.replace("pt2","lepton2.Pt()")
-			plot.cuts = plot.cuts.replace("eta1","lepton1.Eta()")
-			plot.cuts = plot.cuts.replace("eta2","lepton2.Eta()")
-			plot.cuts = plot.cuts.replace("deltaR","sqrt((lepton1.Eta()-lepton2.Eta())^2+(lepton1.Phi()-lepton2.Phi())^2)")
+
 			#~ plot.cuts = plot.cuts.replace("deltaR","1")
 		
 		
@@ -319,17 +314,19 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				
 		counts["Total Background"] = {"val":val,"err":err}		
 		counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}		
-
-		
+		if mainConfig.plotData:
+			yMax = datahist.GetBinContent(datahist.GetMaximumBin())
+		else:	
+			yMax = stack.theHistogram.GetBinContent(datahist.GetMaximumBin())
 		if plot.yMax == 0:
 			if logScale:
-				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*1000
+				yMax = yMax*1000
 			else:
-				yMax = datahist.GetBinContent(datahist.GetMaximumBin())*2
+				yMax = yMax*1.5
 
 		else: yMax = plot.yMax
 			
-
+		#~ yMax = 200
 		hCanvas.DrawFrame(plot.firstBin,plot.yMin,plot.lastBin,yMax,"; %s ; %s" %(plot.xaxis,plot.yaxis))
 		
 
@@ -348,17 +345,17 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		
 		else:
 			drawStack = stack
-			#~ plot.cuts = plot.cuts.replace("met", "metJESUp")	
-			#~ plot.cuts = plot.cuts.replace(" ht", "htJESUp")		
-			#~ plot.cuts = plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-			#~ stackJESUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
-			#~ plot.cuts = plot.cuts.replace("metJESUp", "metJESDown")
-			#~ plot.cuts = plot.cuts.replace("htJESUp", "htJESDown")
-			#~ plot.cuts = plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-			#~ stackJESDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
-			#~ plot.cuts = plot.cuts.replace("metJESDown", "met")
-			#~ plot.cuts = plot.cuts.replace("htJESDown", "ht")
-			#~ plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
+			plot.cuts = plot.cuts.replace("met", "metJESUp")	
+			plot.cuts = plot.cuts.replace(" ht", "htJESUp")		
+			plot.cuts = plot.cuts.replace("nJets", "nShiftedJetsJESUp")
+			stackJESUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
+			plot.cuts = plot.cuts.replace("metJESUp", "metJESDown")
+			plot.cuts = plot.cuts.replace("htJESUp", "htJESDown")
+			plot.cuts = plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
+			stackJESDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
+			plot.cuts = plot.cuts.replace("metJESDown", "met")
+			plot.cuts = plot.cuts.replace("htJESDown", "ht")
+			plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
 			plot.cuts = plot.cuts.replace("*(", "Up*(")	
 			stackPileUpUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
 			plot.cuts = plot.cuts.replace("Up*(", "Down*(")		
@@ -369,18 +366,18 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				stackReweightUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts)	
 
 
-		#~ 
-		#~ errIntMC = ROOT.Double()
-		#~ intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-		#~ errIntMC = ROOT.Double()
-		#~ intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				#~ 
-		#~ valJESUp = float(intMCJESUp)
-		#~ valJESDown = float(intMCJESDown)
-		#~ jesUp = abs(counts["Total Background"]["val"]-valJESUp)
-		#~ jesDown = abs(counts["Total Background"]["val"]-valJESDown)
-		#~ counts["Total Background"]["jesDown"]=jesDown				
-		#~ counts["Total Background"]["jesUp"]=jesUp				
+		
+		errIntMC = ROOT.Double()
+		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		errIntMC = ROOT.Double()
+		intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				
+		valJESUp = float(intMCJESUp)
+		valJESDown = float(intMCJESDown)
+		jesUp = abs(counts["Total Background"]["val"]-valJESUp)
+		jesDown = abs(counts["Total Background"]["val"]-valJESDown)
+		counts["Total Background"]["jesDown"]=jesDown				
+		counts["Total Background"]["jesUp"]=jesUp				
 		
 		errIntMC = ROOT.Double()
 		intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
@@ -436,7 +433,9 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			dileptonLabel = "ee"
 		if dilepton == "MuMu":
 			dileptonLabel = "#mu#mu"
-						
+		if mainConfig.personalWork:
+							
+			intlumi2.DrawLatex(0.2,0.9,"%s"%dileptonLabel)
 
 		datahist.SetMinimum(0.1)
 		if mainConfig.plotData:
@@ -614,6 +613,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				return 1
 			ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
+			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
 			ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
 			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
 			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)

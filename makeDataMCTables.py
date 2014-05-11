@@ -18,26 +18,28 @@ def main():
 	from sys import argv
 	from helpers import loadPickles
 	#~ allPkls = loadPickles("shelves/*.pkl")
+	period = argv[2]
 	inclusivePkls = loadPickles("shelves/Inclusive_Mll*.pkl")
 	ttBarDileptonPkls = loadPickles("shelves/ttBarDilepton*_Mll*.pkl")
 	SignalHighMETPkls = loadPickles("shelves/SignalCentral_Mll*.pkl")
 	SignalLowMETPkls = loadPickles("shelves/SignalForward_Mll*.pkl")
 	#~ print argv[1]
+	print inclusivePkls
 	if argv[1] == "ttBarDilepton":
-		lowMassSF = loadPickles("shelves/%sSF_Mll_edgeMass_Run92_SF.pdf.pkl"%argv[1])
-		lowMassOF = loadPickles("shelves/%sOF_Mll_edgeMass_Run92_OF.pdf.pkl"%argv[1])
-		highMassSF = loadPickles("shelves/%sSF_Mll_highMass_Run92_SF.pdf.pkl"%argv[1])
-		highMassOF = loadPickles("shelves/%sOF_Mll_highMass_Run92_OF.pdf.pkl"%argv[1])
+		lowMassSF = loadPickles("shelves/%sSF_Mll_edgeMass_%s_SF.pdf.pkl"%(argv[1],period))
+		lowMassOF = loadPickles("shelves/%sOF_Mll_edgeMass_%s_OF.pdf.pkl"%(argv[1],period))
+		highMassSF = loadPickles("shelves/%sSF_Mll_highMass_%s_SF.pdf.pkl"%(argv[1],period))
+		highMassOF = loadPickles("shelves/%sOF_Mll_highMass_%s_OF.pdf.pkl"%(argv[1],period))
 	elif argv[1] == "Signal":
-		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_SF.pdf.pkl"%region)
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_OF.pdf.pkl"%region)
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_SF.pdf.pkl"%region)
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_OF.pdf.pkl"%region)
 	else:
-		lowMassSF = loadPickles("shelves/%s_Mll_edgeMass_Run92_SF.pdf.pkl"%argv[1])
-		lowMassOF = loadPickles("shelves/%s_Mll_edgeMass_Run92_OF.pdf.pkl"%argv[1])
-		highMassSF = loadPickles("shelves/%s_Mll_highMass_Run92_SF.pdf.pkl"%argv[1])
-		highMassOF = loadPickles("shelves/%s_Mll_highMass_Run92_OF.pdf.pkl"%argv[1])
+		lowMassSF = loadPickles("shelves/%s_Mll_edgeMass_%s_SF.pdf.pkl"%(argv[1],period))
+		lowMassOF = loadPickles("shelves/%s_Mll_edgeMass_%s_OF.pdf.pkl"%(argv[1],period))
+		highMassSF = loadPickles("shelves/%s_Mll_highMass_%s_SF.pdf.pkl"%(argv[1],period))
+		highMassOF = loadPickles("shelves/%s_Mll_highMass_%s_OF.pdf.pkl"%(argv[1],period))
 	
 
 	tableTemplate =r"""
@@ -50,7 +52,7 @@ def main():
 %s
 \end{tabular}
 """
-	#~ print lowMassSF
+	print lowMassSF
 
 
 	lineTemplateData = r"%s & %d$\pm$%d & %d$\pm$%d & %d$\pm$%d & %d$\pm$%d \\"+"\n"
@@ -94,10 +96,10 @@ def main():
 	
 	if argv[1] == "Signal":
 		
-		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_%s_SF.pdf.pkl"%period)
+		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_%s_OF.pdf.pkl"%period)
+		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_%s_SF.pdf.pkl"%period)
+		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_%s_OF.pdf.pkl"%period)
 
 		table2 =""
 		
@@ -149,12 +151,12 @@ Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 %s
 \end{tabular}
 """	
-		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s_Central"%argv[1])
-		saveTable(tableTemplate2%(table2), "DataMC_StatOnly_%s_Forward"%argv[1])
-		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_Run92_OF.pdf.pkl")			
+		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s_%s_Central"%(argv[1],period))
+		saveTable(tableTemplate2%(table2), "DataMC_StatOnly_%s_%s_Forward"%(argv[1],period))
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_SF.pdf.pkl"%period)
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_OF.pdf.pkl"%period)
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_SF.pdf.pkl"%period)
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_OF.pdf.pkl"%period)			
 	else:
 		saveTable(tableTemplate%(table), "DataMC_StatOnly_%s"%argv[1])
 	
@@ -200,10 +202,10 @@ Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 	
 	if argv[1] == "Signal":
 		
-		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_SF.pdf.pkl")
-		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_Run92_OF.pdf.pkl")
-		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_SF.pdf.pkl")
-		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_Run92_OF.pdf.pkl")
+		lowMassSF = loadPickles("shelves/SignalForward_Mll_edgeMass_%s_SF.pdf.pkl"%period)
+		lowMassOF = loadPickles("shelves/SignalForward_Mll_edgeMass_%s_OF.pdf.pkl"%period)
+		highMassSF = loadPickles("shelves/SignalForward_Mll_highMass_%s_SF.pdf.pkl"%period)
+		highMassOF = loadPickles("shelves/SignalForward_Mll_highMass_%s_OF.pdf.pkl"%period)
 
 		table2 =""
 		otherUncertainties= 0.06726812023536856
@@ -264,10 +266,10 @@ Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 %s
 \end{tabular}
 """	
-		saveTable(tableTemplate%(table), "DataMC_%s_Central"%argv[1])
-		saveTable(tableTemplate%(table2), "DataMC_%s_Forward"%argv[1])
+		saveTable(tableTemplate%(table), "DataMC_%s_%s_Central"%(argv[1],period))
+		saveTable(tableTemplate%(table2), "DataMC_%s_%s_Forward"%(argv[1],period))
 	else:
-		saveTable(tableTemplate%(table), "DataMC_%s"%argv[1])
+		saveTable(tableTemplate%(table), "DataMC_%s_%s"%(argv[1],period))
 
 
 main()

@@ -250,10 +250,23 @@ class Process:
 		if self.additionalSelection != None:
 			print "Applying additional selection: %s"%self.additionalSelection
 			
-			if "weightBlockA" in plot.cuts:
+
+			if "weightBlockBUp" in plot.cuts: 		
+				cut = plot.cuts.replace("weightBlockBUp*(","weightBlockBUp*(%s &&"%self.additionalSelection)
+			elif "weightBlockBDown" in plot.cuts: 		
+				cut = plot.cuts.replace("weightBlockBDown*(","weightBlockBDown*(%s &&"%self.additionalSelection)
+			elif "weightBlockAUp" in plot.cuts: 		
+				cut = plot.cuts.replace("weightBlockAUp*(","weightBlockAUp*(%s &&"%self.additionalSelection)
+			elif "weightBlockADown" in plot.cuts: 		
+				cut = plot.cuts.replace("weightBlockADown*(","weightBlockADown*(%s &&"%self.additionalSelection)
+			elif "weightDown" in plot.cuts:
+				cut = plot.cuts.replace("weightDown*(","weightDown*(%s &&"%self.additionalSelection)		
+			elif "weightUp" in plot.cuts:
+				cut = plot.cuts.replace("weightUp*(","weightUp*(%s &&"%self.additionalSelection)
+			elif "weightBlockA" in plot.cuts:
 				cut = plot.cuts.replace("weightBlockA*(","weightBlockA*(%s &&"%self.additionalSelection)
 			elif "weightBlockB" in plot.cuts: 		
-				cut = plot.cuts.replace("weightBlockB*(","weightBlockB*(%s &&"%self.additionalSelection)
+				cut = plot.cuts.replace("weightBlockB*(","weightBlockB*(%s &&"%self.additionalSelection)						
 			else:
 				cut = plot.cuts.replace("weight*(","weight*(%s &&"%self.additionalSelection)		
 		else: 
@@ -265,7 +278,7 @@ class Process:
 		#~ else:
 		weightNorm = 1./0.99
 		
-					
+		#~ print cut			
 		for index, sample in enumerate(self.samples):
 			from defs import mainConfig
 			for name, tree in tree1.iteritems(): 
@@ -387,6 +400,7 @@ class TheStack:
 def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False,Block="None"):
 	histo = TH1F()
 	histo2 = TH1F()
+	tempCut = plot.cuts
 	if Run201153X:
 		dataname = "MergedData2011"
 	elif Run2011: 
@@ -394,7 +408,9 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False,Block="No
 	else:
 		if Block == "BlockA":
 			dataname= "MergedData_BlockA"
+			plot.cuts = plot.cuts.replace("weightBlockA","weight")
 		elif Block == "BlockB":
+			plot.cuts = plot.cuts.replace("weightBlockB","weight")
 			dataname= "MergedData_BlockB"
 		else:
 			dataname = "MergedData"	
@@ -406,7 +422,8 @@ def getDataHist(plot,tree1,tree2="None",Run2011=False,Run201153X=False,Block="No
 			if name == dataname:
 				histo2 = createHistoFromTree(tree, plot.variable , plot.cuts , plot.nBins, plot.firstBin, plot.lastBin)
 				histo.Add(histo2.Clone())
-	#~ print histo.Integral()					
+	#~ print histo.Integral()
+	plot.cuts = tempCut					
 	return histo	
 				
 def getTotalTopWeight(genPt1,genPt2):

@@ -95,7 +95,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	if Run2011 or Run201153X:
 		processes = [SingleTop,TTJets,Diboson,DY]
 	else:
-		processes = [Rare,SingleTop,TT,Diboson,DYTauTau,DY]
+		processes = [Rare,SingleTop,TTJets_SC,Diboson,DYTauTau,DY]
 
 	for process in reversed(processes):
 		temphist = ROOT.TH1F()
@@ -289,7 +289,6 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		#~ counts[pickleName] = {}
 		print scaleTree1, scaleTree2
 		stack = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
-
 		if Run2011:
 
 			datahist = getDataHist(plot,tree1,tree2,Run2011=True)
@@ -357,9 +356,9 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			plot.cuts = plot.cuts.replace("htJESDown", "ht")
 			plot.cuts = plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
 			plot.cuts = plot.cuts.replace("*(", "Up*(")	
-			stackPileUpUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
+			stackPileUpUp = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts)
 			plot.cuts = plot.cuts.replace("Up*(", "Down*(")		
-			stackPileUpDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)	
+			stackPileUpDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts)	
 			plot.cuts = plot.cuts.replace("Down*(", "*(")
 			if mainConfig.doTopReweighting:
 				stackReweightDown = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts)	

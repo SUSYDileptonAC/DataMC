@@ -30,11 +30,16 @@ def main():
 		lowMassOF = loadPickles("shelves/%sOF_Mll_edgeMass_%s_OF.pdf.pkl"%(argv[1],period))
 		highMassSF = loadPickles("shelves/%sSF_Mll_highMass_%s_SF.pdf.pkl"%(argv[1],period))
 		highMassOF = loadPickles("shelves/%sOF_Mll_highMass_%s_OF.pdf.pkl"%(argv[1],period))
-	elif argv[1] == "Signal":
-		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_SF.pdf.pkl"%region)
-		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_OF.pdf.pkl"%region)
-		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_SF.pdf.pkl"%region)
-		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_OF.pdf.pkl"%region)
+	elif argv[1] == "SignalCentral":
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_SF.pdf.pkl"%period)
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_OF.pdf.pkl"%period)
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_SF.pdf.pkl"%period)
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_OF.pdf.pkl"%period)
+	elif argv[1] == "SignalForward":
+		lowMassSF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_SF.pdf.pkl"%period)
+		lowMassOF = loadPickles("shelves/SignalCentral_Mll_edgeMass_%s_OF.pdf.pkl"%period)
+		highMassSF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_SF.pdf.pkl"%period)
+		highMassOF = loadPickles("shelves/SignalCentral_Mll_highMass_%s_OF.pdf.pkl"%period)		
 	else:
 		lowMassSF = loadPickles("shelves/%s_Mll_edgeMass_%s_SF.pdf.pkl"%(argv[1],period))
 		lowMassOF = loadPickles("shelves/%s_Mll_edgeMass_%s_OF.pdf.pkl"%(argv[1],period))
@@ -52,7 +57,7 @@ def main():
 %s
 \end{tabular}
 """
-	print lowMassSF
+	print highMassOF
 
 
 	lineTemplateData = r"%s & %d$\pm$%d & %d$\pm$%d & %d$\pm$%d & %d$\pm$%d \\"+"\n"
@@ -175,7 +180,7 @@ Signal Forward & \multicolumn{2}{c|}{Same Flavor} & \multicolumn{2}{c}{Opposite 
 	name = "WW,WZ,ZZ"	
 	table += lineTemplateData%("\\PW\\PW, \\Z{}\\Z, \\PW\\Z",lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)			
 	name = "Other SM"	
-	table += lineTemplateData%(name,lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)		
+	table += lineTemplateData%(name,lowMassSF[name]["val"],(lowMassSF[name]["err"]**2+lowMassSF[name]["xSec"]**2+max(lowMassSF[name]["jesUp"],lowMassSF[name]["jesDown"])**2+(0.06726812023536856*lowMassSF[name]["val"])**2)**0.5,highMassSF[name]["val"],(highMassSF[name]["err"]**2+highMassSF[name]["xSec"]**2+max(highMassSF[name]["jesUp"],highMassSF[name]["jesDown"])**2+max(highMassSF[name]["pileUpUp"],highMassSF[name]["pileUpDown"])**2+max(highMassSF[name]["topWeightUp"],highMassSF[name]["topWeightDown"])**2+(0.06726812023536856*highMassSF[name]["val"])**2)**0.5,lowMassOF[name]["val"],(lowMassOF[name]["err"]**2+lowMassOF[name]["xSec"]**2+max(lowMassOF[name]["jesUp"],lowMassOF[name]["jesDown"])**2+(0.06726812023536856*lowMassOF[name]["val"])**2)**0.5,highMassOF[name]["val"],(highMassOF[name]["err"]**2+highMassOF[name]["xSec"]**2+max(highMassOF[name]["jesUp"],highMassOF[name]["jesDown"])**2+(0.06726812023536856*highMassOF[name]["val"])**2)**0.5)		
 
 
 	table += "\\hline\n"

@@ -344,7 +344,7 @@ class TheStack:
 	theHistogram = ROOT.TH1F()	
 	theHistogramXsecUp = ROOT.TH1F()
 	theHistogramXsecDown = ROOT.TH1F()
-	def  __init__(self,processes,lumi,plot,tree1,tree2,shift = 1.0,scalefacTree1=1.0,scalefacTree2=1.0,saveIntegrals=False,counts=None,JESUp=False,JESDown=False,TopWeightUp=False,TopWeightDown=False):
+	def  __init__(self,processes,lumi,plot,tree1,tree2,shift = 1.0,scalefacTree1=1.0,scalefacTree2=1.0,saveIntegrals=False,counts=None,JESUp=False,JESDown=False,TopWeightUp=False,TopWeightDown=False,PileUpUp=False,PileUpDown=False):
 		self.theStack = THStack()
 		self.theHistogram = ROOT.TH1F()
 		self.theHistogram.Sumw2()
@@ -378,6 +378,18 @@ class TheStack:
 				if JESUp:
 					jesUp = abs(counts[process.label]["val"]-val)
 					counts[process.label]["jesUp"]=jesUp
+				elif TopWeightUp:
+					topWeightUp = abs(counts[process.label]["val"]-val)
+					counts[process.label]["topWeightUp"]=topWeightUp
+				elif TopWeightDown:
+					topWeightDown = abs(counts[process.label]["val"]-val)
+					counts[process.label]["topWeightDown"]=topWeightDown
+				elif PileUpUp:
+					pileUpUp = abs(counts[process.label]["val"]-val)
+					counts[process.label]["pileUpUp"]=pileUpUp
+				elif PileUpDown:
+					pileUpDown = abs(counts[process.label]["val"]-val)
+					counts[process.label]["pileUpDown"]=pileUpDown
 				elif JESDown:
 					jesDown = abs(counts[process.label]["val"]-val)
 					counts[process.label]["jesDown"]=jesDown

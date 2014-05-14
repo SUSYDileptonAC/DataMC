@@ -1,6 +1,6 @@
 #DATA_TREES=../../../sw532v0458/processedTrees/sw532v0460.processed.MergedData.root
 
-TREES=/home/jan/Trees/sw538v0477
+TREES=/user/jschulte/Trees/sw538v0477
 TREES_2011=/home/jan/Trees/2011MC
 AN_PATH = ..//DileptonAN
 AN_TABLES=$(AN_PATH)/tables

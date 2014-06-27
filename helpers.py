@@ -1,4 +1,5 @@
 import ROOT
+import gc
 from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath
 from defs import defineMyColors
 from defs import myColors
@@ -175,7 +176,7 @@ def getFilePathsAndSampleNames(path,Run2011=False):
 
 
 	
-def createHistoFromTree(tree, variable, weight, nBins, firstBin, lastBin, nEvents = -1):
+def createHistoFromTree(tree, variable, weight, nBins, firstBin, lastBin, nEvents = -1,smearDY=False):
 	"""
 	tree: tree to create histo from)
 	variable: variable to plot (must be a branch of the tree)
@@ -193,7 +194,22 @@ def createHistoFromTree(tree, variable, weight, nBins, firstBin, lastBin, nEvent
 	name = "%x"%(randint(0, maxint))
 	result = TH1F(name, "", nBins, firstBin, lastBin)
 	result.Sumw2()
-	tree.Draw("%s>>%s"%(variable, name), weight, "goff", nEvents)
+
+	if smearDY and variable == "met":
+		print weight
+		r = ROOT.TRandom3()
+		tempTree = tree.CopyTree(weight)
+		print weight.split("*(")[0]
+		for ev in tempTree:
+			result.Fill(ev.met*r.Gaus(1.08,0.1),getattr(ev,weight.split("*(")[0]))
+			
+		tempTree.IsA().Destructor(tempTree)
+		#myobject.IsA().Destructor(myobject)	
+			#print getattr(ev,weight.split("*(")[0])
+	else:
+		tree.Draw("%s>>%s"%(variable, name), weight, "goff", nEvents)
+	gc.collect()
+	
 	return result
 
 
@@ -246,10 +262,11 @@ class Process:
 		
 	def createCombinedHistogram(self,lumi,plot,tree1,tree2 = "None",shift = 1.,scalefacTree1=1.,scalefacTree2=1.,TopWeightUp=False,TopWeightDown=False):
 		self.histo = TH1F("","",plot.nBins,plot.firstBin,plot.lastBin)
-		
+		smearDY = False
 		if self.additionalSelection != None:
 			print "Applying additional selection: %s"%self.additionalSelection
-			
+			if self.additionalSelection == "(abs(motherPdgId1) != 15 || abs(motherPdgId2) != 15)":
+				smearDY = True
 
 			if "weightBlockBUp" in plot.cuts: 		
 				cut = plot.cuts.replace("weightBlockBUp*(","weightBlockBUp*(%s &&"%self.additionalSelection)
@@ -283,7 +300,7 @@ class Process:
 			from defs import mainConfig
 			for name, tree in tree1.iteritems(): 
 				if name == sample:
-					
+					#print name
 					if mainConfig.doTopReweighting and "TT" in name:
 						#~ tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.148-0.00129*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						
@@ -294,7 +311,8 @@ class Process:
 						else:	
 							tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 					else:
-						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)				
+						print name
+						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents,smearDY)				
 		#~ 
 					#~ print "-------------------------------------"
 					#~ print "process: %s"%name
@@ -324,7 +342,7 @@ class Process:
 							else:	
 								tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						else:
-							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents,smearDY)
 						
 
 						tempHist.Scale((lumi*self.xsecs[index]*scalefacTree2/self.nEvents[index]))

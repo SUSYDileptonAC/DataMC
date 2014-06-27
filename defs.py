@@ -9,16 +9,16 @@ class Constant:
 class Constants:
 	class Trigger:
 		class EffEE(Constant):
-			val = 1.0
+			val = 0.972
 			err = 0.95 * 0.05
 		class EffEMu(Constant):
-			val = 1.0
+			val = 0.927
 			err = 0.05*0.94
 			#~ val = 0.95
 			#~ err = 0.5*(0.918+0.883) * 0.05
 
 		class EffMuMu(Constant):
-			val = 1.0
+			val = 0.969
 			err = 0.95*0.05
 
 	class Pt2010:
@@ -102,7 +102,7 @@ class runRanges:
 		label = "2011"
 		
 	#~ runs = [RunAB,RunC,Run92,All]
-	runs = [BlockA,BlockB,Full2012]
+	runs = [Full2012]
 		
 
 		
@@ -1100,8 +1100,8 @@ class thePlots:
 
 
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [mllPlots.mllPlotHighMass]
-
+	#plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
+	plots = [METPlots.metPlot]
 	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
@@ -1138,14 +1138,30 @@ class thePlots:
 	pasPlotsSFvsOFLowMET = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptllPlots.ptllPlot,ptllPlots.ptllPlotLowMass,ptllPlots.ptllPlotHighMass,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,deltaRPlots.deltaRPlot,deltaRPlots.deltaRPlotLowMass,deltaRPlots.deltaRPlotHighMass]
 	
 class Signals:
-	class SUSY1:
-		subprocesses = ["SUSY_CMSSM_4610_202_Summer12"]
-		label 		 = "CMSSM 4610/202"
+	class SimplifiedModel_mB_350_mn2_250_mn1_200:
+		subprocesses = ["SUSY_SimplifiedModel_BR10_mb_350_mn2_250_mn1_200_Summer12_FullSim"]
+		label 		 = "Signal"
+		fillcolor    = ROOT.kWhite
+		linecolor    = ROOT.kRed
+		uncertainty	 = 0.
+		scaleFac     = 1.
+		additionalSelection = None 
+	class SimplifiedModel_mB_500_mn2_400_mn1_200:
+		subprocesses = ["SUSY_SimplifiedModel_BR10_mb_500_mn2_400_mn1_200_Summer12_FullSim"]
+		label 		 = "Signal"
 		fillcolor    = ROOT.kWhite
 		linecolor    = ROOT.kRed
 		uncertainty	 = 0.
 		scaleFac     = 1.
 		additionalSelection = None
+	class SimplifiedModel_mB_400_mn2_400_mn1_160:
+		subprocesses = ["SUSY_SimplifiedModel_BR50_mb_400_mn2_160_mn1_90_Summer12_FastSim"]
+		label 		 = "Signal"
+		fillcolor    = ROOT.kWhite
+		linecolor    = ROOT.kRed
+		uncertainty	 = 0.
+		scaleFac     = 1.
+		additionalSelection = None				
 	class SUSY2:
 		subprocesses = ["SUSY_CMSSM_4500_188_Summer12"]
 		label 		 = "CMSSM 4500/188"

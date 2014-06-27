@@ -1,4 +1,7 @@
 def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run201153X=False):
+	import gc
+	gc.enable()	
+	
 	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath
 	import ratios
 	from defs import Backgrounds
@@ -49,6 +52,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		SingleTop = Process(Backgrounds2011.SingleTop.subprocesses,eventCounts,Backgrounds2011.SingleTop.label,Backgrounds2011.SingleTop.fillcolor,Backgrounds2011.SingleTop.linecolor,Backgrounds2011.SingleTop.uncertainty,1,Run2011=True)			
 	else:
 		eventCounts = totalNumberOfGeneratedEvents(path)	
+		print eventCounts
 		TTJets = Process(Backgrounds.TTJets.subprocesses,eventCounts,Backgrounds.TTJets.label,Backgrounds.TTJets.fillcolor,Backgrounds.TTJets.linecolor,Backgrounds.TTJets.uncertainty,1)	
 		TT = Process(Backgrounds.TT.subprocesses,eventCounts,Backgrounds.TT.label,Backgrounds.TT.fillcolor,Backgrounds.TT.linecolor,Backgrounds.TT.uncertainty,1)	
 		TTJets_SC = Process(Backgrounds.TTJets_SpinCorrelations.subprocesses,eventCounts,Backgrounds.TTJets_SpinCorrelations.label,Backgrounds.TTJets_SpinCorrelations.fillcolor,Backgrounds.TTJets_SpinCorrelations.linecolor,Backgrounds.TTJets_SpinCorrelations.uncertainty,1)	
@@ -59,14 +63,14 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		DYTauTau = Process(Backgrounds.DrellYanTauTau.subprocesses,eventCounts,Backgrounds.DrellYanTauTau.label,Backgrounds.DrellYanTauTau.fillcolor,Backgrounds.DrellYanTauTau.linecolor,Backgrounds.DrellYanTauTau.uncertainty,1,additionalSelection=Backgrounds.DrellYanTauTau.additionalSelection)	
 		SingleTop = Process(Backgrounds.SingleTop.subprocesses,eventCounts,Backgrounds.SingleTop.label,Backgrounds.SingleTop.fillcolor,Backgrounds.SingleTop.linecolor,Backgrounds.SingleTop.uncertainty,1)	
 
-	#~ Signal1 = Process(Signals.SUSY1.subprocesses,eventCounts,Signals.SUSY1.label,Signals.SUSY1.fillcolor,Signals.SUSY1.linecolor,Signals.SUSY1.uncertainty,1)
+	Signal1 = Process(Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.subprocesses,eventCounts,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.label,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.fillcolor,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.linecolor,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.uncertainty,1)
 	#~ Signal2 = Process(Signals.SUSY2.subprocesses,eventCounts,Signals.SUSY2.label,Signals.SUSY2.fillcolor,Signals.SUSY2.linecolor,Signals.SUSY2.uncertainty,1)	
 	#~ Signal3 = Process(Signals.SUSY3.subprocesses,eventCounts,Signals.SUSY3.label,Signals.SUSY3.fillcolor,Signals.SUSY3.linecolor,Signals.SUSY3.uncertainty,1)	
 	#~ Signal4 = Process(Signals.SUSY4.subprocesses,eventCounts,Signals.SUSY4.label,Signals.SUSY4.fillcolor,Signals.SUSY4.linecolor,Signals.SUSY4.uncertainty,1)	
 	#~ Signal5 = Process(Signals.SUSY5.subprocesses,eventCounts,Signals.SUSY5.label,Signals.SUSY5.fillcolor,Signals.SUSY5.linecolor,Signals.SUSY5.uncertainty,1)	
 	#~ signals = [Signal1]
 	#~ signals = [Signal1,Signal2,Signal3,Signal4,Signal5]
-	signals = []
+	signals = [Signal1]
 
 	legend = TLegend(0.7, 0.55, 0.95, 0.95)
 	legend.SetFillStyle(0)
@@ -119,7 +123,11 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 
 	
 	if mainConfig.plotSignal:
+		processesWithSignal = []
+		for process in processes:
+			processesWithSignal.append(process)
 		for Signal in signals:
+			processesWithSignal.append(Signal)
 			temphist = ROOT.TH1F()
 			temphist.SetFillColor(Signal.theColor)
 			temphist.SetLineColor(Signal.theLineColor)
@@ -157,7 +165,6 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	chi2Label.SetNDC(True)
 	hCanvas.SetLogy()
 	from defs import Constants
-
 
 	if mainConfig.useVectorTrees:
 		treeEE = readVectorTrees(path, "EE")
@@ -284,11 +291,13 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		else:
 			pickleName=plot.filename%("_"+run.label+"_"+dilepton)		
 		
+		
+		
+		
 		counts = {}
 		import pickle
 		#~ counts[pickleName] = {}
-		print scaleTree1, scaleTree2
-		stack = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
+		
 		if Run2011:
 
 			datahist = getDataHist(plot,tree1,tree2,Run2011=True)
@@ -303,8 +312,17 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			else :
 				datahist = getDataHist(plot,tree1,tree2)	
 		datahist.GetXaxis().SetTitle(plot.xaxis) 
-		datahist.GetYaxis().SetTitle(plot.yaxis)
+		datahist.GetYaxis().SetTitle(plot.yaxis)		
 		
+		
+		print scaleTree1, scaleTree2
+		stack = TheStack(processes,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
+		#if mainConfig.plotSignal:
+			#signalCounts = {}
+			#signalStack = TheStack(processesWithSignal,lumi,plot,tree1MC,tree2MC,1.0,scaleTree1,scaleTree2,saveIntegrals=False,counts=signalCounts)
+
+	
+				
 		errIntMC = ROOT.Double()
 		intMC = stack.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 				
@@ -408,9 +426,6 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		pickle.dump(counts, outFilePkl)
 		outFilePkl.close()	
 	
-		drawStack.theStack.Draw("samehist")							
-		drawStack.theStack.GetXaxis().SetTitle(plot.xaxis) 
-		drawStack.theStack.GetYaxis().SetTitle(plot.yaxis)
 		if mainConfig.plotSignal:
 			signalhists = []
 			for Signal in signals:
@@ -419,7 +434,13 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				signalhist.Add(stack.theHistogram)
 				signalhist.SetMinimum(0.1)
 				signalhist.Draw("samehist")
-				signalhists.append(signalhist)
+				signalhists.append(signalhist)	
+	
+	
+		drawStack.theStack.Draw("samehist")							
+		drawStack.theStack.GetXaxis().SetTitle(plot.xaxis) 
+		drawStack.theStack.GetYaxis().SetTitle(plot.yaxis)
+
 				
 		
 			

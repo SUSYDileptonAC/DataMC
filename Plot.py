@@ -42,7 +42,7 @@ def main():
 	#~ path = "/media/data/DATA/sw532v0470/"
 	path = argv[1]
 	if mainConfig.useTriggerEmulation:
-		path = "/media/data/DATA/TriggerTrees/"
+		path = path+"TriggerTrees"
 	if mainConfig.useVectorTrees:
 		path = "/media/data/DATA/VectorTrees"
 	

@@ -81,6 +81,7 @@ def totalNumberOfGeneratedEvents(path,Run2011=False):
 	returns dict samples names -> number of simulated events in source sample
 	        (note these include events without EMu EMu EMu signature, too )
 	"""
+	print path
 	from ROOT import TFile
 	result = {}
 	#~ print path

@@ -92,9 +92,9 @@ def totalNumberOfGeneratedEvents(path,Run2011=False):
 			result[sampleName] = rootFile.FindObjectAny("analysis paths").GetBinContent(1)
 	else:
 		for sampleName, filePath in getFilePathsAndSampleNames(path).iteritems():
-			#~ print filePath
-			rootFile = TFile(filePath, "read")
-			result[sampleName] = rootFile.FindObjectAny("analysis paths").GetBinContent(1)				
+			if not "Aachen" in filePath:
+				rootFile = TFile(filePath, "read")
+				result[sampleName] = rootFile.FindObjectAny("analysis paths").GetBinContent(1)				
 	return result
 	
 def readTrees(path, dileptonCombination,Run2011=False):
@@ -210,7 +210,6 @@ def createHistoFromTree(tree, variable, weight, nBins, firstBin, lastBin, nEvent
 	else:
 		tree.Draw("%s>>%s"%(variable, name), weight, "goff", nEvents)
 	gc.collect()
-	
 	return result
 
 
@@ -261,7 +260,7 @@ class Process:
 			self.nEvents.append(Counts[sample])
 
 		
-	def createCombinedHistogram(self,lumi,plot,tree1,tree2 = "None",shift = 1.,scalefacTree1=1.,scalefacTree2=1.,TopWeightUp=False,TopWeightDown=False):
+	def createCombinedHistogram(self,lumi,plot,tree1,tree2 = "None",shift = 1.,scalefacTree1=1.,scalefacTree2=1.,TopWeightUp=False,TopWeightDown=False,signal=False):
 		self.histo = TH1F("","",plot.nBins,plot.firstBin,plot.lastBin)
 		smearDY = False
 		if self.additionalSelection != None:
@@ -296,6 +295,21 @@ class Process:
 		#~ else:
 		weightNorm = 1./0.99
 		
+		if signal:
+
+
+
+			MultiQuarkScaleFactor = "((nGenSUSYLeptons == 0 && nGenSUSYNeutrinos == 0) * 9 * 0.4887)"
+			NeutrinoQuarkScaleFactor = "((nGenSUSYLeptons == 0 && nGenSUSYNeutrinos == 2) * 9./2. * 0.2796)"
+			MultiNeutrinoScaleFactor = "((nGenSUSYLeptons == 0 && nGenSUSYNeutrinos == 4) * 9 * 0.04)"
+			DileptonNeutrinoScaleFactor = "((nGenSUSYLeptons == 2 && nGenSUSYNeutrinos == 2) * 9./2. * 0.0404)"
+			DileptonQuarkScaleFactor = "((nGenSUSYLeptons == 2 && nGenSUSYNeutrinos == 0) * 9./2. * 0.1411)"
+			MultileptonScaleFactor = "((nGenSUSYLeptons == 4)*9*0.0102)"
+			
+			signalWeight = "(%s+%s+%s+%s+%s+%s)*sbottomWeight"%(MultiQuarkScaleFactor,NeutrinoQuarkScaleFactor,MultiNeutrinoScaleFactor,DileptonNeutrinoScaleFactor,DileptonQuarkScaleFactor,MultileptonScaleFactor)
+			
+			cut = cut+"*"+signalWeight
+		
 		#~ print cut			
 		for index, sample in enumerate(self.samples):
 			from defs import mainConfig
@@ -311,6 +325,8 @@ class Process:
 							tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
 						else:	
 							tempHist = createHistoFromTree(tree, plot.variable , "%f*sqrt(exp(0.156-0.00137*genPtTop1)*exp(0.148-0.00129*genPtTop2))*"%weightNorm+cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents)
+					
+					
 					else:
 						print name
 						tempHist = createHistoFromTree(tree, plot.variable , cut , plot.nBins, plot.firstBin, plot.lastBin, nEvents,smearDY)				
@@ -323,7 +339,7 @@ class Process:
 					#~ print "cross section %f"%self.xsecs[index]
 					#~ print "number of events in sample: %f"%self.nEvents[index]
 					#~ print "scale factor Data/MC: %f"%scalefacTree1
-					#~ print "combined scale factor: %f"%(lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index])
+					#print "combined scale factor: %f"%(lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index])
 					tempHist.Scale((lumi*scalefacTree1*self.xsecs[index]/self.nEvents[index]))
 					#~ print "scaled number in signal region: %f"%tempHist.Integral()
 					self.histo.Add(tempHist.Clone())

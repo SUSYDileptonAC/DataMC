@@ -17,9 +17,10 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	
 	from helpers import *	
 	import math
-	
-	hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
-	
+	if mainConfig.forPAS:
+		hCanvas = TCanvas("hCanvas", "Distribution", 600,800)
+	else:
+		hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
 	if mainConfig.plotRatio:
 		plotPad = ROOT.TPad("plotPad","plotPad",0,0.3,1,1)
 		ratioPad = ROOT.TPad("ratioPad","ratioPad",0,0.,1,0.3)
@@ -40,6 +41,8 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 
 
 
+	sfHistETH = [0.0, 58.0, 60.0, 74.0, 76.0, 89.0, 77.0, 98.0, 115.0, 111.0, 102.0, 100.0, 117.0, 104.0, 111.0, 176.0, 100.0, 91.0, 64.0, 72.0, 65.0, 61.0, 77.0, 54.0, 45.0, 40.0, 40.0, 50.0, 28.0, 31.0, 30.0, 27.0, 27.0, 21.0, 18.0, 18.0, 22.0, 27.0, 16.0, 19.0, 12.0, 13.0, 8.0, 7.0, 7.0, 6.0, 11.0, 7.0, 9.0, 5.0, 4.0, 9.0, 6.0, 5.0, 2.0, 5.0, 4.0, 1.0]
+	ofHistETH = [0.0, 43.0, 50.0, 71.0, 66.0, 75.0, 66.0, 83.0, 81.0, 88.0, 98.0, 95.0, 92.0, 80.0, 94.0, 95.0, 77.0, 86.0, 75.0, 70.0, 62.0, 65.0, 57.0, 42.0, 39.0, 34.0, 39.0, 33.0, 36.0, 30.0, 26.0, 25.0, 20.0, 24.0, 21.0, 22.0, 19.0, 15.0, 19.0, 7.0, 8.0, 13.0, 10.0, 11.0, 12.0, 14.0, 8.0, 7.0, 4.0, 9.0, 7.0, 7.0, 7.0, 5.0, 8.0, 2.0, 2.0, 3.0]
 	
 
 	
@@ -63,28 +66,42 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		DYTauTau = Process(Backgrounds.DrellYanTauTau.subprocesses,eventCounts,Backgrounds.DrellYanTauTau.label,Backgrounds.DrellYanTauTau.fillcolor,Backgrounds.DrellYanTauTau.linecolor,Backgrounds.DrellYanTauTau.uncertainty,1,additionalSelection=Backgrounds.DrellYanTauTau.additionalSelection)	
 		SingleTop = Process(Backgrounds.SingleTop.subprocesses,eventCounts,Backgrounds.SingleTop.label,Backgrounds.SingleTop.fillcolor,Backgrounds.SingleTop.linecolor,Backgrounds.SingleTop.uncertainty,1)	
 
-	Signal1 = Process(Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.subprocesses,eventCounts,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.label,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.fillcolor,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.linecolor,Signals.SimplifiedModel_mB_400_mn2_400_mn1_160.uncertainty,1)
+	Signal1 = Process(Signals.SimplifiedModel_mB_225_mn2_150_mn1_80.subprocesses,eventCounts,Signals.SimplifiedModel_mB_225_mn2_150_mn1_80.label,Signals.SimplifiedModel_mB_225_mn2_150_mn1_80.fillcolor,Signals.SimplifiedModel_mB_225_mn2_150_mn1_80.linecolor,Signals.SimplifiedModel_mB_225_mn2_150_mn1_80.uncertainty,1)
+	Signal2 = Process(Signals.SimplifiedModel_mB_350_mn2_275_mn1_205.subprocesses,eventCounts,Signals.SimplifiedModel_mB_350_mn2_275_mn1_205.label,Signals.SimplifiedModel_mB_350_mn2_275_mn1_205.fillcolor,Signals.SimplifiedModel_mB_350_mn2_275_mn1_205.linecolor,Signals.SimplifiedModel_mB_350_mn2_275_mn1_205.uncertainty,1)
 	#~ Signal2 = Process(Signals.SUSY2.subprocesses,eventCounts,Signals.SUSY2.label,Signals.SUSY2.fillcolor,Signals.SUSY2.linecolor,Signals.SUSY2.uncertainty,1)	
-	#~ Signal3 = Process(Signals.SUSY3.subprocesses,eventCounts,Signals.SUSY3.label,Signals.SUSY3.fillcolor,Signals.SUSY3.linecolor,Signals.SUSY3.uncertainty,1)	
+	Signal3 = Process(Signals.SimplifiedModel_mB_400_mn2_150_mn1_80.subprocesses,eventCounts,Signals.SimplifiedModel_mB_400_mn2_150_mn1_80.label,Signals.SimplifiedModel_mB_400_mn2_150_mn1_80.fillcolor,Signals.SimplifiedModel_mB_400_mn2_150_mn1_80.linecolor,Signals.SimplifiedModel_mB_400_mn2_150_mn1_80.uncertainty,1)	
 	#~ Signal4 = Process(Signals.SUSY4.subprocesses,eventCounts,Signals.SUSY4.label,Signals.SUSY4.fillcolor,Signals.SUSY4.linecolor,Signals.SUSY4.uncertainty,1)	
 	#~ Signal5 = Process(Signals.SUSY5.subprocesses,eventCounts,Signals.SUSY5.label,Signals.SUSY5.fillcolor,Signals.SUSY5.linecolor,Signals.SUSY5.uncertainty,1)	
 	#~ signals = [Signal1]
 	#~ signals = [Signal1,Signal2,Signal3,Signal4,Signal5]
-	signals = [Signal1]
+	signals = [Signal1,Signal2,Signal3]
 
-	legend = TLegend(0.7, 0.55, 0.95, 0.95)
+	legend = TLegend(0.45, 0.4, 0.98, 0.95)
 	legend.SetFillStyle(0)
-	legend.SetBorderSize(1)
+	legend.SetBorderSize(0)
+	legend.SetTextFont(42)
 	legendEta = TLegend(0.15, 0.75, 0.7, 0.95)
 	legendEta.SetFillStyle(0)
-	legendEta.SetBorderSize(1)
+	legendEta.SetBorderSize(0)
+	legendEta.SetTextFont(42)
 
 	#~ legend, legendEta = prepareLegends()
 
 	latex = ROOT.TLatex()
+	latex.SetTextFont(42)
+	latex.SetTextAlign(31)
 	latex.SetTextSize(0.04)
 	latex.SetNDC(True)
-
+	latexCMS = ROOT.TLatex()
+	latexCMS.SetTextFont(61)
+	#latexCMS.SetTextAlign(31)
+	latexCMS.SetTextSize(0.06)
+	latexCMS.SetNDC(True)
+	latexCMSExtra = ROOT.TLatex()
+	latexCMSExtra.SetTextFont(52)
+	#latexCMSExtra.SetTextAlign(31)
+	latexCMSExtra.SetTextSize(0.045)
+	latexCMSExtra.SetNDC(True)	
 	legendHists = []
 	
 
@@ -118,7 +135,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
 		legendHists.append(temphist2.Clone)
-		legend.AddEntry(temphist2,"JEC/Pileup/Top Reweighting Uncert.","f")	
+		legend.AddEntry(temphist2,"JEC & Pileup Uncert.","f")	
 
 
 	
@@ -145,7 +162,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 	
 	intlumi = ROOT.TLatex()
 	intlumi.SetTextAlign(12)
-	intlumi.SetTextSize(0.03)
+	intlumi.SetTextSize(0.045)
 	intlumi.SetNDC(True)
 	intlumi2 = ROOT.TLatex()
 	intlumi2.SetTextAlign(12)
@@ -340,7 +357,20 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 				yMax = yMax*1000
 			else:
 				yMax = yMax*1.5
-
+				if mainConfig.forPAS:
+					
+					
+					if "Forward" in region:
+						yMax = 90
+					else:
+						yMax = 290
+						if dilepton == "SF":
+							for i in range(0,plot.nBins+1):
+								print "changing data to EHT histogram"
+								datahist.SetBinContent(i,sfHistETH[i])
+						elif dilepton == "OF":
+							for i in range(0,plot.nBins+1):
+								datahist.SetBinContent(i,ofHistETH[i])							
 		else: yMax = plot.yMax
 			
 		#~ yMax = 200
@@ -429,7 +459,7 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		if mainConfig.plotSignal:
 			signalhists = []
 			for Signal in signals:
-				signalhist = Signal.createCombinedHistogram(lumi,plot,tree1,tree2)
+				signalhist = Signal.createCombinedHistogram(lumi,plot,tree1,tree2,signal=True)
 				signalhist.SetLineWidth(2)
 				signalhist.Add(stack.theHistogram)
 				signalhist.SetMinimum(0.1)
@@ -453,9 +483,9 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			dileptonLabel = "ee"
 		if dilepton == "MuMu":
 			dileptonLabel = "#mu#mu"
-		if mainConfig.personalWork:
+		#if mainConfig.personalWork:
 							
-			intlumi2.DrawLatex(0.2,0.9,"%s"%dileptonLabel)
+		#intlumi2.DrawLatex(0.2,0.8,"%s"%dileptonLabel)
 
 		datahist.SetMinimum(0.1)
 		if mainConfig.plotData:
@@ -482,16 +512,17 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		else:
 			legend.Draw()
 			if Run2011:
-				intlumi.DrawLatex(0.65,0.45,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")
-				intlumi.DrawLatex(0.65,0.35,"Data and MC in 4_2_X")					
+				intlumi.DrawLatex(0.5,0.45,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")
+				intlumi.DrawLatex(0.5,0.35,"Data and MC in 4_2_X")					
 			elif Run201153X:
-				intlumi.DrawLatex(0.65,0.45,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")
-				intlumi.DrawLatex(0.65,0.35,"Data in 5_3_X, MC in 4_2_X")
+				intlumi.DrawLatex(0.5,0.45,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")
+				intlumi.DrawLatex(0.5,0.35,"Data in 5_3_X, MC in 4_2_X")
 					
 			else:
-				intlumi.DrawLatex(0.63,0.45,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")	
+				#intlumi.DrawLatex(0.625,0.335,"#splitline{"+plot.label+" "+dileptonLabel+"}{#splitline{"+plot.label2+"}{"+plot.label3+"}}")	
+				intlumi.DrawLatex(0.525,0.335,"#splitline{"+plot.label2+"}{"+dileptonLabel+"}")	
 
-
+		
 		#~ if (plot.variable == "p4.Pt()" or plot.variable == "met" or plot.variable == "type1Met" or plot.variable == "tcMet" or plot.variable == "caloMet" or plot.variable == "mht"):
 			#~ from math import sqrt
 			#~ lowerBound = 130
@@ -592,15 +623,32 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 		
 		if mainConfig.personalWork:
 			if Run2011 or Run201153X:	
-				latex.DrawLatex(0.15, 0.96, "CMS Private Work  #sqrt{s} = 7 TeV,     #scale[0.6]{#int}Ldt = 5.0 fb^{-1}")
+				latex.DrawLatex(0.98, 0.96, "CMS Private Work  #sqrt{s} = 7 TeV,     #scale[0.6]{#int}Ldt = 5.0 fb^{-1}")
 			else: 
-				latex.DrawLatex(0.15, 0.96, "CMS Private Work  #sqrt{s} = 8 TeV,     #scale[0.6]{#int}Ldt = %s fb^{-1}"%(printLumi,))
+				latex.DrawLatex(0.98, 0.96, "CMS Private Work  #sqrt{s} = 8 TeV,     #scale[0.6]{#int}Ldt = %s fb^{-1}"%(printLumi,))
 		else:
 			if Run2011 or Run201153X:	
-				latex.DrawLatex(0.15, 0.96, "CMS Preliminary  #sqrt{s} = 7 TeV,     #scale[0.6]{#int}Ldt = 5.0 fb^{-1}")
+				latex.DrawLatex(0.98, 0.96, "CMS Preliminary  #sqrt{s} = 7 TeV,     #scale[0.6]{#int}Ldt = 5.0 fb^{-1}")
 			else: 
-				latex.DrawLatex(0.15, 0.96, "CMS Preliminary  #sqrt{s} = 8 TeV,     #scale[0.6]{#int}Ldt = %s fb^{-1}"%(printLumi,))
-
+				latex.DrawLatex(0.98, 0.96, "%s fb^{-1} (8 TeV)"%(printLumi,))
+		cmsExtra = ""
+		if mainConfig.personalWork:
+			cmsExtra = "Private Work"
+		elif not mainConfig.plotData:
+			cmsExtra = "Simulation"	
+		elif mainConfig.preliminary:
+			cmsExtra = "Preliminary"
+		elif mainConfig.forTWIKI:
+			cmsExtra = "Unpublished"		
+		if mainConfig.forPAS:
+			latexCMS.DrawLatex(0.15,0.955,"CMS")
+			latexCMSExtra.DrawLatex(0.26,0.955,"%s"%(cmsExtra))				
+				
+		else:
+			latexCMS.DrawLatex(0.19,0.89,"CMS")
+			latexCMSExtra.DrawLatex(0.19,0.85,"%s"%(cmsExtra))
+		
+		
 		if mainConfig.produceReweighting:
 			weights = []
 			sumOfEntries = 0
@@ -640,9 +688,20 @@ def plotDataMC(path,plot,dilepton,logScale,region="Inclusive",Run2011=False,Run2
 			ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 			if mainConfig.plotSignal:
 				signalRatios = []
+				
+					
+				legendRatio = TLegend(0.15, 0.72, 0.4, 0.92)
+				legendRatio.SetFillStyle(0)
+				legendRatio.SetBorderSize(0)
+				legendRatio.SetTextFont(42)
+				backgroundHist = ROOT.TH1F()
+				legendRatio.AddEntry(backgroundHist,"Data / Background Only","p")
 				for index, signalhist in enumerate(signalhists):
 					signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
-					signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)				
+					signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
+					signalhist.SetMarkerColor(signalhist.GetLineColor())
+					legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
+				legendRatio.Draw("same")					
 
 		ROOT.gPad.RedrawAxis()
 		plotPad.RedrawAxis()

@@ -372,7 +372,7 @@ def main():
 					dileptons = ["SF","EE","MuMu"]
 				else:
 					dileptons = ["SF","OF","EE","MuMu"]
-
+					#dileptons = ["OF"]
 					#dileptons = ["SF","OF"]
 				for dilepton in dileptons:
 					if argv[2] == "CompareTTbar":

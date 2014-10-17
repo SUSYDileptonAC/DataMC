@@ -1101,7 +1101,7 @@ class thePlots:
 
 	#~ plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#plots = [nJetsPlots.nJetsPlot,nJetsPlots.nJetsPlotLowMass,nJetsPlots.nJetsPlotHighMass,nBJetsPlots.nBJetsPlot,nBJetsPlots.nBJetsPlotLowMass,nBJetsPlots.nBJetsPlotHighMass,mllPlots.mllPlot,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
-	plots = [METPlots.metPlot]
+	plots = [mllPlots.mllPlot]
 	#~ plots = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 	#~ plots = [mllPlots.mllPlotHighMass,mllPlots.mllPlotLowMass]#,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptPlots.leadingPtPlot,ptPlots.leadingPtPlotLowMass,ptPlots.leadingPtPlotHighMass,ptPlots.trailingPtPlot,ptPlots.trailingPtPlotLowMass,ptPlots.trailingPtPlotHighMass]
 
@@ -1138,6 +1138,32 @@ class thePlots:
 	pasPlotsSFvsOFLowMET = [METPlots.metPlot,METPlots.metPlotLowMass,METPlots.metPlotHighMass,ptllPlots.ptllPlot,ptllPlots.ptllPlotLowMass,ptllPlots.ptllPlotHighMass,htPlots.htPlot,htPlots.htPlotLowMass,htPlots.htPlotHighMass,deltaRPlots.deltaRPlot,deltaRPlots.deltaRPlotLowMass,deltaRPlots.deltaRPlotHighMass]
 	
 class Signals:
+	
+	class SimplifiedModel_mB_225_mn2_150_mn1_80:
+		subprocesses = ["SUSY_Simplified_Model_Madgraph_FastSim_T6bblledge_225_150_80_8TeV"]
+		label 		 = "m_{#tilde{b}} = 225 GeV m_{#tilde{#chi_{0}^{2}}} = 150 GeV"
+		fillcolor    = ROOT.kWhite
+		linecolor    = ROOT.kRed-7
+		uncertainty	 = 0.
+		scaleFac     = 1.
+		additionalSelection = None 	
+	class SimplifiedModel_mB_350_mn2_275_mn1_205:
+		subprocesses = ["SUSY_Simplified_Model_Madgraph_FastSim_T6bblledge_350_275_205_8TeV"]
+		label 		 = "m_{#tilde{b}} = 350 GeV m_{#tilde{#chi_{0}^{2}}} = 275 GeV"
+		fillcolor    = ROOT.kWhite
+		linecolor    = ROOT.kRed
+		uncertainty	 = 0.
+		scaleFac     = 1.
+		additionalSelection = None 
+	class SimplifiedModel_mB_400_mn2_150_mn1_80:
+		subprocesses = ["SUSY_Simplified_Model_Madgraph_FastSim_T6bblledge_400_150_80_8TeV"]
+		label 		 = "m_{#tilde{b}} = 400 GeV m_{#tilde{#chi_{0}^{2}}} = 150 GeV"
+		fillcolor    = ROOT.kWhite
+		linecolor    = ROOT.kRed+2
+		uncertainty	 = 0.
+		scaleFac     = 1.
+		additionalSelection = None 			
+			
 	class SimplifiedModel_mB_350_mn2_250_mn1_200:
 		subprocesses = ["SUSY_SimplifiedModel_BR10_mb_350_mn2_250_mn1_200_Summer12_FullSim"]
 		label 		 = "Signal"
@@ -1207,7 +1233,7 @@ class Backgrounds:
 		additionalSelection = None
 	class TTJets_SpinCorrelations:
 		subprocesses = ["TTJets_MGDecays_madgraph_Summer12","TTJets_MGDecays_SemiLept_madgraph_Summer12","TTJets_MGDecays_FullHad_madgraph_Summer12"]
-		label = "Madgraph t#bar{t} w/ SC"
+		label = "Madgraph t#bar{t}"
 		fillcolor = 855
 		linecolor = ROOT.kBlack
 		uncertainty = 0.07
@@ -1321,7 +1347,7 @@ class mainConfig:
 	compareTTbar = False
 	normalizeToData = False
 	plotRatio = True
-	plotSignal = False
+	plotSignal = True
 	compare2011 = False
 	compareSFvsOF = True
 	compareEEvsMuMu = False
@@ -1332,9 +1358,11 @@ class mainConfig:
 	produceReweighting = True
 	plot2011 = False
 	plot53X = False
-	personalWork = True
+	personalWork = False
 	doTopReweighting = True
-	
+	preliminary = True
+	forPAS = True
+	forTWIKI = False
 # Color definition
 #==================
 defineMyColors = {

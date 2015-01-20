@@ -1,409 +1,71 @@
 #!/usr/bin/env python
 
+import sys
+sys.path.append('cfg/')
+from frameworkStructure import pathes
+sys.path.append(pathes.basePath)
+
 import ROOT
 import numpy as np
 
-from ConfigParser import ConfigParser
-from defs import Region
-from defs import Regions
-from defs import Plot
+
 #~ from defs import ThePlots
 attic = []
 
 from ROOT import TMath
 
-	
+import argparse	
+import dataMCConfig
+import plotDataMC
 	
 def main():
-	
-	from sys import argv
-	
-	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath
-	import ratios
-	from defs import Backgrounds
-	from defs import Backgrounds2011
-	from defs import Signals
-	from defs import mainConfig
-	from defs import defineMyColors
-	from defs import myColors
-	from defs import Plot	
-	from defs import getRegion
-	
-	from setTDRStyle import setTDRStyle
-	
-	from helpers import *
-	from plotDataMC import plotDataMC		
-	from plotMCOverlay import plotMCOverlay		
-	from compareTTbar import compareTTbar		
-	from SFvsOF import SFvsOF		
-	from compareReco2011 import compareReco2011
-	from plotRares import plotRares
-	from defs import Region, runRanges, thePlots		
-	#~ path = "/media/data/DATA/sw532v0470/"
-	path = argv[1]
-	if mainConfig.useTriggerEmulation:
-		path = path+"TriggerTrees"
-	if mainConfig.useVectorTrees:
-		path = "/media/data/DATA/VectorTrees"
-	
-	if mainConfig.plot2011:
-		path = "/media/data/DATA/2011MC"
-	print "Using Trees from path:"
-	print path
-	
-	logScale = True
-	
-	if argv[3] == "AN":
 
-		region = getRegion("Region")
-		logScale = region.logY
-		plots = thePlots.generalPlots	
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"SF",logScale,"Inclusive")
-			plotDataMC(path,plot,"OF",logScale,"Inclusive")
-			plotDataMC(path,plot,"EE",logScale,"Inclusive")
-			plotDataMC(path,plot,"MuMu",logScale,"Inclusive")
-			plot.cuts = tempCutString
-			plot.filename = tempFileName
-		region = getRegion("bTagControl")
-		logScale = region.logY	
-		plots = thePlots.anPlotsbTagControl	
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"bTagControl")
-			plotDataMC(path,plot,"OF",logScale,"bTagControl")
-			plot.cuts = tempCutString
-			plot.filename = tempFileName
-		region = getRegion("SignalBarrel")
-		logScale = region.logY
-		plots = thePlots.generalPlots	
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalBarrel")
-			plotDataMC(path,plot,"OF",logScale,"SignalBarrel")
-			plotDataMC(path,plot,"EE",logScale,"SignalBarrel")
-			plotDataMC(path,plot,"MuMu",logScale,"SignalBarrel")
-			plot.cuts = tempCutString
-			plot.filename = tempFileName
-
-		region = getRegion("SignalForward")
-		logScale = region.logY
-		plots = thePlots.generalPlots		
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalForward")
-			plotDataMC(path,plot,"OF",logScale,"SignalForward")
-			plotDataMC(path,plot,"EE",logScale,"SignalForward")
-			plotDataMC(path,plot,"MuMu",logScale,"SignalForward")
-			plot.cuts = tempCutString
-			plot.filename = tempFileName
-		region = getRegion("ttBarDileptonSF")
-		logScale = region.logY
-		plots = thePlots.generalPlots
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			plotDataMC(path,plot,"SF",logScale,"ttBarDileptonSF")
-			plotDataMC(path,plot,"EE",logScale,"ttBarDileptonEE")
-			plotDataMC(path,plot,"MuMu",logScale,"ttBarDileptonMuMu")
-			plot.cuts = tempCutString		
-			plot.filename = tempFileName			
-
-		region = getRegion("ttBarDileptonOF")
-		logScale = region.logY
-		plots = thePlots.generalPlots
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"OF",logScale,"ttBarDileptonOF")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		# 
-			
-	if argv[3] == "PAS":
-		region = getRegion("Region")
-		logScale = region.logY
-		
-		plots = thePlots.pasPlotsInclusive
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"SF",logScale,"Inclusive")
-			plotDataMC(path,plot,"OF",logScale,"Inclusive")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		region = getRegion("bTagControl")
-		logScale = region.logY
-		
-		plots = thePlots.pasPlotsbTagControl
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"SF",logScale,"bTagControl")
-			plotDataMC(path,plot,"OF",logScale,"bTagControl")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-			
-		region = getRegion("ttBarDileptonSF")
-		logScale = region.logY
-		plots = thePlots.pasPlotsCompareTTbarHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale)
-			# compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString		
-			plot.filename = tempFileName			
-		
-		plots = thePlots.pasPlotsbTagControl
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"SF",logScale,"ttBarDileptonSF")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-			# 
-		region = getRegion("ttBarDileptonOF")
-		logScale = region.logY
-		
-		plots = thePlots.pasPlotsbTagControl
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()			
-			plotDataMC(path,plot,"OF",logScale,"ttBarDileptonOF")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-			
-		plots = thePlots.pasPlotsCompareTTbarHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale,"ttBarDileptonSF")
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString		
-			plot.filename = tempFileName				
-			
-		region = getRegion("SignalHighMET")
-		logScale = region.logY
-		plots = thePlots.pasPlotsHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalHighMET")
-			plotDataMC(path,plot,"OF",logScale,"SignalHighMET")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = thePlots.pasPlotsCompareTTbarHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale)
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString		
-			plot.filename = tempFileName	
-		plots = thePlots.pasPlotsSFvsOFHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName	
-		region = getRegion("SignalHighMETBarrel")
-		logScale = region.logY
-		plots = thePlots.pasPlotsHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalHighMETBarrel")
-			plotDataMC(path,plot,"OF",logScale,"SignalHighMETBarrel")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = thePlots.pasPlotsCompareTTbarHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale)
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString		
-			plot.filename = tempFileName	
-		plots = thePlots.pasPlotsSFvsOFHighMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName						
-		region = getRegion("SignalLowMET")
-		logScale = region.logY
-		plots = thePlots.pasPlotsLowMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalLowMET")
-			plotDataMC(path,plot,"OF",logScale,"SignalLowMET")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = plots
-		for plot in thePlots.pasPlotsCompareTTbarLowMET:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale)
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = thePlots.pasPlotsSFvsOFLowMET			
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)			
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName	
-		region = getRegion("SignalLowMETFullEta")
-		logScale = region.logY
-		plots = thePlots.pasPlotsLowMET
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)			
-			plot.cleanCuts()				
-			plotDataMC(path,plot,"SF",logScale,"SignalLowMETFullEta")
-			plotDataMC(path,plot,"OF",logScale,"SignalLowMETFullEta")
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = plots
-		for plot in thePlots.pasPlotsCompareTTbarLowMET:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			compareTTbar(path,plot,"SF",logScale)
-			compareTTbar(path,plot,"OF",logScale)
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName
-		plots = thePlots.pasPlotsSFvsOFLowMET			
-		for plot in plots:
-			tempCutString = plot.cuts
-			tempFileName = plot.filename
-			plot.addRegion(region)
-			plot.cleanCuts()
-			SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)			
-			plot.cuts = tempCutString	
-			plot.filename = tempFileName				
-		
-		
+	parser = argparse.ArgumentParser(description='Process some integers.')
 	
-	else:
-		region = getRegion(argv[3])
+	parser.add_argument("-v", "--verbose", action="store_true", dest="verbose", default=False,
+						  help="Verbose mode.")
+	parser.add_argument("-d", "--data", action="store_true", dest="data", default=False,
+						  help="plot data points.")
+	parser.add_argument("-m", "--mc", action="store_true", dest="mc", default=False,
+						  help="plot mc backgrounds.")
+	parser.add_argument("-s", "--selection", dest = "region" , nargs=1, default='Region',
+						  help="selection which to apply.")
+	parser.add_argument("-p", "--plot", dest="plot", nargs=1, default="",
+						  help="plot to plot.")
+	parser.add_argument("-r", "--runRange", dest="runRange", nargs=1, default="",
+						  help="name of run range.")
+	parser.add_argument("-n", "--norm", action="store_true", dest="norm", default=False,
+						  help="normalize to data.")
+	parser.add_argument("-a", "--ratio", dest="ratio", default=False,
+						  help="plot ratio plot")
+	parser.add_argument("-c", "--signal", dest="signals", action="append", default=[],
+						  help="signals to plot.")
+	parser.add_argument("-b", "--backgrounds", dest="backgrounds", action="append", default=[],
+						  help="backgrounds to plot.")
+	parser.add_argument("-e", "--dilepton", dest="dileptons", action="append", default=[],
+						  help="dilepton combinations to plot.")
+	parser.add_argument("-u", "--usetrigger", dest="trigger", default=False,
+						  help="use trigger emulation.")	
+	parser.add_argument("-t", "--topreweighting", dest="top", default=False,
+						  help="use top reweighting.")	
+	parser.add_argument("-w", "--preliminary", dest="preliminary", default=False,
+						  help="plot is preliminary.")	
+	parser.add_argument("-x", "--private", dest="private", default=False,
+						  help="plot is private work.")	
+	parser.add_argument("-f", "--forPAS", dest="forPAS", default=False,
+						  help="plot is for PAS.")	
+	parser.add_argument("-z", "--forTWIKI", dest="forTWIKI", default=False,
+						  help="plot is for TWIKI.")	
+
+	args = parser.parse_args()
+	if len(args.backgrounds) == 0:
+		args.backgrounds = ["Rare","SingleTop","TTJets_SpinCorrelations","Diboson","DrellYanTauTau","DrellYan"]
+	if len(args.dileptons) == 0:
+		args.dileptons = ["SF","OF","EE","MuMu"]
+	print args.backgrounds	
+	for dilepton in args.dileptons:
+		config = dataMCConfig.dataMCConfig(args.plot[0],region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds)
 		
-		if argv[2] == "overlay":
-			print argv[3], argv[4]
-			for plot in thePlots.plots:
-				region2 = getRegion(argv[4])
-				if len(argv) > 5:
-					plot2 = plot.clone(argv[5])
-				plot.addRegion(region)
-				plot2.addRegion(region2)
-				logScale = region.logY
-				plot.cleanCuts()				
-				plot2.cleanCuts()				
-				plots = [plot,plot2]
-				dileptons = ["SF","OF","EE","MuMu"]
-				for dilepton in dileptons:
-					plotMCOverlay(path,plots,dilepton,logScale)
-								
-				
-
-		else:	
-			for plot in thePlots.plots:
-					
-				plot.addRegion(region)
-				logScale = region.logY
-				plot.cleanCuts()
-				if "OF" in argv[3]:
-					dileptons = ["OF"]
-				elif "SF" in argv[3]:
-					dileptons = ["SF","EE","MuMu"]
-				else:
-					dileptons = ["SF","OF","EE","MuMu"]
-					#dileptons = ["OF"]
-					#dileptons = ["SF","OF"]
-				for dilepton in dileptons:
-					if argv[2] == "CompareTTbar":
-						compareTTbar(path,plot,dilepton,logScale)
-						# compareTTbar(path,plot,dilepton,logScale)
-					elif argv[2] == "DataMC":
-						plotDataMC(path,plot,dilepton,logScale,argv[3])
-						# plotDataMC(path,plot,dilepton,logScale,argv[3])
-					elif argv[2] == "DataMC2011":
-						plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
-						# plotDataMC(path,plot,dilepton,logScale,region,Run2011=True)
-					elif argv[2] == "DataMC201153X":
-						plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
-						# plotDataMC(path,plot,dilepton,logScale,region,Run201153X=True)
-					elif argv[2] == "CompareReco2011":
-						compareReco2011(path,plot,dilepton,logScale)
-						# compareReco2011(path,plot,dilepton,logScale)
-					elif argv[2] == "plotRares":
-						plotRares(path,plot,dilepton,logScale)
-						# compareReco2011(path,plot,dilepton,logScale)
-				if argv[2] == "CompareReco2011SFvsOF":
-					compareReco2011(path,plot,"OF",logScale,doSFvsOF=True)
-				elif argv[2] == "SFvsOF":
-					SFvsOF(path,plot,"OF",logScale,compareSFvsOF=True)
-				elif argv[2] == "SFvsOF2011":
-					SFvsOF(path,plot,"OF",logScale,compare2011=True,compareSFvsOF=False)
-				elif argv[2] == "SFvsOFFlavourSeperated":
-					SFvsOF(path,plot,"OF",logScale,compareSFvsOFFlavourSeperated=True,compareSFvsOF=False)
-
-		
-	
-
+		plotDataMC.plotDataMC(config,dilepton)
 	
 main()

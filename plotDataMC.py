@@ -2,7 +2,7 @@ def plotDataMC(mainConfig,dilepton):
 	import gc
 	gc.enable()	
 	
-	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath
+	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT
 	import ratios
 	from defs import Backgrounds
 	from defs import Backgrounds2011
@@ -13,7 +13,7 @@ def plotDataMC(mainConfig,dilepton):
 	from defs import Regions
 	from defs import Plot
 	from setTDRStyle import setTDRStyle
-	
+	gROOT.SetBatch(True)
 	from helpers import *	
 	import math
 	if mainConfig.forPAS:
@@ -50,11 +50,12 @@ def plotDataMC(mainConfig,dilepton):
 	for signal in mainConfig.signals:
 		signals.append(Process(getattr(Signals,signal),eventCounts))
 		
-	legend = TLegend(0.45, 0.4, 0.98, 0.95)
+	legend = TLegend(0.375, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
 	legend.SetBorderSize(0)
 	legend.SetTextFont(42)
-	legendEta = TLegend(0.15, 0.75, 0.7, 0.95)
+	legend.SetNColumns(2)
+	legendEta = TLegend(0.15, 0.75, 0.7, 0.9)
 	legendEta.SetFillStyle(0)
 	legendEta.SetBorderSize(0)
 	legendEta.SetTextFont(42)
@@ -79,8 +80,8 @@ def plotDataMC(mainConfig,dilepton):
 
 	legendHistData = ROOT.TH1F()
 	if mainConfig.plotData:	
-		legend.AddEntry(legendHistData,"Data","p")	
-		legendEta.AddEntry(legendHistData,"Data","p")	
+		legend.AddEntry(legendHistData,"Data","pe")	
+		legendEta.AddEntry(legendHistData,"Data","pe")	
 
 	
 
@@ -98,12 +99,12 @@ def plotDataMC(mainConfig,dilepton):
 		temphist = ROOT.TH1F()
 		temphist.SetFillColor(myColors["MyGreen"])
 		legendHists.append(temphist.Clone)
-		legend.AddEntry(temphist,"Scaling Uncert.","f")	
+		#~ legend.AddEntry(temphist,"Syst. uncert.","f")	
 		temphist2 = ROOT.TH1F()
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
 		legendHists.append(temphist2.Clone)
-		legend.AddEntry(temphist2,"JEC & Pileup Uncert.","f")	
+		#~ legend.AddEntry(temphist2,"JEC & Pileup Uncert.","f")	
 
 
 	
@@ -202,9 +203,8 @@ def plotDataMC(mainConfig,dilepton):
 			return
 	else:
 		tree2 = "None"
-		tree2 = "None"
 		
-	if mainConfig.useTriggerEmulation:
+	if mainConfig.useTriggerEmulation or mainConfig.DontScaleTrig:
 		scaleTree2 = 1.0
 		scaleTree1 = 1.0				
 	
@@ -214,6 +214,8 @@ def plotDataMC(mainConfig,dilepton):
 		pickleName=mainConfig.plot.filename%("_scaled_"+mainConfig.runRange.label+"_"+dilepton)
 	elif mainConfig.useTriggerEmulation:
 		pickleName=mainConfig.plot.filename%("_TriggerEmulation_"+mainConfig.runRange.label+"_"+dilepton)
+	elif mainConfig.DontScaleTrig:
+		pickleName=mainConfig.plot.filename%("_NoTriggerScaling_"+mainConfig.runRange.label+"_"+dilepton)
 	else:
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
@@ -226,8 +228,10 @@ def plotDataMC(mainConfig,dilepton):
 	
 
 	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
-		
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting)
+	#~ print mainConfig.plot.variable
+	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
+	#~ print mainConfig.plot.cuts
+	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert)
 
 			
 	errIntMC = ROOT.Double()
@@ -324,6 +328,8 @@ def plotDataMC(mainConfig,dilepton):
 	
 	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
 	counts["Total Background"]["xSec"]=xSec
+	theoUncert = abs(stack.theHistogramTheoUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
+	counts["Total Background"]["theo"]=theoUncert
 	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
 	pickle.dump(counts, outFilePkl)
 	outFilePkl.close()	
@@ -344,7 +350,7 @@ def plotDataMC(mainConfig,dilepton):
 		
 	dileptonLabel = ""
 	if dilepton == "SF":
-		dileptonLabel = "ee+#mu#mu"
+		dileptonLabel = "ee + #mu#mu"
 	if dilepton == "OF":
 		dileptonLabel = "e#mu"
 	if dilepton == "EE":
@@ -368,11 +374,11 @@ def plotDataMC(mainConfig,dilepton):
 		intlumi.DrawLatex(0.2,0.7,"#splitline{"+mainConfig.plot.label+" "+dileptonLabel+"}{#splitline{"+mainConfig.plot.label2+"}{"+mainConfig.plot.label3+"}}")				
 	else:
 		legend.Draw()
-		intlumi.DrawLatex(0.525,0.335,"#splitline{"+mainConfig.plot.label2+"}{"+dileptonLabel+"}")	
+		intlumi.DrawLatex(0.45,0.575,mainConfig.plot.label2+" "+dileptonLabel)	
 
 
 	
-	latex.DrawLatex(0.98, 0.96, "%s fb^{-1} (8 TeV)"%(mainConfig.runRange.printval,))
+	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (8 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.85
 	cmsExtra = ""
 	if mainConfig.personalWork:
@@ -405,22 +411,28 @@ def plotDataMC(mainConfig,dilepton):
 			plot.cuts=baseCut
 			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
-		ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
-		ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
-		ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["DarkRed"],fillStyle=3002)			
+		ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
+		ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])			
+		ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
 		ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
 		ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
+		ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
+		print drawStack.theHistogramTheoUp.Integral(), drawStack.theHistogramTheoDown.Integral(), drawStack.theHistogram.Integral()
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:
 			signalRatios = []
 			
 				
-			legendRatio = TLegend(0.15, 0.72, 0.4, 0.92)
+			legendRatio = TLegend(0.175, 0.725, 0.65, 0.95)
 			legendRatio.SetFillStyle(0)
 			legendRatio.SetBorderSize(0)
 			legendRatio.SetTextFont(42)
 			backgroundHist = ROOT.TH1F()
-			legendRatio.AddEntry(backgroundHist,"Data / Background Only","p")
+			legendRatio.AddEntry(backgroundHist,"Data / background","pe")
+			temphist = ROOT.TH1F()
+			temphist.SetFillColor(myColors["MyGreen"])
+			legendRatio.AddEntry(temphist,"Syst. uncert.","f")	
+			legendRatio.SetNColumns(2)			
 			for index, signalhist in enumerate(signalhists):
 				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
 				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
@@ -444,6 +456,8 @@ def plotDataMC(mainConfig,dilepton):
 		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)
 	elif mainConfig.useTriggerEmulation:
 		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_TriggerEmulation_"+nameModifier),)
+	elif mainConfig.DontScaleTrig:
+		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_NoTriggerScaling_"+nameModifier),)
 	else:
 		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_"+nameModifier),)
 

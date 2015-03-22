@@ -6,6 +6,7 @@ from frameworkStructure import pathes
 sys.path.append(pathes.basePath)
 
 import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 import numpy as np
 
 

@@ -313,18 +313,19 @@ def plotDataMC(mainConfig,dilepton):
 	pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
 	counts["Total Background"]["pileUpDown"]=pileUpDown				
 	counts["Total Background"]["pileUpUp"]=pileUpUp	
-				
-	errIntMC = ROOT.Double()
-	intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-	errIntMC = ROOT.Double()
-	intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+	
+	if mainConfig.doTopReweighting:			
+		errIntMC = ROOT.Double()
+		intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		errIntMC = ROOT.Double()
+		intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 			
-	valTopWeightUp = float(intMCTopWeightUp)
-	valTopWeightDown = float(intMCTopWeightDown)
-	topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
-	topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
-	counts["Total Background"]["topWeightDown"]=topWeightDown				
-	counts["Total Background"]["topWeightUp"]=topWeightUp				
+		valTopWeightUp = float(intMCTopWeightUp)
+		valTopWeightDown = float(intMCTopWeightDown)
+		topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
+		topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
+		counts["Total Background"]["topWeightDown"]=topWeightDown				
+		counts["Total Background"]["topWeightUp"]=topWeightUp				
 	
 	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
 	counts["Total Background"]["xSec"]=xSec
@@ -378,7 +379,7 @@ def plotDataMC(mainConfig,dilepton):
 
 
 	
-	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (8 TeV)"%(mainConfig.runRange.printval,))
+	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.85
 	cmsExtra = ""
 	if mainConfig.personalWork:
@@ -412,8 +413,9 @@ def plotDataMC(mainConfig,dilepton):
 			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
-		ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])			
-		ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
+		ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
+		if mainConfig.doTopReweighting:		
+			ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
 		ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
 		ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
 		ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)

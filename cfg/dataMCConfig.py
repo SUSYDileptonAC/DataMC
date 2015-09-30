@@ -28,7 +28,7 @@ class dataMCConfig:
 	theoUncert = 0.
 	backgrounds = []
 		
-	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,useTriggerEmulation=False,personalWork=False,doTopReweighting=True,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],produceTheoUncert=True,dontScaleTrig=False):
+	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,useTriggerEmulation=False,personalWork=False,doTopReweighting=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],produceTheoUncert=False,dontScaleTrig=False):
 		sys.path.append(pathes.basePath)
 		
 		self.dataSetPath = locations.dataSetPath

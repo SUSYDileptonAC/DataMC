@@ -45,7 +45,7 @@ def main():
 						  help="backgrounds to plot.")
 	parser.add_argument("-e", "--dilepton", dest="dileptons", action="append", default=[],
 						  help="dilepton combinations to plot.")
-	parser.add_argument("-u", "--usetrigger", dest="trigger", default=False,
+	parser.add_argument("-u", "--usetrigger", action="store_true", dest="trigger", default=False,
 						  help="use trigger emulation.")	
 	parser.add_argument("-l", "--dontscaletrig", action="store_true", dest="dontscaletrig", default=False,
 						  help="don't scale to trigger efficiency'")	
@@ -62,7 +62,8 @@ def main():
 
 	args = parser.parse_args()
 	if len(args.backgrounds) == 0:
-		args.backgrounds = ["Rare","SingleTop","TTJets_SpinCorrelations","Diboson","DrellYanTauTau","DrellYan"]
+		#~ args.backgrounds = ["Rare","SingleTop","TTJets","Diboson","DrellYanTauTau","DrellYan"]
+		args.backgrounds = ["Rare","SingleTop","TTJets","Diboson","DrellYanTauTau","DrellYan"]
 	if len(args.dileptons) == 0:
 		args.dileptons = ["SF","OF","EE","MuMu"]
 	print args.backgrounds	

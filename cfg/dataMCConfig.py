@@ -32,7 +32,8 @@ class dataMCConfig:
 		sys.path.append(pathes.basePath)
 		
 		self.dataSetPath = locations.dataSetPath
-		
+		if dontScaleTrig:
+			self.dataSetPath = locations.dataSetPathTrigger
 		self.runRange = getRunRange(runName)
 		
 		self.selection = getRegion(region)

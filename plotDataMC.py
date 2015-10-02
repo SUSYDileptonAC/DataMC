@@ -226,7 +226,7 @@ def plotDataMC(mainConfig,dilepton):
 	import pickle
 
 	
-
+	print mainConfig.plot.cuts
 	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
 	#~ print mainConfig.plot.variable
 	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	

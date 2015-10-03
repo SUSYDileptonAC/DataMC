@@ -225,8 +225,6 @@ def plotDataMC(mainConfig,dilepton):
 	counts = {}
 	import pickle
 
-	
-	print mainConfig.plot.cuts
 	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
 	#~ print mainConfig.plot.variable
 	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
@@ -254,7 +252,7 @@ def plotDataMC(mainConfig,dilepton):
 						
 	else: yMax = plot.yMax
 
-	hCanvas.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
+	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
 	
 
  
@@ -412,14 +410,14 @@ def plotDataMC(mainConfig,dilepton):
 			plot.cuts=baseCut
 			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
-		ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
-		ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
-		if mainConfig.doTopReweighting:		
-			ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
-		ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
-		ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
-		ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
-		print drawStack.theHistogramTheoUp.Integral(), drawStack.theHistogramTheoDown.Integral(), drawStack.theHistogram.Integral()
+		if mainConfig.plotSyst:
+			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
+			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
+			if mainConfig.doTopReweighting:		
+				ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
+			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
+			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
+			ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:
 			signalRatios = []
@@ -433,14 +431,15 @@ def plotDataMC(mainConfig,dilepton):
 			legendRatio.AddEntry(backgroundHist,"Data / background","pe")
 			temphist = ROOT.TH1F()
 			temphist.SetFillColor(myColors["MyGreen"])
-			legendRatio.AddEntry(temphist,"Syst. uncert.","f")	
-			legendRatio.SetNColumns(2)			
-			for index, signalhist in enumerate(signalhists):
-				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
-				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
-				signalhist.SetMarkerColor(signalhist.GetLineColor())
-				legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
-			legendRatio.Draw("same")					
+			if mainConfig.plotSyst:
+				legendRatio.AddEntry(temphist,"Syst. uncert.","f")	
+				legendRatio.SetNColumns(2)			
+				for index, signalhist in enumerate(signalhists):
+					signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
+					signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
+					signalhist.SetMarkerColor(signalhist.GetLineColor())
+					legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
+				legendRatio.Draw("same")					
 
 	ROOT.gPad.RedrawAxis()
 	plotPad.RedrawAxis()

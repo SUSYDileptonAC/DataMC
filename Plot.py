@@ -18,6 +18,8 @@ from ROOT import TMath
 import argparse	
 import dataMCConfig
 import plotDataMC
+
+from centralConfig import plotLists
 	
 def main():
 
@@ -30,6 +32,8 @@ def main():
 	parser.add_argument("-m", "--mc", action="store_true", dest="mc", default=False,
 						  help="plot mc backgrounds.")
 	parser.add_argument("-s", "--selection", dest = "region" , nargs=1, default='Region',
+						  help="selection which to apply.")
+	parser.add_argument("-S", "--plotSyst", action="store_true" , dest="plotSyst", default=False,
 						  help="selection which to apply.")
 	parser.add_argument("-p", "--plot", dest="plot", nargs=1, default="",
 						  help="plot to plot.")
@@ -69,10 +73,16 @@ def main():
 		args.backgrounds = ["Rare","SingleTop","TT_Powheg","Diboson","DrellYanTauTau","DrellYan"]
 	if len(args.dileptons) == 0:
 		args.dileptons = ["SF","OF","EE","MuMu"]
-	print args.backgrounds	
-	for dilepton in args.dileptons:
-		config = dataMCConfig.dataMCConfig(args.plot[0],region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig)
+
+	if args.plot == "":
+		args.plot = plotLists.default
 		
-		plotDataMC.plotDataMC(config,dilepton)
+
+
+	for plot in args.plot:
+		for dilepton in args.dileptons:
+			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst)
+			
+			plotDataMC.plotDataMC(config,dilepton)
 	
 main()

@@ -229,7 +229,7 @@ def plotDataMC(mainConfig,dilepton):
 	#~ print mainConfig.plot.variable
 	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
 	#~ print mainConfig.plot.cuts
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert)
+	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights)
 
 			
 	errIntMC = ROOT.Double()
@@ -259,71 +259,74 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.normalizeToData:
 		scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
 
-		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)	
-		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2)
-		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2)								
+		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
+		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
+		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)								
 					
 	
 	else:
 		drawStack = stack
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-		stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-		stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
-		stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts)
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
-		stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts)	
-		mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
-		if mainConfig.doTopReweighting:
-			stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts)	
-			stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts)	
+		if mainConfig.plotSyst:
+
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
+			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
+			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
+			stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
+			stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
+			if mainConfig.doTopReweighting:
+				stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+				stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
 
 
+	if mainConfig.plotSyst:
 	
-	errIntMC = ROOT.Double()
-	intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-	errIntMC = ROOT.Double()
-	intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-			
-	valJESUp = float(intMCJESUp)
-	valJESDown = float(intMCJESDown)
-	jesUp = abs(counts["Total Background"]["val"]-valJESUp)
-	jesDown = abs(counts["Total Background"]["val"]-valJESDown)
-	counts["Total Background"]["jesDown"]=jesDown				
-	counts["Total Background"]["jesUp"]=jesUp				
-	
-	errIntMC = ROOT.Double()
-	intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-	errIntMC = ROOT.Double()
-	intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-			
-	valPileUpUp = float(intMCPileUpUp)
-	valPileUpDown = float(intMCPileUpDown)
-	pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
-	pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
-	counts["Total Background"]["pileUpDown"]=pileUpDown				
-	counts["Total Background"]["pileUpUp"]=pileUpUp	
-	
-	if mainConfig.doTopReweighting:			
 		errIntMC = ROOT.Double()
-		intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 		errIntMC = ROOT.Double()
-		intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-			
-		valTopWeightUp = float(intMCTopWeightUp)
-		valTopWeightDown = float(intMCTopWeightDown)
-		topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
-		topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
-		counts["Total Background"]["topWeightDown"]=topWeightDown				
-		counts["Total Background"]["topWeightUp"]=topWeightUp				
+		intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				
+		valJESUp = float(intMCJESUp)
+		valJESDown = float(intMCJESDown)
+		jesUp = abs(counts["Total Background"]["val"]-valJESUp)
+		jesDown = abs(counts["Total Background"]["val"]-valJESDown)
+		counts["Total Background"]["jesDown"]=jesDown				
+		counts["Total Background"]["jesUp"]=jesUp				
+		
+		errIntMC = ROOT.Double()
+		intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		errIntMC = ROOT.Double()
+		intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				
+		valPileUpUp = float(intMCPileUpUp)
+		valPileUpDown = float(intMCPileUpDown)
+		pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
+		pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
+		counts["Total Background"]["pileUpDown"]=pileUpDown				
+		counts["Total Background"]["pileUpUp"]=pileUpUp	
+		
+		if mainConfig.doTopReweighting:			
+			errIntMC = ROOT.Double()
+			intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+			errIntMC = ROOT.Double()
+			intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				
+			valTopWeightUp = float(intMCTopWeightUp)
+			valTopWeightDown = float(intMCTopWeightDown)
+			topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
+			topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
+			counts["Total Background"]["topWeightDown"]=topWeightDown				
+			counts["Total Background"]["topWeightUp"]=topWeightUp				
 	
 	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
 	counts["Total Background"]["xSec"]=xSec
@@ -346,7 +349,6 @@ def plotDataMC(mainConfig,dilepton):
 
 	drawStack.theStack.Draw("samehist")							
 
-		
 	dileptonLabel = ""
 	if dilepton == "SF":
 		dileptonLabel = "ee + #mu#mu"
@@ -373,7 +375,7 @@ def plotDataMC(mainConfig,dilepton):
 		intlumi.DrawLatex(0.2,0.7,"#splitline{"+mainConfig.plot.label+" "+dileptonLabel+"}{#splitline{"+mainConfig.plot.label2+"}{"+mainConfig.plot.label3+"}}")				
 	else:
 		legend.Draw()
-		intlumi.DrawLatex(0.45,0.575,mainConfig.plot.label2+" "+dileptonLabel)	
+		intlumi.DrawLatex(0.45,0.55,"#splitline{%s}{%s}"%(mainConfig.plot.label2,dileptonLabel))	
 
 
 	

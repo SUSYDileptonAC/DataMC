@@ -63,6 +63,8 @@ def main():
 						  help="plot is for PAS.")	
 	parser.add_argument("-z", "--forTWIKI", action="store_true", dest="forTWIKI", default=False,
 						  help="plot is for TWIKI.")	
+	parser.add_argument("-P", "--puWeights", action="store_true", dest="puWeights", default=False,
+						  help="do offline PU reweighting.")	
 
 	#~ p = ROOT.TProof.Open("")
 
@@ -71,6 +73,7 @@ def main():
 	if len(args.backgrounds) == 0:
 		#~ args.backgrounds = ["Rare","SingleTop","TTJets","Diboson","DrellYanTauTau","DrellYan"]
 		args.backgrounds = ["Rare","SingleTop","TT_Powheg","Diboson","DrellYanTauTau","DrellYan"]
+		#~ args.backgrounds = ["TT_Powheg","DrellYanTauTau","DrellYan"]
 	if len(args.dileptons) == 0:
 		args.dileptons = ["SF","OF","EE","MuMu"]
 
@@ -78,10 +81,9 @@ def main():
 		args.plot = plotLists.default
 		
 
-
 	for plot in args.plot:
 		for dilepton in args.dileptons:
-			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst)
+			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst,doPUWeights=args.puWeights)
 			
 			plotDataMC.plotDataMC(config,dilepton)
 	

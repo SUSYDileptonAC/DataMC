@@ -40,7 +40,6 @@ def plotDataMC(mainConfig,dilepton):
 
 
 	eventCounts = totalNumberOfGeneratedEvents(mainConfig.dataSetPath)	
-
 	processes = []
 	for background in mainConfig.backgrounds:
 		processes.append(Process(getattr(Backgrounds,background),eventCounts))

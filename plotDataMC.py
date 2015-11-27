@@ -219,12 +219,13 @@ def plotDataMC(mainConfig,dilepton):
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
 	
-	
+	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("chargeProduct < 0","chargeProduct > 0")
 	
 	counts = {}
 	import pickle
-
+	print mainConfig.plot.cuts
 	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
+	print datahist.GetEntries()
 	#~ print mainConfig.plot.variable
 	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
 	#~ print mainConfig.plot.cuts
@@ -252,6 +253,8 @@ def plotDataMC(mainConfig,dilepton):
 	else: yMax = plot.yMax
 
 	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
+	
+	
 	
 
  

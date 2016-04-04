@@ -49,7 +49,7 @@ def plotDataMC(mainConfig,dilepton):
 	for signal in mainConfig.signals:
 		signals.append(Process(getattr(Signals,signal),eventCounts))
 		
-	legend = TLegend(0.375, 0.6, 0.925, 0.925)
+	legend = TLegend(0.45, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
 	legend.SetBorderSize(0)
 	legend.SetTextFont(42)
@@ -251,6 +251,8 @@ def plotDataMC(mainConfig,dilepton):
 			yMax = yMax*1.5
 						
 	else: yMax = plot.yMax
+	
+	yMax = 220
 
 	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
 	

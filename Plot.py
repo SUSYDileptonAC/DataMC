@@ -83,7 +83,7 @@ def main():
 
 	for plot in args.plot:
 		for dilepton in args.dileptons:
-			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst,doPUWeights=args.puWeights)
+			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,useTriggerEmulation=args.trigger,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst,doPUWeights=args.puWeights,doTopReweighting=args.top)
 			
 			plotDataMC.plotDataMC(config,dilepton)
 	

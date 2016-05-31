@@ -460,13 +460,13 @@ def plotDataMC(mainConfig,dilepton):
 		nameModifier+="_MCOnly"
 
 	if mainConfig.normalizeToData:
-		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)
+		hCanvas.Print("fig/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)
 	elif mainConfig.useTriggerEmulation:
-		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_TriggerEmulation_"+nameModifier),)
+		hCanvas.Print("fig/"+mainConfig.plot.filename%("_TriggerEmulation_"+nameModifier),)
 	elif mainConfig.DontScaleTrig:
-		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_NoTriggerScaling_"+nameModifier),)
+		hCanvas.Print("fig/"+mainConfig.plot.filename%("_NoTriggerScaling_"+nameModifier),)
 	else:
-		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_"+nameModifier),)
+		hCanvas.Print("fig/"+mainConfig.plot.filename%("_"+nameModifier),)
 
 					
 

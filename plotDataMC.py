@@ -5,8 +5,6 @@ def plotDataMC(mainConfig,dilepton):
 	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT
 	import ratios
 	from defs import Backgrounds
-	from defs import Backgrounds2011
-	from defs import Signals
 	from defs import defineMyColors
 	from defs import myColors	
 	from defs import Region
@@ -229,7 +227,7 @@ def plotDataMC(mainConfig,dilepton):
 	#~ print mainConfig.plot.variable
 	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
 	#~ print mainConfig.plot.cuts
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights)
+	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,theoUncert=mainConfig.theoUncert)
 
 			
 	errIntMC = ROOT.Double()
@@ -252,7 +250,7 @@ def plotDataMC(mainConfig,dilepton):
 						
 	else: yMax = plot.yMax
 	
-	yMax = 220
+	#~ yMax = 220
 
 	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
 	
@@ -263,9 +261,9 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.normalizeToData:
 		scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
 
-		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
-		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
-		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)								
+		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)	
+		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2)
+		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2)								
 					
 	
 	else:
@@ -275,23 +273,20 @@ def plotDataMC(mainConfig,dilepton):
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
-			stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+			stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts)
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
-			stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+			stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts)	
 			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
-			if mainConfig.doTopReweighting:
-				stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-				stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-
+			
 
 	if mainConfig.plotSyst:
 	
@@ -319,19 +314,6 @@ def plotDataMC(mainConfig,dilepton):
 		counts["Total Background"]["pileUpDown"]=pileUpDown				
 		counts["Total Background"]["pileUpUp"]=pileUpUp	
 		
-		if mainConfig.doTopReweighting:			
-			errIntMC = ROOT.Double()
-			intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-			errIntMC = ROOT.Double()
-			intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-			valTopWeightUp = float(intMCTopWeightUp)
-			valTopWeightDown = float(intMCTopWeightDown)
-			topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
-			topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
-			counts["Total Background"]["topWeightDown"]=topWeightDown				
-			counts["Total Background"]["topWeightUp"]=topWeightUp				
-	
 	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
 	counts["Total Background"]["xSec"]=xSec
 	theoUncert = abs(stack.theHistogramTheoUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
@@ -419,8 +401,6 @@ def plotDataMC(mainConfig,dilepton):
 		if mainConfig.plotSyst:
 			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
 			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
-			if mainConfig.doTopReweighting:		
-				ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
 			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
 			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
 			ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
@@ -454,8 +434,6 @@ def plotDataMC(mainConfig,dilepton):
 		ratioPad.RedrawAxis()
 
 	nameModifier = mainConfig.runRange.label+"_"+dilepton
-	if mainConfig.doTopReweighting:
-		nameModifier+="_TopReweighted"
 	if mainConfig.plotData == False:
 		nameModifier+="_MCOnly"
 

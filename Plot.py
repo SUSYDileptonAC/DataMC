@@ -31,13 +31,13 @@ def main():
 						  help="plot data points.")
 	parser.add_argument("-m", "--mc", action="store_true", dest="mc", default=False,
 						  help="plot mc backgrounds.")
-	parser.add_argument("-s", "--selection", dest = "region" , nargs=1, default='Region',
+	parser.add_argument("-s", "--selection", dest = "region" , nargs=1, default=["Inclusive"],
 						  help="selection which to apply.")
 	parser.add_argument("-S", "--plotSyst", action="store_true" , dest="plotSyst", default=False,
 						  help="selection which to apply.")
 	parser.add_argument("-p", "--plot", dest="plot", nargs=1, default="",
 						  help="plot to plot.")
-	parser.add_argument("-r", "--runRange", dest="runRange", nargs=1, default="",
+	parser.add_argument("-r", "--runRange", dest="runRange", nargs=1, default=["Run2015_25ns"],
 						  help="name of run range.")
 	parser.add_argument("-n", "--norm", action="store_true", dest="norm", default=False,
 						  help="normalize to data.")
@@ -72,8 +72,8 @@ def main():
 	args = parser.parse_args()
 	if len(args.backgrounds) == 0:
 		#~ args.backgrounds = ["Rare","SingleTop","TTJets","Diboson","DrellYanTauTau","DrellYan"]
-		args.backgrounds = ["Rare","SingleTop","TT_Powheg","Diboson","DrellYanTauTau","DrellYan"]
-		#~ args.backgrounds = ["TT_Powheg","DrellYanTauTau","DrellYan"]
+		#~ args.backgrounds = ["Rare","SingleTop","TT_Powheg","Diboson","DrellYanTauTau","DrellYan"]
+		args.backgrounds = ["TT_Powheg","DrellYanTauTau","DrellYan"]
 	if len(args.dileptons) == 0:
 		args.dileptons = ["SF","OF","EE","MuMu"]
 

@@ -35,7 +35,7 @@ class dataMCConfig:
 		
 		self.dataSetPath = locations.dataSetPath
 		if dontScaleTrig:
-			self.dataSetPath = locations.dataSetPathTrigger
+			self.dataSetPath = locations.dataSetPath
 		self.runRange = getRunRange(runName)
 		
 		self.selection = getRegion(region)

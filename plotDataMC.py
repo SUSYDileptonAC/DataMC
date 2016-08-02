@@ -176,12 +176,18 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.plot.tree1 == "EE":
 		tree1 = treeEE
 		scaleTree1 = mainConfig.selection.trigEffs.effEE.val
+		print "ee trigger Eff:"
+		print scaleTree1
 	elif mainConfig.plot.tree1 == "MuMu":
 		tree1 = treeMuMu
 		scaleTree1 = mainConfig.selection.trigEffs.effMM.val
+		print "mumu trigger Eff:"
+		print scaleTree1
 	elif mainConfig.plot.tree1 == "EMu":
 		tree1 = treeEMu	
-		scaleTree1 = mainConfig.selection.trigEffs.effEM.val			
+		scaleTree1 = mainConfig.selection.trigEffs.effEM.val
+		print "emu trigger Eff:"
+		print scaleTree1			
 	else: 
 		print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 		return
@@ -189,14 +195,20 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.plot.tree2 != "None":
 		if mainConfig.plot.tree2 == "EE":
 				tree2 = treeEE
-				scaleTree2 = mainConfig.selection.trigEffs.effEE.val				
+				scaleTree2 = mainConfig.selection.trigEffs.effEE.val
+				print "ee trigger Eff:"
+				print scaleTree2				
 		elif mainConfig.plot.tree2 == "MuMu":
 				tree2 = treeMuMu
 				scaleTree2 = mainConfig.selection.trigEffs.effMM.val
+				print "mumu trigger Eff:"
+				print scaleTree2
 
 		elif mainConfig.plot.tree2 == "EMu":
 				tree2 = treeEMu	
-				scaleTree2 = mainConfig.selection.trigEffs.effEM.val					
+				scaleTree2 = mainConfig.selection.trigEffs.effEM.val
+				print "emu trigger Eff:"
+				print scaleTree2				
 		else:
 			print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 			return
@@ -252,7 +264,7 @@ def plotDataMC(mainConfig,dilepton):
 						
 	else: yMax = plot.yMax
 	
-	yMax = 220
+	#~ yMax = 220
 
 	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
 	
@@ -261,11 +273,11 @@ def plotDataMC(mainConfig,dilepton):
 
  
 	if mainConfig.normalizeToData:
-		scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
+		scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
 
-		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
-		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
-		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)								
+		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
+		stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
+		stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)								
 					
 	
 	else:
@@ -343,7 +355,7 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.plotSignal:
 		signalhists = []
 		for Signal in signals:
-			signalhist = Signal.createCombinedHistogram(lumi,plot,tree1,tree2,signal=True)
+			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,signal=True)
 			signalhist.SetLineWidth(2)
 			signalhist.Add(stack.theHistogram)
 			signalhist.SetMinimum(0.1)

@@ -14,10 +14,8 @@ def plotDataMC(mainConfig,dilepton):
 	gROOT.SetBatch(True)
 	from helpers import *	
 	import math
-	if mainConfig.forPAS:
-		hCanvas = TCanvas("hCanvas", "Distribution", 600,800)
-	else:
-		hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
+	
+	hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
 	if mainConfig.plotRatio:
 		plotPad = ROOT.TPad("plotPad","plotPad",0,0.3,1,1)
 		ratioPad = ROOT.TPad("ratioPad","ratioPad",0,0.,1,0.3)
@@ -130,22 +128,10 @@ def plotDataMC(mainConfig,dilepton):
 	intlumi.SetTextAlign(12)
 	intlumi.SetTextSize(0.045)
 	intlumi.SetNDC(True)
-	intlumi2 = ROOT.TLatex()
-	intlumi2.SetTextAlign(12)
-	intlumi2.SetTextSize(0.07)
-	intlumi2.SetNDC(True)
 	scalelabel = ROOT.TLatex()
 	scalelabel.SetTextAlign(12)
 	scalelabel.SetTextSize(0.03)
 	scalelabel.SetNDC(True)
-	metDiffLabel = ROOT.TLatex()
-	metDiffLabel.SetTextAlign(12)
-	metDiffLabel.SetTextSize(0.03)
-	metDiffLabel.SetNDC(True)
-	chi2Label = ROOT.TLatex()
-	chi2Label.SetTextAlign(12)
-	chi2Label.SetTextSize(0.03)
-	chi2Label.SetNDC(True)
 	hCanvas.SetLogy()
 
 
@@ -163,7 +149,7 @@ def plotDataMC(mainConfig,dilepton):
 	plotPad.cd()
 	plotPad.SetLogy(0)
 	logScale = mainConfig.plot.log
-	if mainConfig.plot.variable == "met" or mainConfig.plot.variable == "type1Met" or mainConfig.plot.variable == "tcMet" or mainConfig.plot.variable == "caloMet" or mainConfig.plot.variable == "mht":
+	if mainConfig.plot.variable == "met" or mainConfig.plot.variable == "genMet" or mainConfig.plot.variable == "mht":
 		logScale = True
 	
 	if logScale == True:
@@ -173,61 +159,42 @@ def plotDataMC(mainConfig,dilepton):
 	scaleTree2 = 1.0
 	if mainConfig.plot.tree1 == "EE":
 		tree1 = treeEE
-		scaleTree1 = mainConfig.selection.trigEffs.effEE.val
 	elif mainConfig.plot.tree1 == "MuMu":
 		tree1 = treeMuMu
-		scaleTree1 = mainConfig.selection.trigEffs.effMM.val
 	elif mainConfig.plot.tree1 == "EMu":
-		tree1 = treeEMu	
-		scaleTree1 = mainConfig.selection.trigEffs.effEM.val			
+		tree1 = treeEMu				
 	else: 
 		print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 		return
 	
 	if mainConfig.plot.tree2 != "None":
 		if mainConfig.plot.tree2 == "EE":
-				tree2 = treeEE
-				scaleTree2 = mainConfig.selection.trigEffs.effEE.val				
+				tree2 = treeEE			
 		elif mainConfig.plot.tree2 == "MuMu":
 				tree2 = treeMuMu
-				scaleTree2 = mainConfig.selection.trigEffs.effMM.val
 
 		elif mainConfig.plot.tree2 == "EMu":
-				tree2 = treeEMu	
-				scaleTree2 = mainConfig.selection.trigEffs.effEM.val					
+				tree2 = treeEMu						
 		else:
 			print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 			return
 	else:
-		tree2 = "None"
-		
-	if mainConfig.useTriggerEmulation or mainConfig.DontScaleTrig:
-		scaleTree2 = 1.0
-		scaleTree1 = 1.0				
+		tree2 = "None"				
 	
 		
 	
 	if mainConfig.normalizeToData:
 		pickleName=mainConfig.plot.filename%("_scaled_"+mainConfig.runRange.label+"_"+dilepton)
-	elif mainConfig.useTriggerEmulation:
-		pickleName=mainConfig.plot.filename%("_TriggerEmulation_"+mainConfig.runRange.label+"_"+dilepton)
-	elif mainConfig.DontScaleTrig:
-		pickleName=mainConfig.plot.filename%("_NoTriggerScaling_"+mainConfig.runRange.label+"_"+dilepton)
 	else:
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
-	
-	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("chargeProduct < 0","chargeProduct > 0")
 	
 	counts = {}
 	import pickle
 	print mainConfig.plot.cuts
 	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
 	print datahist.GetEntries()
-	#~ print mainConfig.plot.variable
-	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
-	#~ print mainConfig.plot.cuts
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,theoUncert=mainConfig.theoUncert)
+	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
 
 			
 	errIntMC = ROOT.Double()
@@ -261,63 +228,14 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.normalizeToData:
 		scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
 
-		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)	
-		stackJESUp = TheStack(processes,lumi,plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2)
-		stackJESDown = TheStack(processes,lumi,plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2)								
+		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)								
 					
 	
 	else:
 		drawStack = stack
-		if mainConfig.plotSyst:
-
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts)
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts)	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
-			stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts)
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
-			stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts)	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
 			
 
-	if mainConfig.plotSyst:
-	
-		errIntMC = ROOT.Double()
-		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-		errIntMC = ROOT.Double()
-		intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-		valJESUp = float(intMCJESUp)
-		valJESDown = float(intMCJESDown)
-		jesUp = abs(counts["Total Background"]["val"]-valJESUp)
-		jesDown = abs(counts["Total Background"]["val"]-valJESDown)
-		counts["Total Background"]["jesDown"]=jesDown				
-		counts["Total Background"]["jesUp"]=jesUp				
 		
-		errIntMC = ROOT.Double()
-		intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-		errIntMC = ROOT.Double()
-		intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-		valPileUpUp = float(intMCPileUpUp)
-		valPileUpDown = float(intMCPileUpDown)
-		pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
-		pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
-		counts["Total Background"]["pileUpDown"]=pileUpDown				
-		counts["Total Background"]["pileUpUp"]=pileUpUp	
-		
-	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
-	counts["Total Background"]["xSec"]=xSec
-	theoUncert = abs(stack.theHistogramTheoUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
-	counts["Total Background"]["theo"]=theoUncert
 	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
 	pickle.dump(counts, outFilePkl)
 	outFilePkl.close()	
@@ -368,25 +286,14 @@ def plotDataMC(mainConfig,dilepton):
 	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.85
 	cmsExtra = ""
-	if mainConfig.personalWork:
-		cmsExtra = "Private Work"
-		if not mainConfig.plotData:
-			cmsExtra = "#splitline{Private Work}{Simulation}"
-			yLabelPos = 0.82	
-	elif not mainConfig.plotData:
-		cmsExtra = "Simulation"	
-	elif mainConfig.preliminary:
-		cmsExtra = "Preliminary"
-	elif mainConfig.forTWIKI:
-		cmsExtra = "Unpublished"		
-	if mainConfig.forPAS:
-		latexCMS.DrawLatex(0.15,0.955,"CMS")
-		latexCMSExtra.DrawLatex(0.26,0.955,"%s"%(cmsExtra))				
-			
-	else:
-		latexCMS.DrawLatex(0.19,0.89,"CMS")
-		latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
+	cmsExtra = "Private Work"
+	if not mainConfig.plotData:
+		cmsExtra = "#splitline{Private Work}{Simulation}"
+		yLabelPos = 0.82	
 	
+	latexCMS.DrawLatex(0.19,0.89,"CMS")
+	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
+
 	if mainConfig.plotRatio:
 		try:
 			ratioPad.cd()
@@ -398,15 +305,10 @@ def plotDataMC(mainConfig,dilepton):
 			plot.cuts=baseCut
 			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
-		if mainConfig.plotSyst:
-			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
-			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
-			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
-			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
-			ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:
 			signalRatios = []
+			print "TEST!!!!!!!"
 			
 				
 			legendRatio = TLegend(0.175, 0.725, 0.65, 0.95)
@@ -417,15 +319,13 @@ def plotDataMC(mainConfig,dilepton):
 			legendRatio.AddEntry(backgroundHist,"Data / background","pe")
 			temphist = ROOT.TH1F()
 			temphist.SetFillColor(myColors["MyGreen"])
-			if mainConfig.plotSyst:
-				legendRatio.AddEntry(temphist,"Syst. uncert.","f")	
-				legendRatio.SetNColumns(2)			
-				for index, signalhist in enumerate(signalhists):
-					signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
-					signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
-					signalhist.SetMarkerColor(signalhist.GetLineColor())
-					legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
-				legendRatio.Draw("same")					
+		
+			for index, signalhist in enumerate(signalhists):
+				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
+				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
+				signalhist.SetMarkerColor(signalhist.GetLineColor())
+				legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
+			legendRatio.Draw("same")					
 
 	ROOT.gPad.RedrawAxis()
 	plotPad.RedrawAxis()
@@ -439,10 +339,6 @@ def plotDataMC(mainConfig,dilepton):
 
 	if mainConfig.normalizeToData:
 		hCanvas.Print("fig/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)
-	elif mainConfig.useTriggerEmulation:
-		hCanvas.Print("fig/"+mainConfig.plot.filename%("_TriggerEmulation_"+nameModifier),)
-	elif mainConfig.DontScaleTrig:
-		hCanvas.Print("fig/"+mainConfig.plot.filename%("_NoTriggerScaling_"+nameModifier),)
 	else:
 		hCanvas.Print("fig/"+mainConfig.plot.filename%("_"+nameModifier),)
 

@@ -2,9 +2,10 @@ def plotDataMC(mainConfig,dilepton):
 	import gc
 	gc.enable()	
 	
-	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT
+	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT,TFile, TH2F
 	import ratios
 	from defs import Backgrounds
+	from defs import Signals
 	from defs import defineMyColors
 	from defs import myColors	
 	from defs import Region
@@ -14,6 +15,9 @@ def plotDataMC(mainConfig,dilepton):
 	gROOT.SetBatch(True)
 	from helpers import *	
 	import math
+	
+	signalDenominatorFile = TFile("../SignalScan/T6bbllsleptonDenominatorHisto.root")
+	signalDenominatorHisto = TH2F(signalDenominatorFile.Get("massScan"))
 	
 	hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
 	if mainConfig.plotRatio:
@@ -40,10 +44,13 @@ def plotDataMC(mainConfig,dilepton):
 	for background in mainConfig.backgrounds:
 		processes.append(Process(getattr(Backgrounds,background),eventCounts))
 		
-	
+	signalEventCounts = {}
 	signals = []
 	for signal in mainConfig.signals:
-		signals.append(Process(getattr(Signals,signal),eventCounts))
+		m_b = int(signal.split("_")[2])
+		m_n_2 = int(signal.split("_")[4])
+		signalEventCounts[signal] = signalDenominatorHisto.GetBinContent(signalDenominatorHisto.GetXaxis().FindBin(m_b),signalDenominatorHisto.GetYaxis().FindBin(m_n_2))
+		signals.append(Process(getattr(Signals,signal),signalEventCounts))
 		
 	legend = TLegend(0.45, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
@@ -88,18 +95,14 @@ def plotDataMC(mainConfig,dilepton):
 		legendHists.append(temphist.Clone)
 		legend.AddEntry(temphist,process.label,"f")
 		legendEta.AddEntry(temphist,process.label,"f")
-		#~ if mainConfig.plotSignal:
-			#~ processes.append(Signal)
 	if mainConfig.plotRatio:
 		temphist = ROOT.TH1F()
 		temphist.SetFillColor(myColors["MyGreen"])
-		legendHists.append(temphist.Clone)
-		#~ legend.AddEntry(temphist,"Syst. uncert.","f")	
+		legendHists.append(temphist.Clone)	
 		temphist2 = ROOT.TH1F()
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
-		legendHists.append(temphist2.Clone)
-		#~ legend.AddEntry(temphist2,"JEC & Pileup Uncert.","f")	
+		legendHists.append(temphist2.Clone)	
 
 
 	
@@ -226,9 +229,9 @@ def plotDataMC(mainConfig,dilepton):
 
  
 	if mainConfig.normalizeToData:
-		scalefac = datahist.Integral(datahist.FindBin(plot.firstBin),datahist.FindBin(plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(plot.firstBin),stack.theHistogram.FindBin(plot.lastBin))			
+		scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
 
-		drawStack = TheStack(processes,lumi,plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)								
+		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)								
 					
 	
 	else:
@@ -242,13 +245,15 @@ def plotDataMC(mainConfig,dilepton):
 
 	if mainConfig.plotSignal:
 		signalhists = []
+		signalLabels = []
 		for Signal in signals:
-			signalhist = Signal.createCombinedHistogram(lumi,plot,tree1,tree2,signal=True)
+			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,signal=True)
 			signalhist.SetLineWidth(2)
 			signalhist.Add(stack.theHistogram)
 			signalhist.SetMinimum(0.1)
 			signalhist.Draw("samehist")
-			signalhists.append(signalhist)	
+			signalhists.append(signalhist)
+			signalLabels.append(Signal.label)
 
 
 	drawStack.theStack.Draw("samehist")							
@@ -284,14 +289,14 @@ def plotDataMC(mainConfig,dilepton):
 
 	
 	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
-	yLabelPos = 0.85
+	yLabelPos = 0.83
 	cmsExtra = ""
 	cmsExtra = "Private Work"
 	if not mainConfig.plotData:
 		cmsExtra = "#splitline{Private Work}{Simulation}"
-		yLabelPos = 0.82	
+		yLabelPos = 0.81	
 	
-	latexCMS.DrawLatex(0.19,0.89,"CMS")
+	latexCMS.DrawLatex(0.19,0.87,"CMS")
 	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 
 	if mainConfig.plotRatio:
@@ -302,14 +307,12 @@ def plotDataMC(mainConfig,dilepton):
 			outFile =open("errs/failedPlots.txt","a")
 			outFile.write('%s\n'%plot.filename%("_"+run.label+"_"+dilepton))
 			outFile.close()
-			plot.cuts=baseCut
+			mainConfig.plot.cuts=baseCut
 			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:
-			signalRatios = []
-			print "TEST!!!!!!!"
-			
+			signalRatios = []			
 				
 			legendRatio = TLegend(0.175, 0.725, 0.65, 0.95)
 			legendRatio.SetFillStyle(0)
@@ -321,10 +324,10 @@ def plotDataMC(mainConfig,dilepton):
 			temphist.SetFillColor(myColors["MyGreen"])
 		
 			for index, signalhist in enumerate(signalhists):
-				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
+				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
 				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
 				signalhist.SetMarkerColor(signalhist.GetLineColor())
-				legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
+				legendRatio.AddEntry(signalhist,"Data / Background + Signal (%s)"%signalLabels[index],"p")				
 			legendRatio.Draw("same")					
 
 	ROOT.gPad.RedrawAxis()

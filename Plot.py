@@ -20,7 +20,7 @@ import argparse
 import dataMCConfig
 import plotDataMC
 
-from centralConfig import plotLists
+from centralConfig import plotLists,backgroundLists
 	
 def main():
 
@@ -54,9 +54,7 @@ def main():
 
 	args = parser.parse_args()
 	if len(args.backgrounds) == 0:
-		#~ args.backgrounds = ["Rare","SingleTop","TTJets","Diboson","DrellYanTauTau","DrellYan"]
-		#~ args.backgrounds = ["Rare","SingleTop","TT_Powheg","Diboson","DrellYanTauTau","DrellYan"]
-		args.backgrounds = ["TT_Powheg","DrellYanTauTau","DrellYan"]
+		args.backgrounds = backgroundLists.default
 	if len(args.dileptons) == 0:
 		args.dileptons = ["SF","OF","EE","MuMu"]
 

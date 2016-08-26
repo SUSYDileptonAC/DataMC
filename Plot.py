@@ -56,7 +56,7 @@ def main():
 	if len(args.backgrounds) == 0:
 		args.backgrounds = backgroundLists.default
 	if len(args.dileptons) == 0:
-		args.dileptons = ["SF","OF","EE","MuMu"]
+		args.dileptons = ["SF","OF"]
 
 	if args.plot == "":
 		args.plot = plotLists.default

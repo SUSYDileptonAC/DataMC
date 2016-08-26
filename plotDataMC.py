@@ -46,11 +46,15 @@ def plotDataMC(mainConfig,dilepton):
 		
 	signalEventCounts = {}
 	signals = []
+	signalNameLabel = ""
 	for signal in mainConfig.signals:
 		m_b = int(signal.split("_")[2])
 		m_n_2 = int(signal.split("_")[4])
 		signalEventCounts[signal] = signalDenominatorHisto.GetBinContent(signalDenominatorHisto.GetXaxis().FindBin(m_b),signalDenominatorHisto.GetYaxis().FindBin(m_n_2))
 		signals.append(Process(getattr(Signals,signal),signalEventCounts))
+		if signalNameLabel == "":
+			signalNameLabel = "Signal"
+		signalNameLabel += "_m_b_%s_m_n_%s"%(signal.split("_")[2],signal.split("_")[4])
 		
 	legend = TLegend(0.45, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
@@ -339,6 +343,9 @@ def plotDataMC(mainConfig,dilepton):
 	nameModifier = mainConfig.runRange.label+"_"+dilepton
 	if mainConfig.plotData == False:
 		nameModifier+="_MCOnly"
+	
+	if mainConfig.plotSignal:	
+		nameModifier+="_"+signalNameLabel
 
 	if mainConfig.normalizeToData:
 		hCanvas.Print("fig/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)

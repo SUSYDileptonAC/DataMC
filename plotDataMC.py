@@ -304,7 +304,7 @@ def plotDataMC(mainConfig,dilepton):
 	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 
 	if mainConfig.plotRatio:
-		radioPad.cd()
+		ratioPad.cd()
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:

@@ -304,7 +304,7 @@ def plotDataMC(mainConfig,dilepton):
 	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 
 	if mainConfig.plotRatio:
-		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
+		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:
 			signalRatios = []			
@@ -319,7 +319,7 @@ def plotDataMC(mainConfig,dilepton):
 			temphist.SetFillColor(myColors["MyGreen"])
 		
 			for index, signalhist in enumerate(signalhists):
-				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
+				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
 				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
 				signalhist.SetMarkerColor(signalhist.GetLineColor())
 				legendRatio.AddEntry(signalhist,"Data / Background + Signal (%s)"%signalLabels[index],"p")				

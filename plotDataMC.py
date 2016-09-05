@@ -304,15 +304,6 @@ def plotDataMC(mainConfig,dilepton):
 	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 
 	if mainConfig.plotRatio:
-		try:
-			ratioPad.cd()
-		except AttributeError:
-			print "Plot fails. Look up in errs/failedPlots.txt"
-			outFile =open("errs/failedPlots.txt","a")
-			outFile.write('%s\n'%plot.filename%("_"+run.label+"_"+dilepton))
-			outFile.close()
-			mainConfig.plot.cuts=baseCut
-			return 1
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
 		if mainConfig.plotSignal:

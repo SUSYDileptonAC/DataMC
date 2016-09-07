@@ -199,9 +199,9 @@ def plotDataMC(mainConfig,dilepton):
 	counts = {}
 	import pickle
 	print mainConfig.plot.cuts
-	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
+	datahist = getDataHist(mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)	
 	print datahist.GetEntries()
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts)
+	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,verbose=mainConfig.verbose)
 
 			
 	errIntMC = ROOT.Double()
@@ -235,7 +235,7 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.normalizeToData:
 		scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
 
-		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2)								
+		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,verbose=mainConfig.verbose)								
 					
 	
 	else:
@@ -245,22 +245,25 @@ def plotDataMC(mainConfig,dilepton):
 		
 	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
 	pickle.dump(counts, outFilePkl)
-	outFilePkl.close()	
+	outFilePkl.close()
+	
+	drawStack.theStack.Draw("samehist")	
 
 	if mainConfig.plotSignal:
 		signalhists = []
 		signalLabels = []
 		for Signal in signals:
-			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,signal=True)
+			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)
 			signalhist.SetLineWidth(2)
-			signalhist.Add(stack.theHistogram)
+			if mainConfig.stackSignal:
+				signalhist.Add(stack.theHistogram)
 			signalhist.SetMinimum(0.1)
 			signalhist.Draw("samehist")
 			signalhists.append(signalhist)
 			signalLabels.append(Signal.label)
 
 
-	drawStack.theStack.Draw("samehist")							
+								
 
 	dileptonLabel = ""
 	if dilepton == "SF":
@@ -307,7 +310,7 @@ def plotDataMC(mainConfig,dilepton):
 		ratioPad.cd()
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
-		if mainConfig.plotSignal:
+		if mainConfig.plotSignal and mainConfig.stackSignal:
 			signalRatios = []			
 				
 			legendRatio = TLegend(0.175, 0.725, 0.65, 0.95)
@@ -338,6 +341,8 @@ def plotDataMC(mainConfig,dilepton):
 	
 	if mainConfig.plotSignal:	
 		nameModifier+="_"+signalNameLabel
+		if mainConfig.stackSignal:
+			nameModifier+="_stackedSignal"
 
 	if mainConfig.normalizeToData:
 		hCanvas.Print("fig/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)

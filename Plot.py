@@ -26,8 +26,8 @@ def main():
 
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	
-	parser.add_argument("-v", "--verbose", action="store_true", dest="verbose", default=False,
-						  help="Verbose mode.")
+	parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", default=False,
+						  help="Switch verbose mode off. Do not show cut values and samples on the console whenever a histogram is created")
 	parser.add_argument("-d", "--data", action="store_true", dest="data", default=False,
 						  help="plot data points.")
 	parser.add_argument("-m", "--mc", action="store_true", dest="mc", default=False,
@@ -44,6 +44,8 @@ def main():
 						  help="plot ratio plot")
 	parser.add_argument("-S", "--signal", dest="signals", action="append", default=[],
 						  help="signals to plot.")
+	parser.add_argument("-t", "--stackSignal", dest="stackSignal", action="store_true", default=False,
+						  help="stack the signal to the background if signal is plotted.")
 	parser.add_argument("-b", "--backgrounds", dest="backgrounds", action="append", default=[],
 						  help="backgrounds to plot.")
 	parser.add_argument("-e", "--dilepton", dest="dileptons", action="append", default=[],
@@ -61,10 +63,15 @@ def main():
 	if args.plot == "":
 		args.plot = plotLists.default
 		
+	if args.quiet:
+		verbose = False
+	else:
+		verbose = True
+		
 
 	for plot in args.plot:
 		for dilepton in args.dileptons:
-			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,backgrounds=args.backgrounds)
+			config = dataMCConfig.dataMCConfig(plot,verbose=verbose,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,stackSignal=args.stackSignal,backgrounds=args.backgrounds)
 			
 			plotDataMC.plotDataMC(config,dilepton)
 	

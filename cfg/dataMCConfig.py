@@ -8,11 +8,13 @@ from helpers import readTrees, getDataHist, TheStack, totalNumberOfGeneratedEven
 class dataMCConfig:
 		
 		
+	verbose = True
 	plotData = True
 	plotMC	= True
 	normalizeToData = False
 	plotRatio = True
 	plotSignal = False
+	stackSignal = False
 	
 	plot = None
 	region = None
@@ -20,9 +22,10 @@ class dataMCConfig:
 	dataSetPath = ""
 	backgrounds = []
 		
-	def __init__(self,plot,region="SignalInclusive",runName = "Run2015_25ns",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,backgrounds = []):
+	def __init__(self,plot,verbose=True,region="SignalInclusive",runName = "Run2015_25ns",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,backgrounds = []):
 		sys.path.append(pathes.basePath)
 		
+		self.verbose = verbose
 		self.dataSetPath = locations.dataSetPath
 		self.runRange = getRunRange(runName)
 		
@@ -38,6 +41,7 @@ class dataMCConfig:
 		self.normalizeToData = normalizeToData
 		self.plotRatio = plotRatio
 		self.signals = signals
+		self.stackSignal = stackSignal
 		if len(self.signals) > 0:
 			self.plotSignal = True
 		self.backgrounds = backgrounds

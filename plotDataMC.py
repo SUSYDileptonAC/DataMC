@@ -16,9 +16,11 @@ def plotDataMC(mainConfig,dilepton):
 	from helpers import *	
 	import math
 	
+	### file to normalize signal MC
 	signalDenominatorFile = TFile("../SignalScan/T6bbllsleptonDenominatorHisto.root")
 	signalDenominatorHisto = TH2F(signalDenominatorFile.Get("massScan"))
 	
+	### divide canvas into 2 pads if a ratio is to be plotted
 	hCanvas = TCanvas("hCanvas", "Distribution", 800,800)
 	if mainConfig.plotRatio:
 		plotPad = ROOT.TPad("plotPad","plotPad",0,0.3,1,1)
@@ -35,15 +37,18 @@ def plotDataMC(mainConfig,dilepton):
 		plotPad.UseCurrentStyle()
 		plotPad.Draw()	
 		plotPad.cd()	
-		
+	
 	colors = createMyColors()		
 
 
-	eventCounts = totalNumberOfGeneratedEvents(mainConfig.dataSetPath)	
+	### get the normalization for background MC
+	eventCounts = totalNumberOfGeneratedEvents(mainConfig.dataSetPath)
+	### get the background processes	
 	processes = []
 	for background in mainConfig.backgrounds:
 		processes.append(Process(getattr(Backgrounds,background),eventCounts))
-		
+	
+	### get the signal if any is to be plotted	
 	signalEventCounts = {}
 	signals = []
 	signalNameLabel = ""
@@ -55,7 +60,8 @@ def plotDataMC(mainConfig,dilepton):
 		if signalNameLabel == "":
 			signalNameLabel = "Signal"
 		signalNameLabel += "_m_b_%s_m_n_%s"%(signal.split("_")[2],signal.split("_")[4])
-		
+	
+	### legend, use a slightly different one if eta is plotted	
 	legend = TLegend(0.45, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
 	legend.SetBorderSize(0)
@@ -68,6 +74,7 @@ def plotDataMC(mainConfig,dilepton):
 
 
 
+	### set latex style for labels
 	latex = ROOT.TLatex()
 	latex.SetTextFont(42)
 	latex.SetTextAlign(31)
@@ -83,7 +90,17 @@ def plotDataMC(mainConfig,dilepton):
 	latexCMSExtra.SetNDC(True)	
 	legendHists = []
 	
+	intlumi = ROOT.TLatex()
+	intlumi.SetTextAlign(12)
+	intlumi.SetTextSize(0.045)
+	intlumi.SetNDC(True)
+	scalelabel = ROOT.TLatex()
+	scalelabel.SetTextAlign(12)
+	scalelabel.SetTextSize(0.03)
+	scalelabel.SetNDC(True)
+	
 
+	### add data to the legend
 	legendHistData = ROOT.TH1F()
 	if mainConfig.plotData:	
 		legend.AddEntry(legendHistData,"Data","pe")	
@@ -91,14 +108,14 @@ def plotDataMC(mainConfig,dilepton):
 
 	
 
-
-
-	for process in reversed(processes):
-		temphist = ROOT.TH1F()
-		temphist.SetFillColor(process.theColor)
-		legendHists.append(temphist.Clone)
-		legend.AddEntry(temphist,process.label,"f")
-		legendEta.AddEntry(temphist,process.label,"f")
+	### loop over the background processes, add them in iverse order to the legend
+	if mainConfig.plotMC:
+		for process in reversed(processes):
+			temphist = ROOT.TH1F()
+			temphist.SetFillColor(process.theColor)
+			legendHists.append(temphist.Clone)
+			legend.AddEntry(temphist,process.label,"f")
+			legendEta.AddEntry(temphist,process.label,"f")
 	if mainConfig.plotRatio:
 		temphist = ROOT.TH1F()
 		temphist.SetFillColor(myColors["MyGreen"])
@@ -109,7 +126,7 @@ def plotDataMC(mainConfig,dilepton):
 		legendHists.append(temphist2.Clone)	
 
 
-	
+	### create processes with signal to be able to stack the signal on the background
 	if mainConfig.plotSignal:
 		processesWithSignal = []
 		for process in processes:
@@ -123,36 +140,20 @@ def plotDataMC(mainConfig,dilepton):
 			legend.AddEntry(temphist,Signal.label,"l")
 			legendEta.AddEntry(temphist,Signal.label,"l")
 	
-	
-
-
 	nEvents=-1
 
 	
 	ROOT.gStyle.SetOptStat(0)
 	
-	intlumi = ROOT.TLatex()
-	intlumi.SetTextAlign(12)
-	intlumi.SetTextSize(0.045)
-	intlumi.SetNDC(True)
-	scalelabel = ROOT.TLatex()
-	scalelabel.SetTextAlign(12)
-	scalelabel.SetTextSize(0.03)
-	scalelabel.SetNDC(True)
-	hCanvas.SetLogy()
-
-
+	### get the trees
 	treeEE = readTrees(mainConfig.dataSetPath, "EE")
 	treeMuMu = readTrees(mainConfig.dataSetPath, "MuMu")
 	treeEMu = readTrees(mainConfig.dataSetPath, "EMu")
- 
 
-
-	
-
-	
+	### add dilepton combination
 	mainConfig.plot.addDilepton(dilepton)	 
 	
+	### Use a log scale if certain MET like variables are plotted
 	plotPad.cd()
 	plotPad.SetLogy(0)
 	logScale = mainConfig.plot.log
@@ -162,6 +163,7 @@ def plotDataMC(mainConfig,dilepton):
 	if logScale == True:
 		plotPad.SetLogy()
 
+	### fetch the trees to be used
 	scaleTree1 = 1.0
 	scaleTree2 = 1.0
 	if mainConfig.plot.tree1 == "EE":
@@ -189,29 +191,33 @@ def plotDataMC(mainConfig,dilepton):
 		tree2 = "None"				
 	
 		
-	
+	### adapt name if MC is normalized to data
 	if mainConfig.normalizeToData:
 		pickleName=mainConfig.plot.filename%("_scaled_"+mainConfig.runRange.label+"_"+dilepton)
 	else:
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
-	
+	### get the data histogram and the MC stack
 	counts = {}
 	import pickle
 	print mainConfig.plot.cuts
-	datahist = getDataHist(mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)	
-	print datahist.GetEntries()
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,verbose=mainConfig.verbose)
+	if mainConfig.plotData:
+		datahist = getDataHist(mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)			
+		counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}
+		print datahist.GetEntries()
+	if mainConfig.plotMC:
+		stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,verbose=mainConfig.verbose)
 
+		### get the number of MC events and the uncertainty		
+		errIntMC = ROOT.Double()
+		intMC = stack.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 			
-	errIntMC = ROOT.Double()
-	intMC = stack.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		val = float(intMC)
+		err = float(errIntMC)
 			
-	val = float(intMC)
-	err = float(errIntMC)
-			
-	counts["Total Background"] = {"val":val,"err":err}		
-	counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}		
+		counts["Total Background"] = {"val":val,"err":err}			
+	
+	### set the maximum of the y-axis	
 	if mainConfig.plotData:
 		yMax = datahist.GetBinContent(datahist.GetMaximumBin())
 	else:	
@@ -226,29 +232,31 @@ def plotDataMC(mainConfig,dilepton):
 	
 	#~ yMax = 220
 
-	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
-	
-	
-	
+	### draw the frame
+	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))	
 
  
-	if mainConfig.normalizeToData:
-		scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
-
-		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,verbose=mainConfig.verbose)								
-					
+	### scale the stack if MC is to be normalzed to data
+	if mainConfig.plotMC:
+		if mainConfig.normalizeToData:
+			scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
 	
-	else:
-		drawStack = stack
+			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,verbose=mainConfig.verbose)								
+						
+		else:
+			drawStack = stack
 			
 
-		
+	### dump the data and MC yields	
 	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
 	pickle.dump(counts, outFilePkl)
 	outFilePkl.close()
 	
-	drawStack.theStack.Draw("samehist")	
+	### draw the stack
+	if mainConfig.plotMC:
+		drawStack.theStack.Draw("samehist")	
 
+	### Draw signal and add the corresponding labels
 	if mainConfig.plotSignal:
 		signalhists = []
 		signalLabels = []
@@ -264,7 +272,7 @@ def plotDataMC(mainConfig,dilepton):
 
 
 								
-
+	### add a dilepton label
 	dileptonLabel = ""
 	if dilepton == "SF":
 		dileptonLabel = "ee + #mu#mu"
@@ -275,16 +283,16 @@ def plotDataMC(mainConfig,dilepton):
 	if dilepton == "MuMu":
 		dileptonLabel = "#mu#mu"
 
+	### plot data
 	datahist.SetMinimum(0.1)
 	if mainConfig.plotData:
 		datahist.Draw("samep")	
-
-
 	
+	### add a label if MC is normalized to data
 	if mainConfig.normalizeToData:			
 		scalelabel.DrawLatex(0.6,0.4,"Background scaled by %.2f"%(scalefac))
 	
-
+	### draw legend, special legend if eta is plotted
 	if mainConfig.plot.variable == "eta1" or mainConfig.plot.variable == "eta2":
 		legendEta.SetNColumns(2)
 		legendEta.Draw()
@@ -294,7 +302,7 @@ def plotDataMC(mainConfig,dilepton):
 		intlumi.DrawLatex(0.45,0.55,"#splitline{%s}{%s}"%(mainConfig.plot.label2,dileptonLabel))	
 
 
-	
+	### other labels
 	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.83
 	cmsExtra = ""
@@ -306,10 +314,13 @@ def plotDataMC(mainConfig,dilepton):
 	latexCMS.DrawLatex(0.19,0.87,"CMS")
 	latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 
+	### make the ratio plot
 	if mainConfig.plotRatio:
 		ratioPad.cd()
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=ROOT.kBlack,adaptiveBinning=0.25)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
+		
+		### draw additional ratios if signal is stacked on background MC
 		if mainConfig.plotSignal and mainConfig.stackSignal:
 			signalRatios = []			
 				
@@ -320,8 +331,8 @@ def plotDataMC(mainConfig,dilepton):
 			backgroundHist = ROOT.TH1F()
 			legendRatio.AddEntry(backgroundHist,"Data / background","pe")
 			temphist = ROOT.TH1F()
-			temphist.SetFillColor(myColors["MyGreen"])
-		
+			temphist.SetFillColor(myColors["MyGreen"])		
+			
 			for index, signalhist in enumerate(signalhists):
 				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
 				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
@@ -335,15 +346,19 @@ def plotDataMC(mainConfig,dilepton):
 
 		ratioPad.RedrawAxis()
 
+	### adapt the file name
 	nameModifier = mainConfig.runRange.label+"_"+dilepton
 	if mainConfig.plotData == False:
 		nameModifier+="_MCOnly"
+	if mainConfig.plotMC == False:
+		nameModifier+="_NoBkgMC"
 	
 	if mainConfig.plotSignal:	
 		nameModifier+="_"+signalNameLabel
 		if mainConfig.stackSignal:
 			nameModifier+="_stackedSignal"
 
+	### save the plot
 	if mainConfig.normalizeToData:
 		hCanvas.Print("fig/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)
 	else:

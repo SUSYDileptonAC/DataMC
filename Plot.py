@@ -24,7 +24,7 @@ from centralConfig import plotLists,backgroundLists
 	
 def main():
 
-	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser = argparse.ArgumentParser(description='Data MC comparison tool')
 	
 	parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", default=False,
 						  help="Switch verbose mode off. Do not show cut values and samples on the console whenever a histogram is created")
@@ -67,7 +67,27 @@ def main():
 		verbose = False
 	else:
 		verbose = True
+	
+	if not args.mc and not args.data:
+		print "Nothing to be done since neither MC nor data is to be plotted"
+		print "Run with -d for data and -m for MC to plot eighter or both"
+		sys.exit()
+			
+	if args.ratio and (not args.mc or not args.data):
+		print "Can only plot a ratio if both data (-d) and MC (-m) are used"
+		sys.exit()
 		
+	if args.norm and not args.mc:
+		print "MC needs to be in the plot to be normalized to data"
+		sys.exit()	
+		
+	if args.stackSignal and not args.mc:
+		print "Can not stack signal on background MC if MC is not plotted"
+		sys.exit()	
+		
+	if args.stackSignal and args.signals == []:
+		print "Need a signal to stack"
+		sys.exit()	
 
 	for plot in args.plot:
 		for dilepton in args.dileptons:

@@ -126,13 +126,9 @@ def plotDataMC(mainConfig,dilepton):
 		legendHists.append(temphist2.Clone)	
 
 
-	### create processes with signal to be able to stack the signal on the background
+	### add signal to the legend if any is to be plotted
 	if mainConfig.plotSignal:
-		processesWithSignal = []
-		for process in processes:
-			processesWithSignal.append(process)
 		for Signal in signals:
-			processesWithSignal.append(Signal)
 			temphist = ROOT.TH1F()
 			temphist.SetFillColor(Signal.theColor)
 			temphist.SetLineColor(Signal.theLineColor)
@@ -215,13 +211,46 @@ def plotDataMC(mainConfig,dilepton):
 		val = float(intMC)
 		err = float(errIntMC)
 			
-		counts["Total Background"] = {"val":val,"err":err}			
+		counts["Total Background"] = {"val":val,"err":err}
+		
+		### scale the stack if MC is to be normalzed to data
+		if mainConfig.normalizeToData:
+			scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
+	
+			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,verbose=mainConfig.verbose)								
+						
+		else:
+			drawStack = stack			
+	
+	if mainConfig.plotSignal:
+		signalhists = []
+		signalLabels = []
+		ymaxSignal = 0
+		for Signal in signals:
+			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)
+			signalhist.SetLineWidth(2)
+			if mainConfig.stackSignal:
+				signalhist.Add(drawStack.theHistogram)
+			signalhist.SetMinimum(0.1)
+			signalhists.append(signalhist)
+			signalLabels.append(Signal.label)
+			tmpYmaxSignal = signalhist.GetBinContent(signalhist.GetMaximumBin())
+			if tmpYmaxSignal > ymaxSignal:
+				ymaxSignal = tmpYmaxSignal
+	
+	
+	### dump the data and MC yields	
+	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
+	pickle.dump(counts, outFilePkl)
+	outFilePkl.close()
 	
 	### set the maximum of the y-axis	
 	if mainConfig.plotData:
 		yMax = datahist.GetBinContent(datahist.GetMaximumBin())
+	elif mainConfig.plotMC:	
+		yMax = drawStack.theHistogram.GetBinContent(drawStack.theHistogram.GetMaximumBin())
 	else:	
-		yMax = stack.theHistogram.GetBinContent(datahist.GetMaximumBin())
+		yMax = ymaxSignal
 	if mainConfig.plot.yMax == 0:
 		if logScale:
 			yMax = yMax*1000
@@ -234,41 +263,17 @@ def plotDataMC(mainConfig,dilepton):
 
 	### draw the frame
 	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))	
-
- 
-	### scale the stack if MC is to be normalzed to data
-	if mainConfig.plotMC:
-		if mainConfig.normalizeToData:
-			scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
-	
-			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,verbose=mainConfig.verbose)								
-						
-		else:
-			drawStack = stack
+		
 			
-
-	### dump the data and MC yields	
-	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
-	pickle.dump(counts, outFilePkl)
-	outFilePkl.close()
 	
 	### draw the stack
 	if mainConfig.plotMC:
 		drawStack.theStack.Draw("samehist")	
 
-	### Draw signal and add the corresponding labels
+	### Draw signal 
 	if mainConfig.plotSignal:
-		signalhists = []
-		signalLabels = []
 		for Signal in signals:
-			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,verbose=mainConfig.verbose)
-			signalhist.SetLineWidth(2)
-			if mainConfig.stackSignal:
-				signalhist.Add(stack.theHistogram)
-			signalhist.SetMinimum(0.1)
 			signalhist.Draw("samehist")
-			signalhists.append(signalhist)
-			signalLabels.append(Signal.label)
 
 
 								
@@ -284,8 +289,8 @@ def plotDataMC(mainConfig,dilepton):
 		dileptonLabel = "#mu#mu"
 
 	### plot data
-	datahist.SetMinimum(0.1)
 	if mainConfig.plotData:
+		datahist.SetMinimum(0.1)
 		datahist.Draw("samep")	
 	
 	### add a label if MC is normalized to data
@@ -303,7 +308,7 @@ def plotDataMC(mainConfig,dilepton):
 
 
 	### other labels
-	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
+	latex.DrawLatex(0.95, 0.95, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.83
 	cmsExtra = ""
 	cmsExtra = "Private Work"

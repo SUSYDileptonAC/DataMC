@@ -68,9 +68,9 @@ def main():
 	else:
 		verbose = True
 	
-	if not args.mc and not args.data:
+	if not args.mc and not args.data and args.signals == []:
 		print "Nothing to be done since neither MC nor data is to be plotted"
-		print "Run with -d for data and -m for MC to plot eighter or both"
+		print "Run with -d for data and -m for MC bkg or add a signal sample with -S"
 		sys.exit()
 			
 	if args.ratio and (not args.mc or not args.data):

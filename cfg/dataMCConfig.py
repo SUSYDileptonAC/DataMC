@@ -14,6 +14,7 @@ class dataMCConfig:
 	normalizeToData = False
 	plotRatio = True
 	plotSignal = False
+	stackSignal = False
 	useTriggerEmulation = False 
 	doPUWeights = False	
 	DontScaleTrig = False 
@@ -30,13 +31,21 @@ class dataMCConfig:
 	theoUncert = 0.
 	backgrounds = []
 		
-	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,useTriggerEmulation=False,personalWork=False,doTopReweighting=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],produceTheoUncert=False,dontScaleTrig=False,plotSyst=False,doPUWeights=False):
+	#~ def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,useTriggerEmulation=False,personalWork=False,doTopReweighting=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],produceTheoUncert=False,dontScaleTrig=False,plotSyst=False,doPUWeights=False):
+	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,useTriggerEmulation=False,doTopReweighting=False,personalWork=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],dontScaleTrig=False,plotSyst=False,doPUWeights=False):
 		sys.path.append(pathes.basePath)
 		
 		self.dataSetPath = locations.dataSetPath
 		if dontScaleTrig:
 			self.dataSetPath = locations.dataSetPathTrigger
 		self.runRange = getRunRange(runName)
+		
+		if "Central" in region:
+			self.etaRegion = "central"
+		elif "Forward" in region:
+			self.etaRegion = "forward"
+		else:
+			self.etaRegion = "inclusive"
 		
 		self.selection = getRegion(region)
 		
@@ -50,6 +59,7 @@ class dataMCConfig:
 		self.normalizeToData = normalizeToData
 		self.plotRatio = plotRatio
 		self.signals = signals
+		self.stackSignal = stackSignal
 		if self.signals is not None:
 			self.plotSignal = True
 		self.backgrounds = backgrounds
@@ -65,28 +75,28 @@ class dataMCConfig:
 		from corrections import rSFOF	
 		self.rSFOF = rSFOF
 		
-		if produceTheoUncert:
-			
-			sampleList = ["TTJets","TTJets_MatchingUp","TTJets_MatchingDown","TTJets_ScaleUp","TTJets_ScaleDown","TTJets_MassUp","TTJets_MassDown"]
-			
-			treesEE = readTrees(self.dataSetPath,"EE")
-			treesEM = readTrees(self.dataSetPath,"EMu")
-			treesMM = readTrees(self.dataSetPath,"MuMu")
-					
-			eventCounts = totalNumberOfGeneratedEvents(self.dataSetPath)	
-			numbers = {}
-			for sample in sampleList:
-				process = Process(getattr(Backgrounds,sample),eventCounts)
-			
-				histoEE = TheStack([process],self.runRange.lumi,self.plot,treesEE,"None",1.0,1.0,1.0).theHistogram		
-				histoMM = TheStack([process],self.runRange.lumi,self.plot,treesMM,"None",1.0,1.0,1.0).theHistogram
-				histoEM = TheStack([process],self.runRange.lumi,self.plot,treesEM,"None",1.0,1.0,1.0).theHistogram	
-				
-				numbers[sample] = histoEE.Integral() + histoMM.Integral() + histoEM.Integral()
-				
-			
-			scaleErr = max(abs(numbers["TTJets"]-numbers["TTJets_ScaleUp"]),abs(numbers["TTJets"]-numbers["TTJets_ScaleDown"])) / numbers["TTJets"]			
-			matchingErr = max(abs(numbers["TTJets"]-numbers["TTJets_MatchingUp"]),abs(numbers["TTJets"]-numbers["TTJets_MatchingDown"])) / numbers["TTJets"]			
-			massErr = max(abs(numbers["TTJets"]-numbers["TTJets_MassUp"]),abs(numbers["TTJets"]-numbers["TTJets_MassDown"])) / numbers["TTJets"]			
-	
-			self.theoUncert = (scaleErr**2 + matchingErr**2 + massErr**2)**0.5
+		#~ if produceTheoUncert:
+			#~ 
+			#~ sampleList = ["TTJets","TTJets_MatchingUp","TTJets_MatchingDown","TTJets_ScaleUp","TTJets_ScaleDown","TTJets_MassUp","TTJets_MassDown"]
+			#~ 
+			#~ treesEE = readTrees(self.dataSetPath,"EE")
+			#~ treesEM = readTrees(self.dataSetPath,"EMu")
+			#~ treesMM = readTrees(self.dataSetPath,"MuMu")
+					#~ 
+			#~ eventCounts = totalNumberOfGeneratedEvents(self.dataSetPath)	
+			#~ numbers = {}
+			#~ for sample in sampleList:
+				#~ process = Process(getattr(Backgrounds,sample),eventCounts)
+			#~ 
+				#~ histoEE = TheStack([process],self.runRange.lumi,self.plot,treesEE,"None",1.0,1.0,1.0).theHistogram		
+				#~ histoMM = TheStack([process],self.runRange.lumi,self.plot,treesMM,"None",1.0,1.0,1.0).theHistogram
+				#~ histoEM = TheStack([process],self.runRange.lumi,self.plot,treesEM,"None",1.0,1.0,1.0).theHistogram	
+				#~ 
+				#~ numbers[sample] = histoEE.Integral() + histoMM.Integral() + histoEM.Integral()
+				#~ 
+			#~ 
+			#~ scaleErr = max(abs(numbers["TTJets"]-numbers["TTJets_ScaleUp"]),abs(numbers["TTJets"]-numbers["TTJets_ScaleDown"])) / numbers["TTJets"]			
+			#~ matchingErr = max(abs(numbers["TTJets"]-numbers["TTJets_MatchingUp"]),abs(numbers["TTJets"]-numbers["TTJets_MatchingDown"])) / numbers["TTJets"]			
+			#~ massErr = max(abs(numbers["TTJets"]-numbers["TTJets_MassUp"]),abs(numbers["TTJets"]-numbers["TTJets_MassDown"])) / numbers["TTJets"]			
+	#~ 
+			#~ self.theoUncert = (scaleErr**2 + matchingErr**2 + massErr**2)**0.5

@@ -2,7 +2,7 @@ def plotDataMC(mainConfig,dilepton):
 	import gc
 	gc.enable()	
 	
-	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT
+	from ROOT import TCanvas, TPad, TH1F, TH1I, THStack, TLegend, TMath, gROOT,TFile, TH2F
 	import ratios
 	from defs import Backgrounds
 	from defs import Backgrounds2011
@@ -12,10 +12,16 @@ def plotDataMC(mainConfig,dilepton):
 	from defs import Region
 	from defs import Regions
 	from defs import Plot
+	from corrections import triggerEffs, rSFOFTrig
 	from setTDRStyle import setTDRStyle
 	gROOT.SetBatch(True)
 	from helpers import *	
 	import math
+	
+	### file to normalize signal MC
+	signalDenominatorFile = TFile("../SignalScan/T6bbllsleptonDenominatorHisto.root")
+	signalDenominatorHisto = TH2F(signalDenominatorFile.Get("massScan"))
+	
 	if mainConfig.forPAS:
 		hCanvas = TCanvas("hCanvas", "Distribution", 600,800)
 	else:
@@ -45,9 +51,18 @@ def plotDataMC(mainConfig,dilepton):
 		processes.append(Process(getattr(Backgrounds,background),eventCounts))
 		
 	
+	### get the signal if any is to be plotted	
+	signalEventCounts = {}
 	signals = []
+	signalNameLabel = ""
 	for signal in mainConfig.signals:
-		signals.append(Process(getattr(Signals,signal),eventCounts))
+		m_b = int(signal.split("_")[2])
+		m_n_2 = int(signal.split("_")[4])
+		signalEventCounts[signal] = signalDenominatorHisto.GetBinContent(signalDenominatorHisto.GetXaxis().FindBin(m_b),signalDenominatorHisto.GetYaxis().FindBin(m_n_2))
+		signals.append(Process(getattr(Signals,signal),signalEventCounts))
+		if signalNameLabel == "":
+			signalNameLabel = "Signal"
+		signalNameLabel += "_m_b_%s_m_n_%s"%(signal.split("_")[2],signal.split("_")[4])
 		
 	legend = TLegend(0.45, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
@@ -84,35 +99,28 @@ def plotDataMC(mainConfig,dilepton):
 
 	
 
-
-
-	for process in reversed(processes):
-		temphist = ROOT.TH1F()
-		temphist.SetFillColor(process.theColor)
-		legendHists.append(temphist.Clone)
-		legend.AddEntry(temphist,process.label,"f")
-		legendEta.AddEntry(temphist,process.label,"f")
-		#~ if mainConfig.plotSignal:
-			#~ processes.append(Signal)
+	### loop over the background processes, add them in iverse order to the legend
+	if mainConfig.plotMC:
+		for process in reversed(processes):
+			temphist = ROOT.TH1F()
+			temphist.SetFillColor(process.theColor)
+			legendHists.append(temphist.Clone)
+			legend.AddEntry(temphist,process.label,"f")
+			legendEta.AddEntry(temphist,process.label,"f")
 	if mainConfig.plotRatio:
 		temphist = ROOT.TH1F()
 		temphist.SetFillColor(myColors["MyGreen"])
-		legendHists.append(temphist.Clone)
-		#~ legend.AddEntry(temphist,"Syst. uncert.","f")	
+		legendHists.append(temphist.Clone)	
+		#~ legend.AddEntry(temphist,"Syst. uncert.","f")
 		temphist2 = ROOT.TH1F()
 		temphist2.SetFillColor(myColors["DarkRed"],)
 		temphist2.SetFillStyle(3002)
-		legendHists.append(temphist2.Clone)
-		#~ legend.AddEntry(temphist2,"JEC & Pileup Uncert.","f")	
+		legendHists.append(temphist2.Clone)	
 
 
 	
 	if mainConfig.plotSignal:
-		processesWithSignal = []
-		for process in processes:
-			processesWithSignal.append(process)
 		for Signal in signals:
-			processesWithSignal.append(Signal)
 			temphist = ROOT.TH1F()
 			temphist.SetFillColor(Signal.theColor)
 			temphist.SetLineColor(Signal.theLineColor)
@@ -175,17 +183,20 @@ def plotDataMC(mainConfig,dilepton):
 	scaleTree2 = 1.0
 	if mainConfig.plot.tree1 == "EE":
 		tree1 = treeEE
-		scaleTree1 = mainConfig.selection.trigEffs.effEE.val
+		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val
+		#~ scaleTree1 = mainConfig.selection.trigEffs.effEE.val
 		print "ee trigger Eff:"
 		print scaleTree1
 	elif mainConfig.plot.tree1 == "MuMu":
 		tree1 = treeMuMu
-		scaleTree1 = mainConfig.selection.trigEffs.effMM.val
+		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val
+		#~ scaleTree1 = mainConfig.selection.trigEffs.effMM.val
 		print "mumu trigger Eff:"
 		print scaleTree1
 	elif mainConfig.plot.tree1 == "EMu":
 		tree1 = treeEMu	
-		scaleTree1 = mainConfig.selection.trigEffs.effEM.val
+		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEM.val
+		#~ scaleTree1 = mainConfig.selection.trigEffs.effEM.val
 		print "emu trigger Eff:"
 		print scaleTree1			
 	else: 
@@ -231,31 +242,130 @@ def plotDataMC(mainConfig,dilepton):
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
 	
-	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("chargeProduct < 0","chargeProduct > 0")
-	
 	counts = {}
 	import pickle
 	print mainConfig.plot.cuts
-	datahist = getDataHist(mainConfig.plot,tree1,tree2)	
-	print datahist.GetEntries()
-	#~ print mainConfig.plot.variable
-	#~ mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met","patPFMet")	
-	#~ print mainConfig.plot.cuts
-	stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights)
+	if mainConfig.plotData:
+		datahist = getDataHist(mainConfig.plot,tree1,tree2)			
+		counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}
+		print datahist.GetEntries()
+		
+	if mainConfig.plotMC:
+		#~ stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights)
+		stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,doPUWeights=mainConfig.doPUWeights)
 
+		### get the number of MC events and the uncertainty		
+		errIntMC = ROOT.Double()
+		intMC = stack.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
 			
-	errIntMC = ROOT.Double()
-	intMC = stack.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+		val = float(intMC)
+		err = float(errIntMC)
 			
-	val = float(intMC)
-	err = float(errIntMC)
+		counts["Total Background"] = {"val":val,"err":err}
+		
+		### scale the stack if MC is to be normalzed to data
+		if mainConfig.normalizeToData:
+			scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
+	
+			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
+			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
+			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)							
+						
+		else:
+			drawStack = stack
 			
-	counts["Total Background"] = {"val":val,"err":err}		
-	counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}		
+			if mainConfig.plotSyst:
+
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
+				stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
+				stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
+				stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
+				stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
+						
+		
+				errIntMC = ROOT.Double()
+				intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				errIntMC = ROOT.Double()
+				intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+						
+				valPileUpUp = float(intMCPileUpUp)
+				valPileUpDown = float(intMCPileUpDown)
+				pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
+				pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
+				counts["Total Background"]["pileUpDown"]=pileUpDown				
+				counts["Total Background"]["pileUpUp"]=pileUpUp	
+				
+				if mainConfig.doTopReweighting:
+					stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+					stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+							
+					errIntMC = ROOT.Double()
+					intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+					errIntMC = ROOT.Double()
+					intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+						
+					valTopWeightUp = float(intMCTopWeightUp)
+					valTopWeightDown = float(intMCTopWeightDown)
+					topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
+					topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
+					counts["Total Background"]["topWeightDown"]=topWeightDown				
+					counts["Total Background"]["topWeightUp"]=topWeightUp
+				
+				errIntMC = ROOT.Double()
+				intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+				errIntMC = ROOT.Double()
+				intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
+					
+				valJESUp = float(intMCJESUp)
+				valJESDown = float(intMCJESDown)
+				jesUp = abs(counts["Total Background"]["val"]-valJESUp)
+				jesDown = abs(counts["Total Background"]["val"]-valJESDown)
+				counts["Total Background"]["jesDown"]=jesDown				
+				counts["Total Background"]["jesUp"]=jesUp				
+	
+		xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
+		counts["Total Background"]["xSec"]=xSec
+		#~ theoUncert = abs(stack.theHistogramTheoUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
+		#~ counts["Total Background"]["theo"]=theoUncert
+		
+	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
+	pickle.dump(counts, outFilePkl)
+	outFilePkl.close()	
+	
+	if mainConfig.plotSignal:
+		signalhists = []
+		signalLabels = []
+		ymaxSignal = 0
+		for Signal in signals:
+			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2)
+			signalhist.SetLineWidth(2)
+			if mainConfig.stackSignal:
+				signalhist.Add(drawStack.theHistogram)
+			signalhist.SetMinimum(0.1)
+			signalhists.append(signalhist)
+			signalLabels.append(Signal.label)
+			tmpYmaxSignal = signalhist.GetBinContent(signalhist.GetMaximumBin())
+			if tmpYmaxSignal > ymaxSignal:
+				ymaxSignal = tmpYmaxSignal
+							
+	### set the maximum of the y-axis	
 	if mainConfig.plotData:
 		yMax = datahist.GetBinContent(datahist.GetMaximumBin())
+	elif mainConfig.plotMC:	
+		yMax = drawStack.theHistogram.GetBinContent(drawStack.theHistogram.GetMaximumBin())
 	else:	
-		yMax = stack.theHistogram.GetBinContent(datahist.GetMaximumBin())
+		yMax = ymaxSignal
 	if mainConfig.plot.yMax == 0:
 		if logScale:
 			yMax = yMax*1000
@@ -264,106 +374,19 @@ def plotDataMC(mainConfig,dilepton):
 						
 	else: yMax = plot.yMax
 	
-	#~ yMax = 220
+	#~ yMax = 650
 
-	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))
-	
-	
-	
-
- 
-	if mainConfig.normalizeToData:
-		scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
-
-		drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
-		stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
-		stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)								
-					
-	
-	else:
-		drawStack = stack
-		if mainConfig.plotSyst:
-
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
-			stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
-			stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-			mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
-			if mainConfig.doTopReweighting:
-				stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-				stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))	
 
 
-	if mainConfig.plotSyst:
-	
-		errIntMC = ROOT.Double()
-		intMCJESUp = stackJESUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-		errIntMC = ROOT.Double()
-		intMCJESDown = stackJESDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-		valJESUp = float(intMCJESUp)
-		valJESDown = float(intMCJESDown)
-		jesUp = abs(counts["Total Background"]["val"]-valJESUp)
-		jesDown = abs(counts["Total Background"]["val"]-valJESDown)
-		counts["Total Background"]["jesDown"]=jesDown				
-		counts["Total Background"]["jesUp"]=jesUp				
-		
-		errIntMC = ROOT.Double()
-		intMCPileUpUp = stackPileUpUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-		errIntMC = ROOT.Double()
-		intMCPileUpDown = stackPileUpDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-		valPileUpUp = float(intMCPileUpUp)
-		valPileUpDown = float(intMCPileUpDown)
-		pileUpUp = abs(counts["Total Background"]["val"]-valPileUpUp)
-		pileUpDown = abs(counts["Total Background"]["val"]-valPileUpDown)
-		counts["Total Background"]["pileUpDown"]=pileUpDown				
-		counts["Total Background"]["pileUpUp"]=pileUpUp	
-		
-		if mainConfig.doTopReweighting:			
-			errIntMC = ROOT.Double()
-			intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-			errIntMC = ROOT.Double()
-			intMCTopWeightDown = stackReweightDown.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
-				
-			valTopWeightUp = float(intMCTopWeightUp)
-			valTopWeightDown = float(intMCTopWeightDown)
-			topWeightUp = abs(counts["Total Background"]["val"]-valTopWeightUp)
-			topWeightDown = abs(counts["Total Background"]["val"]-valTopWeightDown)
-			counts["Total Background"]["topWeightDown"]=topWeightDown				
-			counts["Total Background"]["topWeightUp"]=topWeightUp				
-	
-	xSec = abs(stack.theHistogramXsecUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
-	counts["Total Background"]["xSec"]=xSec
-	theoUncert = abs(stack.theHistogramTheoUp.Integral(0,stack.theHistogram.GetNbinsX()+1)-counts["Total Background"]["val"])
-	counts["Total Background"]["theo"]=theoUncert
-	outFilePkl = open("shelves/%s.pkl"%(pickleName),"w")
-	pickle.dump(counts, outFilePkl)
-	outFilePkl.close()	
+	### draw the stack
+	if mainConfig.plotMC:
+		drawStack.theStack.Draw("samehist")	
 
+	### Draw signal 
 	if mainConfig.plotSignal:
-		signalhists = []
 		for Signal in signals:
-			signalhist = Signal.createCombinedHistogram(mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,signal=True)
-			signalhist.SetLineWidth(2)
-			signalhist.Add(stack.theHistogram)
-			signalhist.SetMinimum(0.1)
-			signalhist.Draw("samehist")
-			signalhists.append(signalhist)	
-
-
-	drawStack.theStack.Draw("samehist")							
+			signalhist.Draw("samehist")						
 
 	dileptonLabel = ""
 	if dilepton == "SF":
@@ -375,8 +398,8 @@ def plotDataMC(mainConfig,dilepton):
 	if dilepton == "MuMu":
 		dileptonLabel = "#mu#mu"
 
-	datahist.SetMinimum(0.1)
 	if mainConfig.plotData:
+		datahist.SetMinimum(0.1)
 		datahist.Draw("samep")	
 
 
@@ -418,26 +441,18 @@ def plotDataMC(mainConfig,dilepton):
 		latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
 	
 	if mainConfig.plotRatio:
-		try:
-			ratioPad.cd()
-		except AttributeError:
-			print "Plot fails. Look up in errs/failedPlots.txt"
-			outFile =open("errs/failedPlots.txt","a")
-			outFile.write('%s\n'%plot.filename%("_"+run.label+"_"+dilepton))
-			outFile.close()
-			plot.cuts=baseCut
-			return 1
+		ratioPad.cd()
 		ratioGraphs =  ratios.RatioGraph(datahist,drawStack.theHistogram, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=ROOT.kBlack,adaptiveBinning=0.25)
 		if mainConfig.plotSyst:
 			ratioGraphs.addErrorByHistograms( "Pileup", stackPileUpUp.theHistogram, stackPileUpDown.theHistogram,color= myColors["MyGreen"])			
 			ratioGraphs.addErrorByHistograms( "JES", stackJESUp.theHistogram, stackJESDown.theHistogram,color= myColors["MyGreen"])	
 			if mainConfig.doTopReweighting:		
 				ratioGraphs.addErrorByHistograms( "TopWeight", stackReweightUp.theHistogram, stackReweightDown.theHistogram,color= myColors["MyGreen"])			
-			ratioGraphs.addErrorBySize("Effs",0.06726812023536856,color=myColors["MyGreen"],add=True)
+			ratioGraphs.addErrorBySize("Effs",getattr(rSFOFTrig,mainConfig.etaRegion).err,color=myColors["MyGreen"],add=True)
 			ratioGraphs.addErrorByHistograms( "Xsecs", drawStack.theHistogramXsecUp, drawStack.theHistogramXsecDown,color=myColors["MyGreen"],add=True)
-			ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
+			#~ ratioGraphs.addErrorByHistograms( "Theo", drawStack.theHistogramTheoUp, drawStack.theHistogramTheoDown,color=myColors["MyGreen"],add=True)
 		ratioGraphs.draw(ROOT.gPad,True,False,True,chi2Pos=0.8)
-		if mainConfig.plotSignal:
+		if mainConfig.plotSignal and mainConfig.stackSignal:
 			signalRatios = []
 			
 				
@@ -452,12 +467,12 @@ def plotDataMC(mainConfig,dilepton):
 			if mainConfig.plotSyst:
 				legendRatio.AddEntry(temphist,"Syst. uncert.","f")	
 				legendRatio.SetNColumns(2)			
-				for index, signalhist in enumerate(signalhists):
-					signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=plot.firstBin, xMax=plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
-					signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
-					signalhist.SetMarkerColor(signalhist.GetLineColor())
-					legendRatio.AddEntry(signalhist,"Data / Background + Signal","p")				
-				legendRatio.Draw("same")					
+			for index, signalhist in enumerate(signalhists):
+				signalRatios.append(ratios.RatioGraph(datahist,signalhist, xMin=mainConfig.plot.firstBin, xMax=mainConfig.plot.lastBin,title="Data / MC",yMin=0.0,yMax=2,ndivisions=10,color=signalhist.GetLineColor(),adaptiveBinning=0.25))
+				signalRatios[index].draw(ROOT.gPad,False,False,True,chi2Pos=0.7-index*0.1)
+				signalhist.SetMarkerColor(signalhist.GetLineColor())
+				legendRatio.AddEntry(signalhist,"Data / Background + Signal (%s)"%signalLabels[index],"p")			
+			legendRatio.Draw("same")					
 
 	ROOT.gPad.RedrawAxis()
 	plotPad.RedrawAxis()
@@ -470,6 +485,13 @@ def plotDataMC(mainConfig,dilepton):
 		nameModifier+="_TopReweighted"
 	if mainConfig.plotData == False:
 		nameModifier+="_MCOnly"
+	if mainConfig.plotMC == False:
+		nameModifier+="_NoBkgMC"
+		
+	if mainConfig.plotSignal:	
+		nameModifier+="_"+signalNameLabel
+		if mainConfig.stackSignal:
+			nameModifier+="_stackedSignal"
 
 	if mainConfig.normalizeToData:
 		hCanvas.Print("fig/DataMC/"+mainConfig.plot.filename%("_scaled_"+nameModifier),)

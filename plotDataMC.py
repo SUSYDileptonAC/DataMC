@@ -19,7 +19,7 @@ def plotDataMC(mainConfig,dilepton):
 	import math
 	
 	### file to normalize signal MC
-	signalDenominatorFile = TFile("../SignalScan/T6bbllsleptonDenominatorHisto.root")
+	signalDenominatorFile = TFile("../SignalScan/T6bbllsleptonDenominatorHisto4.root")
 	signalDenominatorHisto = TH2F(signalDenominatorFile.Get("massScan"))
 	
 	if mainConfig.forPAS:
@@ -64,11 +64,12 @@ def plotDataMC(mainConfig,dilepton):
 			signalNameLabel = "Signal"
 		signalNameLabel += "_m_b_%s_m_n_%s"%(signal.split("_")[2],signal.split("_")[4])
 		
-	legend = TLegend(0.45, 0.6, 0.925, 0.925)
+	#~ legend = TLegend(0.45, 0.6, 0.925, 0.925)
+	legend = TLegend(0.55, 0.6, 0.925, 0.925)
 	legend.SetFillStyle(0)
 	legend.SetBorderSize(0)
 	legend.SetTextFont(42)
-	legend.SetNColumns(2)
+	#~ legend.SetNColumns(2)
 	legendEta = TLegend(0.15, 0.75, 0.7, 0.9)
 	legendEta.SetFillStyle(0)
 	legendEta.SetBorderSize(0)
@@ -103,10 +104,12 @@ def plotDataMC(mainConfig,dilepton):
 	if mainConfig.plotMC:
 		for process in reversed(processes):
 			temphist = ROOT.TH1F()
-			temphist.SetFillColor(process.theColor)
-			legendHists.append(temphist.Clone)
-			legend.AddEntry(temphist,process.label,"f")
-			legendEta.AddEntry(temphist,process.label,"f")
+			temphist.SetFillColor(process.theColor)		
+			### Do not add a seperate legend entry for DY to tautau if new legend scheme is used
+			if not process.label == "DY+jets non resonant":
+				legendHists.append(temphist.Clone)
+				legend.AddEntry(temphist,process.label,"f")
+				legendEta.AddEntry(temphist,process.label,"f")
 	if mainConfig.plotRatio:
 		temphist = ROOT.TH1F()
 		temphist.SetFillColor(myColors["MyGreen"])
@@ -138,7 +141,7 @@ def plotDataMC(mainConfig,dilepton):
 	
 	intlumi = ROOT.TLatex()
 	intlumi.SetTextAlign(12)
-	intlumi.SetTextSize(0.045)
+	intlumi.SetTextSize(0.03)
 	intlumi.SetNDC(True)
 	intlumi2 = ROOT.TLatex()
 	intlumi2.SetTextAlign(12)
@@ -173,6 +176,7 @@ def plotDataMC(mainConfig,dilepton):
 	plotPad.cd()
 	plotPad.SetLogy(0)
 	logScale = mainConfig.plot.log
+	#~ logScale = True
 	if mainConfig.plot.variable == "met" or mainConfig.plot.variable == "type1Met" or mainConfig.plot.variable == "tcMet" or mainConfig.plot.variable == "caloMet" or mainConfig.plot.variable == "mht":
 		logScale = True
 	
@@ -183,61 +187,79 @@ def plotDataMC(mainConfig,dilepton):
 	scaleTree2 = 1.0
 	if mainConfig.plot.tree1 == "EE":
 		tree1 = treeEE
-		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val
-		#~ scaleTree1 = mainConfig.selection.trigEffs.effEE.val
-		print "ee trigger Eff:"
-		print scaleTree1
+		if mainConfig.useDataTrigEff:
+			scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val
+			#~ scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val**2
+			print "ee trigger Eff:"
+			print scaleTree1
+		#~ elif mainConfig.useTriggerEmulation:
+			#~ scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val/getattr(triggerEffs,mainConfig.etaRegion).effEE.valMC
 	elif mainConfig.plot.tree1 == "MuMu":
 		tree1 = treeMuMu
-		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val
-		#~ scaleTree1 = mainConfig.selection.trigEffs.effMM.val
-		print "mumu trigger Eff:"
-		print scaleTree1
+		if mainConfig.useDataTrigEff:
+			scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val
+			#~ scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val**2
+			print "mumu trigger Eff:"
+			print scaleTree1
+		#~ elif mainConfig.useTriggerEmulation:
+			#~ scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val/getattr(triggerEffs,mainConfig.etaRegion).effMM.valMC
 	elif mainConfig.plot.tree1 == "EMu":
 		tree1 = treeEMu	
-		scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEM.val
-		#~ scaleTree1 = mainConfig.selection.trigEffs.effEM.val
-		print "emu trigger Eff:"
-		print scaleTree1			
+		if mainConfig.useDataTrigEff:
+			scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEM.val
+			print "emu trigger Eff:"
+			print scaleTree1
+		#~ elif mainConfig.useTriggerEmulation:
+			#~ scaleTree1 = getattr(triggerEffs,mainConfig.etaRegion).effEM.val/getattr(triggerEffs,mainConfig.etaRegion).effEM.valMC			
 	else: 
 		print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 		return
 	
 	if mainConfig.plot.tree2 != "None":
 		if mainConfig.plot.tree2 == "EE":
-				tree2 = treeEE
-				scaleTree2 = mainConfig.selection.trigEffs.effEE.val
+			tree2 = treeEE
+			if mainConfig.useDataTrigEff:
+				#~ scaleTree2 = mainConfig.selection.trigEffs.effEE.val
+				scaleTree2 = mainConfig.selection.trigEffs.effEE.val**2
 				print "ee trigger Eff:"
-				print scaleTree2				
+				print scaleTree2	
+			#~ elif mainConfig.useTriggerEmulation:
+				#~ scaleTree2 = getattr(triggerEffs,mainConfig.etaRegion).effEE.val/getattr(triggerEffs,mainConfig.etaRegion).effEE.valMC			
 		elif mainConfig.plot.tree2 == "MuMu":
-				tree2 = treeMuMu
-				scaleTree2 = mainConfig.selection.trigEffs.effMM.val
+			tree2 = treeMuMu
+			if mainConfig.useDataTrigEff:
+				#~ scaleTree2 = mainConfig.selection.trigEffs.effMM.val
+				scaleTree2 = mainConfig.selection.trigEffs.effMM.val**2
 				print "mumu trigger Eff:"
 				print scaleTree2
+			#~ elif mainConfig.useTriggerEmulation:
+				#~ scaleTree2 = getattr(triggerEffs,mainConfig.etaRegion).effMM.val/getattr(triggerEffs,mainConfig.etaRegion).effMM.valMC	
 
 		elif mainConfig.plot.tree2 == "EMu":
-				tree2 = treeEMu	
+			tree2 = treeEMu	
+			if mainConfig.useDataTrigEff:
 				scaleTree2 = mainConfig.selection.trigEffs.effEM.val
 				print "emu trigger Eff:"
-				print scaleTree2				
+				print scaleTree2
+			#~ elif mainConfig.useTriggerEmulation:
+				#~ scaleTree2 = getattr(triggerEffs,mainConfig.etaRegion).effEM.val/getattr(triggerEffs,mainConfig.etaRegion).effEM.valMC				
 		else:
 			print "Unknown Dilepton combination! %s not created!"%(mainConfig.plot.filename,)
 			return
 	else:
 		tree2 = "None"
-		
-	if mainConfig.useTriggerEmulation or mainConfig.DontScaleTrig:
-		scaleTree2 = 1.0
-		scaleTree1 = 1.0				
+						
 	
 		
 	
 	if mainConfig.normalizeToData:
-		pickleName=mainConfig.plot.filename%("_scaled_"+mainConfig.runRange.label+"_"+dilepton)
+		pickleName=mainConfig.plot.filename%("_normalizedToData_"+mainConfig.runRange.label+"_"+dilepton)
 	elif mainConfig.useTriggerEmulation:
 		pickleName=mainConfig.plot.filename%("_TriggerEmulation_"+mainConfig.runRange.label+"_"+dilepton)
 	elif mainConfig.DontScaleTrig:
 		pickleName=mainConfig.plot.filename%("_NoTriggerScaling_"+mainConfig.runRange.label+"_"+dilepton)
+	elif mainConfig.useDataTrigEff:
+		pickleName=mainConfig.plot.filename%("_dataTriggerEffs_"+mainConfig.runRange.label+"_"+dilepton)
 	else:
 		pickleName=mainConfig.plot.filename%("_"+mainConfig.runRange.label+"_"+dilepton)		
 	
@@ -246,13 +268,13 @@ def plotDataMC(mainConfig,dilepton):
 	import pickle
 	print mainConfig.plot.cuts
 	if mainConfig.plotData:
-		datahist = getDataHist(mainConfig.plot,tree1,tree2)			
+		datahist = getDataHist(mainConfig.plot,tree1,tree2,normalizeToBinWidth=mainConfig.normalizeToBinWidth)			
 		counts["Data"] = {"val":datahist.Integral(0,datahist.GetNbinsX()+1),"err":math.sqrt(datahist.Integral(0,datahist.GetNbinsX()+1))}
 		print datahist.GetEntries()
 		
 	if mainConfig.plotMC:
-		#~ stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights)
-		stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,doPUWeights=mainConfig.doPUWeights)
+		#~ stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,theoUncert=mainConfig.theoUncert,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth)
+		stack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,counts=counts,doTopReweighting=mainConfig.doTopReweighting,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)
 
 		### get the number of MC events and the uncertainty		
 		errIntMC = ROOT.Double()
@@ -267,30 +289,31 @@ def plotDataMC(mainConfig,dilepton):
 		if mainConfig.normalizeToData:
 			scalefac = datahist.Integral(datahist.FindBin(mainConfig.plot.firstBin),datahist.FindBin(mainConfig.plot.lastBin))/stack.theHistogram.Integral(stack.theHistogram.FindBin(mainConfig.plot.firstBin),stack.theHistogram.FindBin(mainConfig.plot.lastBin))			
 	
-			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)	
-			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)
-			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights)							
+			drawStack = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)	
+			stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,0.955,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)
+			stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.045,scalefac*scaleTree1,scalefac*scaleTree2,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)							
 						
 		else:
 			drawStack = stack
 			
 			if mainConfig.plotSyst:
 
-				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met", "metJESUp")	
-				mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", "htJESUp")		
-				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nJets", "nShiftedJetsJESUp")
-				stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("met ", "metJESUp ")	
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" ht", " htJESUp")		
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace(" nJets ", " nShiftedJetsJESUp ")
+				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("(nJets ", "(nShiftedJetsJESUp ")
+				stackJESUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESUp", "metJESDown")
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESUp", "htJESDown")
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESUp", "nShiftedJetsJESDown")					
-				stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+				stackJESDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,JESDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)	
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("metJESDown", "met")
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("htJESDown", "ht")
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("nShiftedJetsJESDown", "nJets")	
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("*(", "Up*(")	
-				stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights)
+				stackPileUpUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpUp=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Up*(", "Down*(")		
-				stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+				stackPileUpDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,saveIntegrals=True,PileUpDown=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)	
 				mainConfig.plot.cuts = mainConfig.plot.cuts.replace("Down*(", "*(")
 						
 		
@@ -307,8 +330,8 @@ def plotDataMC(mainConfig,dilepton):
 				counts["Total Background"]["pileUpUp"]=pileUpUp	
 				
 				if mainConfig.doTopReweighting:
-					stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
-					stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights)	
+					stackReweightDown = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightDown=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)	
+					stackReweightUp = TheStack(processes,mainConfig.runRange.lumi,mainConfig.plot,tree1,tree2,1.0,scaleTree1,scaleTree2,TopWeightUp=True,saveIntegrals=True,counts=counts,doPUWeights=mainConfig.doPUWeights,normalizeToBinWidth=mainConfig.normalizeToBinWidth,useTriggerEmulation=mainConfig.useTriggerEmulation)	
 							
 					errIntMC = ROOT.Double()
 					intMCTopWeightUp = stackReweightUp.theHistogram.IntegralAndError(0,stack.theHistogram.GetNbinsX()+1,errIntMC)				
@@ -359,33 +382,44 @@ def plotDataMC(mainConfig,dilepton):
 			if tmpYmaxSignal > ymaxSignal:
 				ymaxSignal = tmpYmaxSignal
 							
-	### set the maximum of the y-axis	
+	### set the maximum of the y-axis
+	yMax = 0
+	yMin = 0	
 	if mainConfig.plotData:
 		yMax = datahist.GetBinContent(datahist.GetMaximumBin())
-	elif mainConfig.plotMC:	
+	if (mainConfig.plotMC and yMax < drawStack.theHistogram.GetBinContent(drawStack.theHistogram.GetMaximumBin())):	
 		yMax = drawStack.theHistogram.GetBinContent(drawStack.theHistogram.GetMaximumBin())
-	else:	
+	if (mainConfig.plotSignal and yMax < ymaxSignal):	
 		yMax = ymaxSignal
 	if mainConfig.plot.yMax == 0:
 		if logScale:
-			yMax = yMax*1000
+			yMax = yMax*200
+			if datahist.GetBinContent(datahist.GetMinimumBin()) > 0:
+				yMin = datahist.GetBinContent(datahist.GetMinimumBin()) / 5.
+			else:
+				yMin = 0.1
+				#~ yMin = 0.5
+				#~ yMin = 5
 		else:
 			yMax = yMax*1.5
 						
 	else: yMax = plot.yMax
 	
-	#~ yMax = 650
+	#~ yMax = 1200
+	#~ yMax = 130
 
-	plotPad.DrawFrame(mainConfig.plot.firstBin,mainConfig.plot.yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))	
+	plotPad.DrawFrame(mainConfig.plot.firstBin,yMin,mainConfig.plot.lastBin,yMax,"; %s ; %s" %(mainConfig.plot.xaxis,mainConfig.plot.yaxis))	
 
 
 	### draw the stack
 	if mainConfig.plotMC:
 		drawStack.theStack.Draw("samehist")	
+		lineHistogram = drawStack.theHistogram
+		lineHistogram.Draw("same l")
 
 	### Draw signal 
 	if mainConfig.plotSignal:
-		for Signal in signals:
+		for signalhist in signalhists:
 			signalhist.Draw("samehist")						
 
 	dileptonLabel = ""
@@ -399,10 +433,9 @@ def plotDataMC(mainConfig,dilepton):
 		dileptonLabel = "#mu#mu"
 
 	if mainConfig.plotData:
-		datahist.SetMinimum(0.1)
-		datahist.Draw("samep")	
-
-
+		#~ datahist.SetMinimum(0.1)
+		datahist.Draw("samep")
+		
 	
 	if mainConfig.normalizeToData:			
 		scalelabel.DrawLatex(0.6,0.4,"Background scaled by %.2f"%(scalefac))
@@ -414,18 +447,20 @@ def plotDataMC(mainConfig,dilepton):
 		intlumi.DrawLatex(0.2,0.7,"#splitline{"+mainConfig.plot.label+" "+dileptonLabel+"}{#splitline{"+mainConfig.plot.label2+"}{"+mainConfig.plot.label3+"}}")				
 	else:
 		legend.Draw()
-		intlumi.DrawLatex(0.45,0.55,"#splitline{%s}{%s}"%(mainConfig.plot.label2,dileptonLabel))	
+		intlumi.DrawLatex(0.4,0.55,"#splitline{%s}{%s}"%(mainConfig.plot.label2,dileptonLabel))	
 
 
 	
 	latex.DrawLatex(0.95, 0.96, "%s fb^{-1} (13 TeV)"%(mainConfig.runRange.printval,))
 	yLabelPos = 0.85
+	#~ yLabelPos = 0.88
 	cmsExtra = ""
 	if mainConfig.personalWork:
 		cmsExtra = "Private Work"
 		if not mainConfig.plotData:
 			cmsExtra = "#splitline{Private Work}{Simulation}"
 			yLabelPos = 0.82	
+			#~ yLabelPos = 0.85	
 	elif not mainConfig.plotData:
 		cmsExtra = "Simulation"	
 	elif mainConfig.preliminary:
@@ -439,6 +474,7 @@ def plotDataMC(mainConfig,dilepton):
 	else:
 		latexCMS.DrawLatex(0.19,0.89,"CMS")
 		latexCMSExtra.DrawLatex(0.19,yLabelPos,"%s"%(cmsExtra))
+	
 	
 	if mainConfig.plotRatio:
 		ratioPad.cd()

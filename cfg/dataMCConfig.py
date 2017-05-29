@@ -16,7 +16,9 @@ class dataMCConfig:
 	plotSignal = False
 	stackSignal = False
 	useTriggerEmulation = False 
+	useDataTrigEff = False 
 	doPUWeights = False	
+	normalizeToBinWidth = False	
 	DontScaleTrig = False 
 	personalWork = True
 	doTopReweighting = True
@@ -32,12 +34,14 @@ class dataMCConfig:
 	backgrounds = []
 		
 	#~ def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,useTriggerEmulation=False,personalWork=False,doTopReweighting=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],produceTheoUncert=False,dontScaleTrig=False,plotSyst=False,doPUWeights=False):
-	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,useTriggerEmulation=False,doTopReweighting=False,personalWork=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],dontScaleTrig=False,plotSyst=False,doPUWeights=False):
+	def __init__(self,plot,region="SignalInclusive",runName = "Full2012",plotData=True,plotMC=True,normalizeToData=False,plotRatio=True,signals=None,stackSignal=False,useTriggerEmulation=False,useDataTrigEff=False,doTopReweighting=False,personalWork=False,preliminary=True,forPAS=False,forTWIKI=False,backgrounds = [],dontScaleTrig=False,plotSyst=False,doPUWeights=False,normalizeToBinWidth=False):
 		sys.path.append(pathes.basePath)
 		
+		#~ self.dataSetPath = locations.dataSetPathNLL
 		self.dataSetPath = locations.dataSetPath
 		if dontScaleTrig:
-			self.dataSetPath = locations.dataSetPathTrigger
+			self.dataSetPath = locations.dataSetPath
+			#~ self.dataSetPath = locations.dataSetPathNLL
 		self.runRange = getRunRange(runName)
 		
 		if "Central" in region:
@@ -56,6 +60,7 @@ class dataMCConfig:
 		
 		self.plotData = plotData
 		self.plotMC = plotMC
+		self.plotSyst = plotSyst
 		self.normalizeToData = normalizeToData
 		self.plotRatio = plotRatio
 		self.signals = signals
@@ -64,6 +69,7 @@ class dataMCConfig:
 			self.plotSignal = True
 		self.backgrounds = backgrounds
 		self.useTriggerEmulation = useTriggerEmulation
+		self.useDataTrigEff = useDataTrigEff
 		self.personalWork = personalWork
 		self.preliminary = preliminary
 		self.doTopReweighting = doTopReweighting
@@ -71,6 +77,7 @@ class dataMCConfig:
 		self.forTWIKI = forTWIKI
 		self.DontScaleTrig = dontScaleTrig
 		self.doPUWeights = doPUWeights
+		self.normalizeToBinWidth = normalizeToBinWidth
 		
 		from corrections import rSFOF	
 		self.rSFOF = rSFOF

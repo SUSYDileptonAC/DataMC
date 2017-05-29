@@ -41,6 +41,8 @@ def main():
 						  help="name of run range.")
 	parser.add_argument("-n", "--norm", action="store_true", dest="norm", default=False,
 						  help="normalize to data.")
+	parser.add_argument("-N", "--normToBinWidth", action="store_true", dest="normToBinWidth", default=False,
+						  help="normalize to data.")
 	parser.add_argument("-a", "--ratio", action="store_true", dest="ratio", default=False,
 						  help="plot ratio plot")
 	parser.add_argument("-c", "--signal", dest="signals", action="append", default=[],
@@ -51,10 +53,12 @@ def main():
 						  help="backgrounds to plot.")
 	parser.add_argument("-e", "--dilepton", dest="dileptons", action="append", default=[],
 						  help="dilepton combinations to plot.")
-	parser.add_argument("-u", "--usetrigger", action="store_true", dest="trigger", default=False,
-						  help="use trigger emulation.")	
-	parser.add_argument("-l", "--dontscaletrig", action="store_true", dest="dontscaletrig", default=False,
-						  help="don't scale to trigger efficiency'")	
+	parser.add_argument("-u", "--useTrigger", action="store_true", dest="trigger", default=False,
+						  help="use trigger emulation. Cannot be used together with dontUseTrig (-l) or data trigger efficiencies (-D) ")	
+	parser.add_argument("-l", "--dontUseTrig", action="store_true", dest="dontUseTrig", default=False,
+						  help="don't use any trigger information for MC (neither trigger emulation nor data trigger efficiencies). Cannot be used together with trigger emulation (-u) or data trigger efficiencies (-D)")	
+	parser.add_argument("-D", "--useDataTrigEff", action="store_true", dest="useDataTrigEff", default=False,
+						  help="scale MC to trigger efficiencies measured on data. Cannot be used together with trigger emulation (-u) or dontUseTrig (-l)")	
 	parser.add_argument("-t", "--topreweighting", action="store_true", dest="top", default=False,
 						  help="use top reweighting.")	
 	parser.add_argument("-w", "--preliminary", action="store_true", dest="preliminary", default=False,
@@ -75,7 +79,10 @@ def main():
 	if len(args.backgrounds) == 0:
 		args.backgrounds = backgroundLists.default
 	if len(args.dileptons) == 0:
-		args.dileptons = ["SF","OF","EE","MuMu"]
+		#~ args.dileptons = ["SF","OF","EE","MuMu"]
+		#~ args.dileptons = ["MuMu"]
+		#~ args.dileptons = ["EE","MuMu"]
+		args.dileptons = ["SF","OF"]
 		
 	if len(args.runRange) == 0:
 		args.runRange.append(runRanges.name)
@@ -104,10 +111,20 @@ def main():
 		print "Need a signal to stack"
 		sys.exit()	
 		
+	if args.trigger and args.useDataTrigEff:
+		print "Cannot use trigger emulation (option -u) and data trigger efficiencies (-D) at the same time"	
+		sys.exit()
+	if args.trigger and args.dontUseTrig:
+		print "Cannot use trigger emulation (option -u) and not use any trigger information (-l) at the same time"	
+		sys.exit()
+	if args.useDataTrigEff and args.dontUseTrig:
+		print "Cannot use data trigger efficiencies (option -D) and not use any trigger information (-l) at the same time"	
+		sys.exit()
+		
 
 	for plot in args.plot:
 		for dilepton in args.dileptons:
-			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,stackSignal=args.stackSignal,useTriggerEmulation=args.trigger,doTopReweighting=args.top,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontscaletrig,plotSyst=args.plotSyst,doPUWeights=args.puWeights)
+			config = dataMCConfig.dataMCConfig(plot,region=args.region[0],runName=args.runRange[0],plotData=args.data,plotMC=args.mc,normalizeToData=args.norm,plotRatio=args.ratio,signals=args.signals,stackSignal=args.stackSignal,useTriggerEmulation=args.trigger,useDataTrigEff=args.useDataTrigEff,doTopReweighting=args.top,personalWork=args.private,preliminary=args.preliminary,forPAS=args.forPAS,forTWIKI=args.forTWIKI,backgrounds=args.backgrounds,dontScaleTrig=args.dontUseTrig,plotSyst=args.plotSyst,doPUWeights=args.puWeights,normalizeToBinWidth=args.normToBinWidth)
 			
 			plotDataMC.plotDataMC(config,dilepton)
 	
